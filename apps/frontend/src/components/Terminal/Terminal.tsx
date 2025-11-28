@@ -1,7 +1,9 @@
+import type { FilesystemNode } from "@linux-simulator/shared";
 import type { FC, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "../../contexts";
 import terminalCommands from "../../data/terminal-commands.json";
+import { FilesystemService } from "../../services";
 import "./Terminal.css";
 
 interface TerminalLine {
@@ -29,11 +31,20 @@ export const Terminal: FC = () => {
   const [input, setInput] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [currentPath, setCurrentPath] = useState("/");
+  const [currentNode, setCurrentNode] = useState<FilesystemNode | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const historyLengthRef = useRef(history.length);
 
   const commands: Command[] = terminalCommands.commands;
+
+  // Initialize filesystem
+  useEffect(() => {
+    FilesystemService.getNodeByPath("/").then((node) => {
+      setCurrentNode(node);
+    });
+  }, []);
 
   useEffect(() => {
     if (history.length !== historyLengthRef.current) {
@@ -76,12 +87,7 @@ export const Terminal: FC = () => {
     } else if (commandName === "clear") {
       setHistory([]);
     } else if (command) {
-      const output = executeBuiltinCommand(command.execute, args);
-      setHistory((prev) => [
-        ...prev,
-        { type: "output", content: output },
-        { type: "output", content: "" },
-      ]);
+      executeBuiltinCommand(command.execute, args);
     } else {
       setHistory((prev) => [
         ...prev,
@@ -101,17 +107,275 @@ export const Terminal: FC = () => {
     setHistoryIndex(-1);
   };
 
-  const executeBuiltinCommand = (
-    commandType: string,
-    args: string[]
-  ): string => {
+  const executeBuiltinCommand = (commandType: string, args: string[]): void => {
     switch (commandType) {
       case "echo":
-        return args.join(" ") || "";
+        addOutput(args.join(" ") || "");
+        break;
       case "date":
-        return new Date().toLocaleString();
+        addOutput(new Date().toLocaleString());
+        break;
+      case "pwd":
+        executePwd();
+        break;
+      case "ls":
+        executeLs(args);
+        break;
+      case "cd":
+        executeCd(args);
+        break;
+      case "cat":
+        executeCat(args);
+        break;
+      case "mkdir":
+        executeMkdir(args);
+        break;
+      case "touch":
+        executeTouch(args);
+        break;
+      case "rm":
+        executeRm(args);
+        break;
+      case "mv":
+        executeMv(args);
+        break;
       default:
-        return tTerminal.errors.notImplemented;
+        addOutput(tTerminal.errors.notImplemented);
+    }
+  };
+
+  const addOutput = (content: string, type: "output" | "error" = "output") => {
+    setHistory((prev) => [
+      ...prev,
+      { type, content },
+      { type: "output", content: "" },
+    ]);
+  };
+
+  const resolvePath = (path: string): string => {
+    if (path.startsWith("/")) {
+      return path;
+    }
+    const base = currentPath === "/" ? "" : currentPath;
+    return `${base}/${path}`.replace(/\/+/g, "/");
+  };
+
+  const executePwd = () => {
+    addOutput(currentPath);
+  };
+
+  const executeLs = async (args: string[]) => {
+    try {
+      const path = args[0] ? resolvePath(args[0]) : currentPath;
+      const node = await FilesystemService.getNodeByPath(path);
+
+      if (!node) {
+        addOutput(
+          `ls: cannot access '${args[0] || "."}': No such file or directory`,
+          "error"
+        );
+        return;
+      }
+
+      if (node.type === "file") {
+        addOutput(node.name);
+        return;
+      }
+
+      const children = await FilesystemService.getChildren(node.id);
+      if (children.length === 0) {
+        addOutput("");
+        return;
+      }
+
+      const dirs = children
+        .filter((c) => c.type === "directory")
+        .map((c) => c.name);
+      const files = children
+        .filter((c) => c.type === "file")
+        .map((c) => c.name);
+      const allNames = [...dirs, ...files];
+
+      addOutput(allNames.join("  "));
+    } catch (error) {
+      addOutput(`ls: error: ${error}`, "error");
+    }
+  };
+
+  const executeCd = async (args: string[]) => {
+    try {
+      if (args.length === 0) {
+        // cd with no args goes to root
+        const root = await FilesystemService.getNodeByPath("/");
+        if (root) {
+          setCurrentPath("/");
+          setCurrentNode(root);
+        }
+        return;
+      }
+
+      const path = resolvePath(args[0]);
+      const node = await FilesystemService.getNodeByPath(path);
+
+      if (!node) {
+        addOutput(`cd: ${args[0]}: No such file or directory`, "error");
+        return;
+      }
+
+      if (node.type !== "directory") {
+        addOutput(`cd: ${args[0]}: Not a directory`, "error");
+        return;
+      }
+
+      setCurrentPath(path);
+      setCurrentNode(node);
+      addOutput("");
+    } catch (error) {
+      addOutput(`cd: error: ${error}`, "error");
+    }
+  };
+
+  const executeCat = async (args: string[]) => {
+    if (args.length === 0) {
+      addOutput("cat: missing file operand", "error");
+      return;
+    }
+
+    try {
+      const path = resolvePath(args[0]);
+      const node = await FilesystemService.getNodeByPath(path);
+
+      if (!node) {
+        addOutput(`cat: ${args[0]}: No such file or directory`, "error");
+        return;
+      }
+
+      if (node.type !== "file") {
+        addOutput(`cat: ${args[0]}: Is a directory`, "error");
+        return;
+      }
+
+      addOutput(node.content || "");
+    } catch (error) {
+      addOutput(`cat: error: ${error}`, "error");
+    }
+  };
+
+  const executeMkdir = async (args: string[]) => {
+    if (args.length === 0) {
+      addOutput("mkdir: missing operand", "error");
+      return;
+    }
+
+    try {
+      const name = args[0];
+      if (name.includes("/")) {
+        addOutput("mkdir: only simple names supported (no paths)", "error");
+        return;
+      }
+
+      if (!currentNode) {
+        addOutput("mkdir: current directory not found", "error");
+        return;
+      }
+
+      await FilesystemService.createNode(currentNode.id, name, "directory");
+      addOutput("");
+    } catch (error) {
+      addOutput(`mkdir: error: ${error}`, "error");
+    }
+  };
+
+  const executeTouch = async (args: string[]) => {
+    if (args.length === 0) {
+      addOutput("touch: missing file operand", "error");
+      return;
+    }
+
+    try {
+      const name = args[0];
+      if (name.includes("/")) {
+        addOutput("touch: only simple names supported (no paths)", "error");
+        return;
+      }
+
+      if (!currentNode) {
+        addOutput("touch: current directory not found", "error");
+        return;
+      }
+
+      await FilesystemService.createNode(currentNode.id, name, "file", "");
+      addOutput("");
+    } catch (error) {
+      addOutput(`touch: error: ${error}`, "error");
+    }
+  };
+
+  const executeRm = async (args: string[]) => {
+    if (args.length === 0) {
+      addOutput("rm: missing operand", "error");
+      return;
+    }
+
+    try {
+      const path = resolvePath(args[0]);
+      const node = await FilesystemService.getNodeByPath(path);
+
+      if (!node) {
+        addOutput(
+          `rm: cannot remove '${args[0]}': No such file or directory`,
+          "error"
+        );
+        return;
+      }
+
+      if (node.type === "directory") {
+        const children = await FilesystemService.getChildren(node.id);
+        if (children.length > 0) {
+          addOutput(
+            `rm: cannot remove '${args[0]}': Directory not empty`,
+            "error"
+          );
+          return;
+        }
+      }
+
+      await FilesystemService.deleteNode(node.id);
+      addOutput("");
+    } catch (error) {
+      addOutput(`rm: error: ${error}`, "error");
+    }
+  };
+
+  const executeMv = async (args: string[]) => {
+    if (args.length < 2) {
+      addOutput("mv: missing operand", "error");
+      return;
+    }
+
+    try {
+      const sourcePath = resolvePath(args[0]);
+      const destName = args[1];
+
+      const sourceNode = await FilesystemService.getNodeByPath(sourcePath);
+      if (!sourceNode) {
+        addOutput(
+          `mv: cannot stat '${args[0]}': No such file or directory`,
+          "error"
+        );
+        return;
+      }
+
+      // Simple rename in current directory
+      if (!destName.includes("/")) {
+        await FilesystemService.updateNode(sourceNode.id, { name: destName });
+        addOutput("");
+        return;
+      }
+
+      addOutput("mv: moving between directories not yet supported", "error");
+    } catch (error) {
+      addOutput(`mv: error: ${error}`, "error");
     }
   };
 
@@ -173,7 +437,7 @@ export const Terminal: FC = () => {
         <div ref={terminalEndRef} />
       </div>
       <div className="terminal-input-line">
-        <span className="terminal-prompt">{tTerminal.prompt}</span>
+        <span className="terminal-prompt">{currentPath} $</span>
         <input
           ref={inputRef}
           type="text"

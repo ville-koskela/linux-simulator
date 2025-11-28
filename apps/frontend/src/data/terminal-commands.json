@@ -11,6 +11,54 @@
       "description": "Display current date and time",
       "usage": "date",
       "execute": "date"
+    },
+    {
+      "name": "pwd",
+      "description": "Print working directory",
+      "usage": "pwd",
+      "execute": "pwd"
+    },
+    {
+      "name": "ls",
+      "description": "List directory contents",
+      "usage": "ls [directory]",
+      "execute": "ls"
+    },
+    {
+      "name": "cd",
+      "description": "Change directory",
+      "usage": "cd [directory]",
+      "execute": "cd"
+    },
+    {
+      "name": "cat",
+      "description": "Display file contents",
+      "usage": "cat <file>",
+      "execute": "cat"
+    },
+    {
+      "name": "mkdir",
+      "description": "Create a directory",
+      "usage": "mkdir <directory>",
+      "execute": "mkdir"
+    },
+    {
+      "name": "touch",
+      "description": "Create an empty file",
+      "usage": "touch <file>",
+      "execute": "touch"
+    },
+    {
+      "name": "rm",
+      "description": "Remove files or directories",
+      "usage": "rm <file|directory>",
+      "execute": "rm"
+    },
+    {
+      "name": "mv",
+      "description": "Move or rename files",
+      "usage": "mv <source> <destination>",
+      "execute": "mv"
     }
   ]
 }

@@ -64,6 +64,38 @@
     "date": {
       "description": "Näytä nykyinen päivämäärä ja aika",
       "usage": "date"
+    },
+    "pwd": {
+      "description": "Tulosta työhakemisto",
+      "usage": "pwd"
+    },
+    "ls": {
+      "description": "Listaa hakemiston sisältö",
+      "usage": "ls [hakemisto]"
+    },
+    "cd": {
+      "description": "Vaihda hakemistoa",
+      "usage": "cd [hakemisto]"
+    },
+    "cat": {
+      "description": "Näytä tiedoston sisältö",
+      "usage": "cat <tiedosto>"
+    },
+    "mkdir": {
+      "description": "Luo hakemisto",
+      "usage": "mkdir <hakemisto>"
+    },
+    "touch": {
+      "description": "Luo tyhjä tiedosto",
+      "usage": "touch <tiedosto>"
+    },
+    "rm": {
+      "description": "Poista tiedostoja tai hakemistoja",
+      "usage": "rm <tiedosto|hakemisto>"
+    },
+    "mv": {
+      "description": "Siirrä tai nimeä tiedostoja",
+      "usage": "mv <lähde> <kohde>"
     }
   },
   "taskbar": {

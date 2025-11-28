@@ -2,21 +2,27 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as dotenv from 'dotenv';
 import { AppModule } from './app.module';
+import { ConfigService } from './config/config.service';
 import { DatabaseService } from './database/database.service';
-import { LoggerService } from './logger/logger.service';
 import { runMigrations } from './database/migrations';
+import { LoggerService } from './logger/logger.service';
 
 // Load environment variables
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: new LoggerService('NestApplication'),
+    bufferLogs: true,
   });
+
+  const config = app.get(ConfigService);
+  const logger = app.get(LoggerService);
+  logger.setContext('Bootstrap');
+  app.useLogger(logger);
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: config.corsOrigin,
     credentials: true,
   });
 
@@ -31,8 +37,6 @@ async function bootstrap() {
 
   // Run migrations on startup
   const db = app.get(DatabaseService);
-  const logger = app.get(LoggerService);
-  logger.setContext('Bootstrap');
 
   try {
     await runMigrations(db, logger);
@@ -44,10 +48,9 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
+  await app.listen(config.port);
 
-  logger.log(`🚀 Backend server running on http://localhost:${port}`);
+  logger.log(`🚀 Backend server running on http://localhost:${config.port}`);
 }
 
 bootstrap();

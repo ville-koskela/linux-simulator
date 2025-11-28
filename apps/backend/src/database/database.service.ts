@@ -1,11 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import {
   Pool,
   type PoolClient,
   type QueryResult,
   type QueryResultRow,
 } from 'pg';
-import { Injectable } from '@nestjs/common';
-import { LoggerService } from '../logger/logger.service';
+import type { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class DatabaseService {
@@ -35,7 +35,7 @@ export class DatabaseService {
     const result = await this.pool.query<T>(text, params);
     const duration = Date.now() - start;
 
-    if (process.env.NODE_ENV === 'development') {
+    if (this.config.isDevelopment) {
       this.logger.debug(
         `Query executed in ${duration}ms - ${result.rowCount} rows`
       );

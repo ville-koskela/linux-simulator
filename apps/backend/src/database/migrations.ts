@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import type { DatabaseService } from './database.service';
 import type { LoggerService } from '../logger/logger.service';
+import type { DatabaseService } from './database.service';
 
 export async function runMigrations(
   db: DatabaseService,
@@ -16,7 +16,10 @@ export async function runMigrations(
     await db.query(schema);
     logger.log('Database migrations completed successfully');
   } catch (error) {
-    logger.error('Migration failed', error instanceof Error ? error.stack : String(error));
+    logger.error(
+      'Migration failed',
+      error instanceof Error ? error.stack : String(error)
+    );
     throw error;
   }
 }

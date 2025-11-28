@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { DatabaseService } from '../database/database.service';
-import { LoggerService } from '../logger/logger.service';
+import type { LoggerService } from '../logger/logger.service';
 import type {
   CreateNodeDto,
   FilesystemNode,

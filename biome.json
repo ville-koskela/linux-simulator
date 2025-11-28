@@ -25,7 +25,7 @@
       },
       "suspicious": {
         "noDebugger": "error",
-        "noConsole": "off",
+        "noConsole": "error",
         "noExplicitAny": "off"
       },
       "correctness": {

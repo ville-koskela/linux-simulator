@@ -1,4 +1,9 @@
-import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
+import {
+  Injectable,
+  type LoggerService as NestLoggerService,
+  Scope,
+} from '@nestjs/common';
+import type { ConfigService } from '../config/config.service';
 
 export enum LogLevel {
   ERROR = 0,
@@ -7,18 +12,17 @@ export enum LogLevel {
   DEBUG = 3,
 }
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService implements NestLoggerService {
-  private context?: string;
+  private context = '';
   private logLevel: LogLevel;
 
-  constructor(context?: string) {
-    this.context = context;
-    this.logLevel = this.getLogLevelFromEnv();
+  constructor(private config: ConfigService) {
+    this.logLevel = this.getLogLevelFromConfig();
   }
 
-  private getLogLevelFromEnv(): LogLevel {
-    const level = process.env.LOG_LEVEL?.toUpperCase();
+  private getLogLevelFromConfig(): LogLevel {
+    const level = this.config.logLevel.toUpperCase();
     switch (level) {
       case 'ERROR':
         return LogLevel.ERROR;
@@ -29,61 +33,61 @@ export class LoggerService implements NestLoggerService {
       case 'DEBUG':
         return LogLevel.DEBUG;
       default:
-        return process.env.NODE_ENV === 'production'
-          ? LogLevel.INFO
-          : LogLevel.DEBUG;
+        return LogLevel.INFO;
     }
   }
 
   private formatMessage(level: string, message: string): string {
     const timestamp = new Date().toISOString();
-    const ctx = this.context ? `[${this.context}]` : '';
-    return `${timestamp} [${level}] ${ctx} ${message}`;
+    const contextStr = this.context ? `[${this.context}]` : '';
+    return `${timestamp} [${level}] ${contextStr} ${message}`;
   }
 
   private shouldLog(level: LogLevel): boolean {
     return level <= this.logLevel;
   }
 
-  log(message: string, context?: string): void {
+  log(message: string): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      const ctx = context || this.context;
+      // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.log(this.formatMessage('INFO', message));
     }
   }
 
-  error(message: string, trace?: string, context?: string): void {
+  error(message: string, trace?: string): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      const ctx = context || this.context;
+      // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.error(this.formatMessage('ERROR', message));
       if (trace) {
+        // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
         console.error(trace);
       }
     }
   }
 
-  warn(message: string, context?: string): void {
+  warn(message: string): void {
     if (this.shouldLog(LogLevel.WARN)) {
-      const ctx = context || this.context;
+      // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.warn(this.formatMessage('WARN', message));
     }
   }
 
-  debug(message: string, context?: string): void {
+  debug(message: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      const ctx = context || this.context;
+      // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.debug(this.formatMessage('DEBUG', message));
     }
   }
 
-  verbose(message: string, context?: string): void {
+  verbose(message: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      const ctx = context || this.context;
+      // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.log(this.formatMessage('VERBOSE', message));
     }
   }
 
-  // Create a child logger with a specific context
+  // Set context for this logger instance
+  // Call this in your service constructor after injection
   setContext(context: string): void {
     this.context = context;
   }

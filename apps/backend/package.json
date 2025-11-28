@@ -1,0 +1,10 @@
+{
+  "name": "@creative-friday/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Backend not yet implemented'",
+    "build": "echo 'Backend not yet implemented'"
+  }
+}

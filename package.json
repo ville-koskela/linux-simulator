@@ -3,18 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "node --import tsx --experimental-loader ./tests/test-utils/css-loader.js --test tests/**/*.test.{ts,tsx}",
-    "test:watch": "node --import tsx --experimental-loader ./tests/test-utils/css-loader.js --test --watch tests/**/*.test.{ts,tsx}",
+    "dev": "npm run dev -w @creative-friday/frontend",
+    "build": "npm run build -w @creative-friday/frontend",
+    "preview": "npm run preview -w @creative-friday/frontend",
+    "test": "npm run test -w @creative-friday/frontend",
+    "test:watch": "npm run test:watch -w @creative-friday/frontend",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "type-check": "tsc --noEmit",
+    "type-check": "npm run type-check -w @creative-friday/frontend",
     "prepare": "husky"
   },
   "dependencies": {

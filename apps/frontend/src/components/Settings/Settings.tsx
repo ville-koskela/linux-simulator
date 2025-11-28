@@ -1,8 +1,8 @@
+import type { ThemeColors } from '@creative-friday/shared';
+import { defaultThemes } from '@creative-friday/shared';
 import type { FC } from 'react';
 import { useRef, useState } from 'react';
 import { useSettings, useTranslations } from '../../contexts';
-import type { ThemeColors } from '../../types/settings';
-import { defaultThemes } from '../../types/settings';
 import './Settings.css';
 
 export const Settings: FC = () => {

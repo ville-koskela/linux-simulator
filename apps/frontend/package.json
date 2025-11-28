@@ -1,0 +1,31 @@
+{
+  "name": "@creative-friday/frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "node --import tsx --experimental-loader ./tests/test-utils/css-loader.js --test tests/**/*.test.{ts,tsx}",
+    "test:watch": "node --import tsx --experimental-loader ./tests/test-utils/css-loader.js --test --watch tests/**/*.test.{ts,tsx}",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@creative-friday/shared": "*",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "16.3.0",
+    "@types/jsdom": "27.0.0",
+    "@types/node": "24.9.2",
+    "@types/react": "19.1.16",
+    "@types/react-dom": "19.1.9",
+    "@vitejs/plugin-react": "5.0.4",
+    "jsdom": "27.1.0",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vite": "7.1.7"
+  }
+}

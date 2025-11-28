@@ -1,8 +1,8 @@
+import type { Settings, ThemeColors } from '@creative-friday/shared';
+import { defaultThemes } from '@creative-friday/shared';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';
-import type { Settings, ThemeColors } from '../types/settings';
-import { defaultThemes } from '../types/settings';
 import { getBrowserLanguage } from '../utils/language';
 
 interface SettingsContextValue {

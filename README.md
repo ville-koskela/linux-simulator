@@ -23,34 +23,59 @@ A web-based Linux terminal simulator for teaching basic Linux commands and files
 
 - Node.js 24.9.0 (managed via asdf)
 - npm (comes with Node.js)
+- Docker and Docker Compose (for PostgreSQL)
 
 ### asdf Setup
 
 ```bash
 # Install Node.js plugin for asdf
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+```
 
 ## Getting Started
 
-```bash
-# Install dependencies
-npm install
+1. **Start the database:**
+   ```bash
+   docker compose up -d
+   ```
 
-# Start frontend only
-npm run dev:frontend
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-# Start backend only  
-npm run dev:backend
+3. **Start the development servers:**
+   ```bash
+   # Start both backend and frontend
+   npm run dev:all
 
-# Start both (backend + frontend)
-npm run dev:all
+   # Or start them separately:
+   npm run dev:backend    # Backend on http://localhost:3001
+   npm run dev:frontend   # Frontend on http://localhost:5173
+   ```
 
-# Run tests
-npm test
+4. **Run tests:**
+   ```bash
+   npm test
+   ```
 
-# Build production
-npm run build
-``` run type-check
+5. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+### Database
+
+PostgreSQL runs in Docker on port **15995** (mapped from internal port 5432).
+
+Connection details (configured in `apps/backend/.env`):
+- Host: `localhost`
+- Port: `15995`
+- Database: `linux_simulator`
+- User: `postgres`
+- Password: `postgres`
+
+The database schema is automatically created and seeded on first startup via migrations. run type-check
 
 # Build for production
 npm run build
@@ -99,6 +124,12 @@ Tests are located in `tests/` (root level) and use:
 - ✅ Use `FC<PropsType>` for React components
 - ✅ Explicit prop interfaces
 - ✅ Inline default values in destructuring
+
+**Backend Imports (NestJS):**
+- ⚠️ **DO NOT** use `import type` for classes used in dependency injection
+- ✅ Use regular imports: `import { ConfigService } from "..."`
+- ❌ Avoid type-only: `import type { ConfigService } from "..."`
+- Reason: NestJS needs actual class constructors at runtime for DI to work
 
 **Testing:**
 - Use Node.js built-in test runner

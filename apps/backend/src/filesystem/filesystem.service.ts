@@ -3,15 +3,15 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import type { DatabaseService } from '../database/database.service';
-import type { LoggerService } from '../logger/logger.service';
+} from "@nestjs/common";
+import type { DatabaseService } from "../database/database.service";
+import type { LoggerService } from "../logger/logger.service";
 import type {
   CreateNodeDto,
   FilesystemNode,
   FilesystemTree,
   UpdateNodeDto,
-} from './filesystem.types';
+} from "./filesystem.types";
 
 @Injectable()
 export class FilesystemService {
@@ -19,7 +19,7 @@ export class FilesystemService {
     private db: DatabaseService,
     private logger: LoggerService
   ) {
-    this.logger.setContext('FilesystemService');
+    this.logger.setContext("FilesystemService");
   }
 
   async getNodeById(
@@ -27,7 +27,7 @@ export class FilesystemService {
     nodeId: number
   ): Promise<FilesystemNode | null> {
     const result = await this.db.query<FilesystemNode>(
-      'SELECT * FROM filesystem_nodes WHERE id = $1 AND user_id = $2',
+      "SELECT * FROM filesystem_nodes WHERE id = $1 AND user_id = $2",
       [nodeId, userId]
     );
     return result.rows[0] || null;
@@ -37,18 +37,18 @@ export class FilesystemService {
     userId: number,
     path: string
   ): Promise<FilesystemNode | null> {
-    if (path === '/') {
+    if (path === "/") {
       const result = await this.db.query<FilesystemNode>(
-        'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2',
-        [userId, '/']
+        "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
+        [userId, "/"]
       );
       return result.rows[0] || null;
     }
 
-    const parts = path.split('/').filter((p) => p);
+    const parts = path.split("/").filter((p) => p);
     const rootResult = await this.db.query<FilesystemNode>(
-      'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2',
-      [userId, '/']
+      "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
+      [userId, "/"]
     );
 
     let currentNode: FilesystemNode | null = rootResult.rows[0] || null;
@@ -58,7 +58,7 @@ export class FilesystemService {
       // TypeScript doesn't narrow type in loop, so we assert non-null
       const parentId = currentNode.id;
       const queryResult = await this.db.query<FilesystemNode>(
-        'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3',
+        "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
         [userId, parentId, part]
       );
 
@@ -75,8 +75,8 @@ export class FilesystemService {
   ): Promise<FilesystemNode[]> {
     const query =
       parentId === null
-        ? 'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL ORDER BY type DESC, name'
-        : 'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 ORDER BY type DESC, name';
+        ? "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL ORDER BY type DESC, name"
+        : "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 ORDER BY type DESC, name";
 
     const params = parentId === null ? [userId] : [userId, parentId];
     const result = await this.db.query<FilesystemNode>(query, params);
@@ -87,10 +87,10 @@ export class FilesystemService {
   async getTree(userId: number, nodeId?: number): Promise<FilesystemTree> {
     const rootNode = nodeId
       ? await this.getNodeById(userId, nodeId)
-      : await this.getNodeByPath(userId, '/');
+      : await this.getNodeByPath(userId, "/");
 
     if (!rootNode) {
-      throw new NotFoundException('Node not found');
+      throw new NotFoundException("Node not found");
     }
 
     return this.buildTree(userId, rootNode);
@@ -107,8 +107,8 @@ export class FilesystemService {
       permissions: node.permissions,
     };
 
-    if (node.type === 'file') {
-      tree.content = node.content || '';
+    if (node.type === "file") {
+      tree.content = node.content || "";
     } else {
       const children = await this.getChildren(userId, node.id);
       tree.children = await Promise.all(
@@ -127,27 +127,27 @@ export class FilesystemService {
     if (dto.parentId !== null) {
       const parent = await this.getNodeById(userId, dto.parentId);
       if (!parent) {
-        throw new NotFoundException('Parent directory not found');
+        throw new NotFoundException("Parent directory not found");
       }
-      if (parent.type !== 'directory') {
-        throw new BadRequestException('Parent must be a directory');
+      if (parent.type !== "directory") {
+        throw new BadRequestException("Parent must be a directory");
       }
     }
 
     // Validate name
-    if (!dto.name || dto.name.includes('/')) {
-      throw new BadRequestException('Invalid name');
+    if (!dto.name || dto.name.includes("/")) {
+      throw new BadRequestException("Invalid name");
     }
 
     // Check for duplicate
     const existing = await this.db.query(
-      'SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3',
+      "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
       [userId, dto.parentId, dto.name]
     );
 
     if (existing.rows.length > 0) {
       throw new ConflictException(
-        `${dto.type === 'directory' ? 'Directory' : 'File'} already exists`
+        `${dto.type === "directory" ? "Directory" : "File"} already exists`
       );
     }
 
@@ -162,7 +162,7 @@ export class FilesystemService {
         dto.type,
         dto.content || null,
         dto.permissions ||
-          (dto.type === 'directory' ? 'rwxr-xr-x' : 'rw-r--r--'),
+          (dto.type === "directory" ? "rwxr-xr-x" : "rw-r--r--"),
       ]
     );
 
@@ -176,27 +176,27 @@ export class FilesystemService {
   ): Promise<FilesystemNode> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
-      throw new NotFoundException('Node not found');
+      throw new NotFoundException("Node not found");
     }
 
     // Don't allow updating root
-    if (node.parentId === null && node.name === '/') {
-      throw new BadRequestException('Cannot modify root directory');
+    if (node.parentId === null && node.name === "/") {
+      throw new BadRequestException("Cannot modify root directory");
     }
 
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: (string | null)[] = [];
     let paramIndex = 1;
 
     if (dto.name !== undefined) {
-      if (!dto.name || dto.name.includes('/')) {
-        throw new BadRequestException('Invalid name');
+      if (!dto.name || dto.name.includes("/")) {
+        throw new BadRequestException("Invalid name");
       }
       updates.push(`name = $${paramIndex++}`);
       values.push(dto.name);
     }
 
-    if (dto.content !== undefined && node.type === 'file') {
+    if (dto.content !== undefined && node.type === "file") {
       updates.push(`content = $${paramIndex++}`);
       values.push(dto.content);
     }
@@ -210,12 +210,12 @@ export class FilesystemService {
       return node;
     }
 
-    updates.push('updated_at = CURRENT_TIMESTAMP');
+    updates.push("updated_at = CURRENT_TIMESTAMP");
     values.push(userId, nodeId);
 
     const result = await this.db.query<FilesystemNode>(
       `UPDATE filesystem_nodes 
-       SET ${updates.join(', ')}
+       SET ${updates.join(", ")}
        WHERE user_id = $${paramIndex++} AND id = $${paramIndex++}
        RETURNING *`,
       values
@@ -227,16 +227,16 @@ export class FilesystemService {
   async deleteNode(userId: number, nodeId: number): Promise<void> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
-      throw new NotFoundException('Node not found');
+      throw new NotFoundException("Node not found");
     }
 
     // Don't allow deleting root
-    if (node.parentId === null && node.name === '/') {
-      throw new BadRequestException('Cannot delete root directory');
+    if (node.parentId === null && node.name === "/") {
+      throw new BadRequestException("Cannot delete root directory");
     }
 
     await this.db.query(
-      'DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2',
+      "DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
       [userId, nodeId]
     );
   }
@@ -248,17 +248,17 @@ export class FilesystemService {
   ): Promise<FilesystemNode> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
-      throw new NotFoundException('Node not found');
+      throw new NotFoundException("Node not found");
     }
 
     const newParent = await this.getNodeById(userId, newParentId);
-    if (!newParent || newParent.type !== 'directory') {
-      throw new BadRequestException('Invalid destination directory');
+    if (!newParent || newParent.type !== "directory") {
+      throw new BadRequestException("Invalid destination directory");
     }
 
     // Check for cycles
     if (await this.wouldCreateCycle(userId, nodeId, newParentId)) {
-      throw new BadRequestException('Cannot move directory into itself');
+      throw new BadRequestException("Cannot move directory into itself");
     }
 
     const result = await this.db.query<FilesystemNode>(

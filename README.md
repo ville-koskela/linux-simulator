@@ -1,16 +1,23 @@
-# React + TypeScript + Vite
+# Linux Simulator
 
-A minimal React application setup using Vite, TypeScript, and Biome for code quality.
+A web-based Linux terminal simulator for teaching basic Linux commands and filesystem concepts. Built with React + TypeScript frontend and NestJS backend with PostgreSQL.
 
 ## Tech Stack
 
-- **React 19** - UI library
-- **TypeScript 5.9** - Type safety
-- **Vite 7** - Build tool and dev server
-- **Biome** - Linting and formatting (replaces ESLint and Prettier)
-- **Node.js Test Runner** - Built-in testing with `@testing-library/react`
-- **Husky** - Git hooks for pre-commit checks
-- **Commitlint** - Conventional commit message validation
+**Frontend:**
+- React 19 + TypeScript + Vite
+- Biome (linting/formatting)
+- Node.js Test Runner + React Testing Library
+
+**Backend:**
+- NestJS + TypeScript
+- PostgreSQL with raw SQL (no ORM)
+- Custom migration system
+
+**Dev Tools:**
+- Husky (git hooks)
+- Commitlint (conventional commits)
+- Monorepo structure (npm workspaces)
 
 ## Prerequisites
 
@@ -23,62 +30,45 @@ A minimal React application setup using Vite, TypeScript, and Biome for code qua
 # Install Node.js plugin for asdf
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 
-# Install Node.js version from .tool-versions
-asdf install
-
-# Verify installation
-asdf current nodejs
-```
-
 ## Getting Started
 
 ```bash
-# Install dependencies (uses exact versions)
+# Install dependencies
 npm install
 
-# Start development server
-npm run dev
+# Start frontend only
+npm run dev:frontend
+
+# Start backend only  
+npm run dev:backend
+
+# Start both (backend + frontend)
+npm run dev:all
 
 # Run tests
 npm test
 
-# Run tests in watch mode
-npm run test:watch
-
-# Type checking
-npm run type-check
+# Build production
+npm run build
+``` run type-check
 
 # Build for production
 npm run build
 
-# Preview production build
-npm run preview
-```
-
-## Code Quality Commands
-
-### Linting
+## Code Quality
 
 ```bash
-# Check for linting issues
-npm run lint
+# Lint
+npm run lint        # check
+npm run lint:fix    # fix
 
-# Fix linting issues automatically
-npm run lint:fix
-```
+# Format
+npm run format      # fix formatting
 
-### Formatting
-
-```bash
-# Format all files
-npm run format
-```
-
-### All-in-One Check
-
-```bash
-# Run all checks (lint + format)
-npm run check
+# All checks
+npm run check       # check all
+npm run check:fix   # fix all
+``` run check
 
 # Fix all issues (lint + format)
 npm run check:fix
@@ -101,47 +91,25 @@ npm run test:watch
 Tests are located in `tests/` (root level) and use:
 - `node:test` - Built-in test runner
 - `node:assert` (strict mode) - Assertions
-- `@testing-library/react` - React component testing
-- `jsdom` - DOM environment for Node.js
+## Coding Standards
 
-Example test:
+**TypeScript:**
+- ✅ Always use named exports (`export const Component`)
+- ✅ Never use default exports
+- ✅ Use `FC<PropsType>` for React components
+- ✅ Explicit prop interfaces
+- ✅ Inline default values in destructuring
 
-```typescript
-import { strict as assert } from 'node:assert';
-import { beforeEach, describe, test } from 'node:test';
-import { render } from '@testing-library/react';
-import { createDOM } from '../test-utils/create-dom';
-import { Component } from '../../src/components/Component';
+**Testing:**
+- Use Node.js built-in test runner
+- Always call `createDOM()` in `beforeEach()`
+- Use strict assertions from `node:assert`
+- Access elements from `render()` return, not `screen`
 
-describe('Component', () => {
-  beforeEach(() => {
-    createDOM();
-  });
-
-  test('renders correctly', () => {
-    const { getByText } = render(<Component />);
-    const element = getByText('Expected Text');
-    assert.equal(element.textContent, 'Expected Text');
-  });
-});
-```
-
-## Git Workflow
-
-### Conventional Commits
-
-All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) format:
-
-```
-<type>(<optional scope>): <subject>
-
-<optional body>
-
-<optional footer>
-```
-
-**Valid types:**
-- `feat` - New feature
+**Git:**
+- Conventional commits required (enforced by git hooks)
+- Pre-commit runs linting/formatting
+- Use exact dependency versions (no `^` or `~`)feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation changes
 - `style` - Code style/formatting changes
@@ -165,72 +133,7 @@ git commit -m "test: add unit tests for Button component"
 ### Git Hooks
 
 - **pre-commit**: Runs `npm run check` (Biome linting + formatting)
-- **commit-msg**: Validates conventional commit format
-
-To bypass hooks (use sparingly):
-
-```bash
-git commit --no-verify -m "emergency fix"
-```
-
-## Dependency Management
-
-This project uses **exact version numbers** (no `^` or `~` prefixes) for reproducible builds.
-
-When installing new packages, always use `--save-exact`:
-
-```bash
-# Production dependency
-npm install --save-exact package-name
-
-# Development dependency
-npm install --save-dev --save-exact package-name
-```
-
-Or configure npm globally:
-
-```bash
-npm config set save-exact true
-```
-
-## Project Structure
-
-```
-.
-├── src/
-│   ├── components/      # React components
-│   │   ├── FloatingWindow/      # Component with own directory
-│   │   │   ├── FloatingWindow.tsx
-│   │   │   ├── FloatingWindow.css
-│   │   │   └── index.ts         # Barrel export
-│   │   ├── WindowManager/
-│   │   └── WindowTaskbar/
-│   ├── contexts/        # React contexts (e.g., WindowContext)
-│   ├── types/           # TypeScript type definitions
-│   ├── utils/           # Utility functions
-│   ├── assets/          # Static assets (images, etc.)
-│   ├── App.tsx          # Main App component
-│   ├── App.css          # App styles
-│   └── main.tsx         # Application entry point
-├── tests/               # Test files (root level)
-│   ├── components/      # Component tests
-│   │   ├── FloatingWindow/
-│   │   ├── WindowManager/
-│   │   └── WindowTaskbar/
-│   └── test-utils/      # Testing utilities (e.g., createDOM)
-├── public/              # Public static assets
-├── .docs/               # Project documentation
-├── .github/             # GitHub workflows and configurations
-├── .husky/              # Git hooks
-├── .vscode/             # VS Code settings
-├── biome.json           # Biome configuration
-├── commitlint.config.js # Commit message linting
-├── tsconfig.json        # TypeScript configuration
-├── vite.config.ts       # Vite configuration
-└── package.json         # Dependencies and scripts
-```
-
-## VS Code Integration
+VS Code Integration
 
 The project includes `.vscode/settings.json` for automatic code formatting and import organization on save using Biome.
 
@@ -245,15 +148,52 @@ The project includes `.vscode/settings.json` for automatic code formatting and i
 - **commitlint.config.js** - Commit message validation rules
 - **.tool-versions** - Node.js version for asdf
 
-## Additional Documentation
+## 📚 Documentation
 
-For detailed guides for AI agents, see:
-- `.docs/AI_REACT_SETUP_INSTRUCTIONS.md` - Complete setup instructions
-- `.docs/AI_COMPONENT_CREATION_GUIDE.md` - Component creation guide
-- `.docs/COMPONENT_IMPLEMENTATION_GUIDE.md` - Implementation patterns
-- `.docs/COMPONENT_TESTING_GUIDE.md` - Testing guide
-- `.docs/QUICK_REFERENCE.md` - Quick reference
+Comprehensive technical documentation is available in the [`.docs/`](.docs/) directory:
+
+- **[Documentation Index](.docs/README.md)** - Complete guide to all documentation
+- **[Component Creation Guide](.docs/AI_COMPONENT_CREATION_GUIDE.md)** - Standards for creating React components
+- **[Testing Guide](.docs/COMPONENT_TESTING_GUIDE.md)** - Testing practices and examples
+- **[Backend Architecture](.docs/BACKEND_ARCHITECTURE.md)** - NestJS backend structure
+- **[Quick Reference](.docs/QUICK_REFERENCE.md)** - Common commands and patterns
+
+See [.docs/README.md](.docs/README.md) for the full documentation index.
 
 ## License
 
 Private project - not licensed for public use.
+## Project Structure
+
+```
+apps/
+├── frontend/          # React + Vite app
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── hooks/
+│   │   └── utils/
+│   └── tests/
+└── backend/           # NestJS API
+    └── src/
+        ├── config/
+        ├── database/
+        ├── filesystem/
+        └── logger/
+
+packages/
+└── shared/            # Shared TypeScript types
+    └── src/types/
+
+.docs/                 # Backend architecture docs
+├── BACKEND_ARCHITECTURE.md
+├── MIGRATIONS.md
+└── REPOSITORY_PATTERN.md
+```
+
+## Backend Documentation
+
+Backend uses NestJS with PostgreSQL and raw SQL (no ORM). See:
+- [Backend Architecture](.docs/BACKEND_ARCHITECTURE.md)
+- [Migrations](.docs/MIGRATIONS.md)  
+- [Repository Pattern](.docs/REPOSITORY_PATTERN.md)

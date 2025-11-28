@@ -2,7 +2,8 @@ import {
   Injectable,
   type LoggerService as NestLoggerService,
 } from "@nestjs/common";
-import type { ConfigService } from "../config/config.service";
+// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+import { ConfigService } from "../config/config.service";
 
 export enum LogLevel {
   ERROR = 0,

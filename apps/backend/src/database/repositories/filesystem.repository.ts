@@ -4,7 +4,8 @@ import type {
   CreateNodeDto,
   FilesystemNode,
 } from "../../filesystem/filesystem.types";
-import type { DatabaseService } from "../database.service";
+// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+import { DatabaseService } from "../database.service";
 
 @Injectable()
 export class FilesystemRepository {

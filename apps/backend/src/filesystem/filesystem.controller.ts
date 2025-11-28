@@ -11,8 +11,10 @@ import {
   Put,
   Query,
 } from "@nestjs/common";
-import type { FilesystemService } from "./filesystem.service";
-import type { CreateNodeDto, UpdateNodeDto } from "./filesystem.types";
+// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+import { FilesystemService } from "./filesystem.service";
+// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+import { CreateNodeDto, UpdateNodeDto } from "./filesystem.types";
 
 @Controller("filesystem")
 export class FilesystemController {

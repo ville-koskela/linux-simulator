@@ -5,8 +5,10 @@ import {
   type QueryResult,
   type QueryResultRow,
 } from "pg";
-import type { ConfigService } from "../config/config.service";
-import type { LoggerService } from "../logger/logger.service";
+// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+import { ConfigService } from "../config/config.service";
+// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+import { LoggerService } from "../logger/logger.service";
 
 @Injectable()
 export class DatabaseService {

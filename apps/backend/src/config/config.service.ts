@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -26,6 +27,7 @@ const envSchema = z.object({
 
 export type EnvConfig = z.infer<typeof envSchema>;
 
+@Injectable()
 export class ConfigService {
   private readonly config: EnvConfig;
 

@@ -5,8 +5,8 @@ import {
   type QueryResult,
   type QueryResultRow,
 } from "pg";
-import type { ConfigService } from "../config/config.service";
-import type { LoggerService } from "../logger/logger.service";
+import { ConfigService } from "../config/config.service";
+import { LoggerService } from "../logger/logger.service";
 
 @Injectable()
 export class DatabaseService {

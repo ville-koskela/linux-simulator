@@ -4,7 +4,7 @@ import type {
   CreateNodeDto,
   FilesystemNode,
 } from "../../filesystem/filesystem.types";
-import type { DatabaseService } from "../database.service";
+import { DatabaseService } from "../database.service";
 
 @Injectable()
 export class FilesystemRepository {

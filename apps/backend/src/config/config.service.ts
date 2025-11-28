@@ -98,9 +98,4 @@ export class ConfigService {
   get defaultUserId(): number {
     return this.config.DEFAULT_USER_ID;
   }
-
-  // For testing: get all config (readonly)
-  getAll(): Readonly<EnvConfig> {
-    return { ...this.config };
-  }
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -25,7 +25,8 @@
       },
       "suspicious": {
         "noDebugger": "error",
-        "noConsole": "warn"
+        "noConsole": "off",
+        "noExplicitAny": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "warn"
@@ -37,6 +38,9 @@
       "quoteStyle": "single",
       "semicolons": "always",
       "trailingCommas": "es5"
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
     }
   },
   "json": {

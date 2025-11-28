@@ -8,37 +8,39 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w @linux-simulator/frontend",
-    "build": "npm run build -w @linux-simulator/frontend",
+    "dev:frontend": "npm run dev -w @linux-simulator/frontend",
+    "dev:backend": "npm run dev -w @linux-simulator/backend",
+    "dev:all": "npm run dev:backend & npm run dev",
+    "build": "npm run build --workspaces --if-present",
     "preview": "npm run preview -w @linux-simulator/frontend",
-    "test": "npm run test -w @linux-simulator/frontend",
+    "test": "npm run test --workspaces --if-present",
     "test:watch": "npm run test:watch -w @linux-simulator/frontend",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "type-check": "npm run type-check -w @linux-simulator/frontend",
+    "type-check": "npm run type-check --workspaces --if-present",
     "prepare": "husky"
   },
   "dependencies": {
-    "react": "19.1.1",
-    "react-dom": "19.1.1"
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.2",
+    "@biomejs/biome": "2.3.8",
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
     "@testing-library/react": "16.3.0",
     "@types/jsdom": "27.0.0",
-    "@types/node": "24.9.2",
-    "@types/react": "19.1.16",
-    "@types/react-dom": "19.1.9",
-    "@vitejs/plugin-react": "5.0.4",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.1.1",
     "husky": "9.1.7",
-    "jsdom": "27.1.0",
+    "jsdom": "27.2.0",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
-    "vite": "7.1.7"
+    "vite": "7.2.4"
   }
 }

@@ -62,13 +62,15 @@ export const VimEditor: FC<VimEditorProps> = ({
         onSave(content);
       }
     } catch (error) {
-      setStatusMessage(`Error: ${error instanceof Error ? error.message : "Failed to save"}`);
+      setStatusMessage(
+        `Error: ${error instanceof Error ? error.message : "Failed to save"}`
+      );
     }
   };
 
   const executeCommand = async (cmd: string) => {
     const trimmed = cmd.trim();
-    
+
     if (trimmed === "q") {
       if (modified) {
         setStatusMessage("No write since last change (add ! to override)");
@@ -202,7 +204,7 @@ export const VimEditor: FC<VimEditorProps> = ({
       const currentLine = getCurrentLine();
       const beforeCursor = currentLine.slice(0, cursorCol);
       const afterCursor = currentLine.slice(cursorCol);
-      
+
       const newLines = [...lines];
       newLines[cursorRow] = beforeCursor;
       newLines.splice(cursorRow + 1, 0, afterCursor);
@@ -284,9 +286,7 @@ export const VimEditor: FC<VimEditorProps> = ({
               {idx === cursorRow ? (
                 <>
                   {line.slice(0, cursorCol)}
-                  <span className="vim-cursor">
-                    {line[cursorCol] || " "}
-                  </span>
+                  <span className="vim-cursor">{line[cursorCol] || " "}</span>
                   {line.slice(cursorCol + 1)}
                 </>
               ) : (
@@ -306,11 +306,7 @@ export const VimEditor: FC<VimEditorProps> = ({
         </div>
       </div>
       <div className="vim-commandline">
-        {mode === "command" ? (
-          <>:{commandInput}</>
-        ) : (
-          statusMessage
-        )}
+        {mode === "command" ? <>:{commandInput}</> : statusMessage}
       </div>
     </div>
   );

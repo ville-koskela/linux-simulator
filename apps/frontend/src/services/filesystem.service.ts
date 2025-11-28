@@ -89,7 +89,7 @@ export const FilesystemService = {
       const filename = pathParts.pop() || "";
       const parentPath = pathParts.length > 0 ? `/${pathParts.join("/")}` : "/";
       const parentNode = await this.getNodeByPath(parentPath);
-      
+
       if (parentNode) {
         await this.createNode(parentNode.id, filename, "file", content);
       } else {

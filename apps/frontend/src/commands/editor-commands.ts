@@ -18,7 +18,7 @@ export const vimCommand: CommandHandler = async (args, context) => {
 
     // File exists or will be created
     const content = node?.content || "";
-    
+
     // Open the vim editor
     if (context.openEditor) {
       context.openEditor(path, content);

@@ -47,10 +47,12 @@
 }
 
 @keyframes vim-cursor-blink {
-  0%, 50% {
+  0%,
+  50% {
     opacity: 1;
   }
-  50.1%, 100% {
+  50.1%,
+  100% {
     opacity: 0.3;
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "creative_friday_10_2025",
+  "name": "linux-simulator",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,17 +8,17 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w @creative-friday/frontend",
-    "build": "npm run build -w @creative-friday/frontend",
-    "preview": "npm run preview -w @creative-friday/frontend",
-    "test": "npm run test -w @creative-friday/frontend",
-    "test:watch": "npm run test:watch -w @creative-friday/frontend",
+    "dev": "npm run dev -w @linux-simulator/frontend",
+    "build": "npm run build -w @linux-simulator/frontend",
+    "preview": "npm run preview -w @linux-simulator/frontend",
+    "test": "npm run test -w @linux-simulator/frontend",
+    "test:watch": "npm run test:watch -w @linux-simulator/frontend",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "type-check": "npm run type-check -w @creative-friday/frontend",
+    "type-check": "npm run type-check -w @linux-simulator/frontend",
     "prepare": "husky"
   },
   "dependencies": {

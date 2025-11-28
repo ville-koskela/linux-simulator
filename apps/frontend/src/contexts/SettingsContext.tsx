@@ -1,5 +1,5 @@
-import type { Settings, ThemeColors } from '@creative-friday/shared';
-import { defaultThemes } from '@creative-friday/shared';
+import type { Settings, ThemeColors } from '@linux-simulator/shared';
+import { defaultThemes } from '@linux-simulator/shared';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';

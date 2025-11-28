@@ -1,5 +1,5 @@
-import type { ThemeColors } from '@creative-friday/shared';
-import { defaultThemes } from '@creative-friday/shared';
+import type { ThemeColors } from '@linux-simulator/shared';
+import { defaultThemes } from '@linux-simulator/shared';
 import type { FC } from 'react';
 import { useRef, useState } from 'react';
 import { useSettings, useTranslations } from '../../contexts';

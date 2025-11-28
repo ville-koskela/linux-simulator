@@ -11,7 +11,7 @@ import {
   Put,
   Query,
 } from "@nestjs/common";
-import { FilesystemService } from "./filesystem.service";
+import type { FilesystemService } from "./filesystem.service";
 import type { CreateNodeDto, UpdateNodeDto } from "./filesystem.types";
 
 @Controller("filesystem")

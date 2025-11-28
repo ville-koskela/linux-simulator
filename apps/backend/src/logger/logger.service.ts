@@ -2,7 +2,7 @@ import {
   Injectable,
   type LoggerService as NestLoggerService,
 } from "@nestjs/common";
-import { ConfigService } from "../config/config.service";
+import type { ConfigService } from "../config/config.service";
 
 export enum LogLevel {
   ERROR = 0,

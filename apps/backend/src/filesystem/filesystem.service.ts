@@ -4,8 +4,8 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { FilesystemRepository } from "../database/repositories";
-import { LoggerService } from "../logger/logger.service";
+import type { FilesystemRepository } from "../database/repositories";
+import type { LoggerService } from "../logger/logger.service";
 import type {
   CreateNodeDto,
   FilesystemNode,

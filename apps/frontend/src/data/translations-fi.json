@@ -96,6 +96,14 @@
     "mv": {
       "description": "Siirrä tai nimeä tiedostoja",
       "usage": "mv <lähde> <kohde>"
+    },
+    "vim": {
+      "description": "Tekstieditori (vi-yhteensopiva)",
+      "usage": "vim <tiedosto>"
+    },
+    "vi": {
+      "description": "Tekstieditori",
+      "usage": "vi <tiedosto>"
     }
   },
   "taskbar": {

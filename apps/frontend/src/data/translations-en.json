@@ -96,6 +96,14 @@
     "mv": {
       "description": "Move or rename files",
       "usage": "mv <source> <destination>"
+    },
+    "vim": {
+      "description": "Text editor (vi-compatible)",
+      "usage": "vim <file>"
+    },
+    "vi": {
+      "description": "Text editor",
+      "usage": "vi <file>"
     }
   },
   "taskbar": {

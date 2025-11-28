@@ -5,6 +5,7 @@ import type { CommandContext } from "../../commands";
 import { commandHandlers } from "../../commands";
 import { useTranslations } from "../../contexts";
 import { CommandsService, FilesystemService } from "../../services";
+import { VimEditor } from "../VimEditor/VimEditor";
 import "./Terminal.css";
 
 interface TerminalLine {
@@ -28,6 +29,11 @@ export const Terminal: FC = () => {
   const [currentPath, setCurrentPath] = useState("/");
   const [currentNode, setCurrentNode] = useState<FilesystemNode | null>(null);
   const [commands, setCommands] = useState<TerminalCommand[]>([]);
+  const [editorState, setEditorState] = useState<{
+    isOpen: boolean;
+    filepath: string;
+    content: string;
+  } | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const historyLengthRef = useRef(history.length);
@@ -110,6 +116,15 @@ export const Terminal: FC = () => {
     return `${base}/${path}`.replace(/\/+/g, "/");
   };
 
+  const openEditor = (filepath: string, content: string) => {
+    setEditorState({ isOpen: true, filepath, content });
+  };
+
+  const closeEditor = () => {
+    setEditorState(null);
+    inputRef.current?.focus();
+  };
+
   const executeBuiltinCommand = (commandName: string, args: string[]): void => {
     const handler = commandHandlers[commandName];
 
@@ -135,6 +150,7 @@ export const Terminal: FC = () => {
       setCurrentPath,
       setCurrentNode,
       resolvePath,
+      openEditor,
     };
 
     handler(args, context);
@@ -174,6 +190,16 @@ export const Terminal: FC = () => {
       }
     }
   };
+
+  if (editorState?.isOpen) {
+    return (
+      <VimEditor
+        filepath={editorState.filepath}
+        initialContent={editorState.content}
+        onClose={closeEditor}
+      />
+    );
+  }
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: Terminal needs to be a clickable div for proper styling

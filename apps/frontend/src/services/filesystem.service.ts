@@ -78,4 +78,23 @@ export const FilesystemService = {
       body: JSON.stringify({ newParentId }),
     });
   },
+
+  async updateFileContent(path: string, content: string): Promise<void> {
+    const node = await this.getNodeByPath(path);
+    if (node) {
+      await this.updateNode(node.id, { content });
+    } else {
+      // Create new file
+      const pathParts = path.split("/").filter(Boolean);
+      const filename = pathParts.pop() || "";
+      const parentPath = pathParts.length > 0 ? `/${pathParts.join("/")}` : "/";
+      const parentNode = await this.getNodeByPath(parentPath);
+      
+      if (parentNode) {
+        await this.createNode(parentNode.id, filename, "file", content);
+      } else {
+        throw new Error(`Parent directory not found: ${parentPath}`);
+      }
+    }
+  },
 };

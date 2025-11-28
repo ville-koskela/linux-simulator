@@ -1,0 +1,105 @@
+.vim-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  outline: none;
+  overflow: hidden;
+}
+
+.vim-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+  line-height: 1.5;
+}
+
+.vim-line {
+  display: flex;
+  white-space: pre;
+  min-height: 21px;
+}
+
+.vim-line-number {
+  display: inline-block;
+  width: 50px;
+  text-align: right;
+  padding-right: 12px;
+  color: #858585;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.vim-line-content {
+  flex: 1;
+  white-space: pre;
+  text-align: left;
+}
+
+.vim-cursor {
+  background-color: #d4d4d4;
+  color: #1e1e1e;
+  animation: vim-cursor-blink 1s step-end infinite;
+}
+
+@keyframes vim-cursor-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.1%, 100% {
+    opacity: 0.3;
+  }
+}
+
+.vim-statusline {
+  display: flex;
+  justify-content: space-between;
+  background-color: #007acc;
+  color: #ffffff;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-top: 1px solid #007acc;
+  user-select: none;
+}
+
+.vim-statusline-left {
+  flex: 1;
+  text-align: left;
+}
+
+.vim-statusline-right {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.vim-commandline {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  padding: 4px 12px;
+  min-height: 24px;
+  font-size: 12px;
+  border-top: 1px solid #3e3e3e;
+  text-align: left;
+}
+
+/* Scrollbar styling for vim editor */
+.vim-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.vim-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.vim-content::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 5px;
+}
+
+.vim-content::-webkit-scrollbar-thumb:hover {
+  background: #4e4e4e;
+}

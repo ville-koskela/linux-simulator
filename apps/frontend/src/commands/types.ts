@@ -7,6 +7,7 @@ export interface CommandContext {
   setCurrentPath: (path: string) => void;
   setCurrentNode: (node: FilesystemNode | null) => void;
   resolvePath: (path: string) => string;
+  openEditor?: (filepath: string, content: string) => void;
 }
 
 export type CommandHandler = (

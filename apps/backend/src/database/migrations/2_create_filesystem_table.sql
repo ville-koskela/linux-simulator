@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS filesystem_nodes (
   CONSTRAINT unique_name_per_parent UNIQUE (user_id, parent_id, name)
 );
 
--- Create index for faster lookups
-CREATE INDEX IF NOT EXISTS idx_filesystem_user_parent ON filesystem_nodes(user_id, parent_id);
-CREATE INDEX IF NOT EXISTS idx_filesystem_user_id ON filesystem_nodes(user_id);
+-- Create indexes for faster lookups
+CREATE INDEX IF NOT EXISTS idx_filesystem_nodes_user_parent ON filesystem_nodes(user_id, parent_id);
+CREATE INDEX IF NOT EXISTS idx_filesystem_nodes_user_id ON filesystem_nodes(user_id);

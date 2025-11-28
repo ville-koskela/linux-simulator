@@ -4,8 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import type { QueryResult } from "pg";
-import type { DatabaseService } from "../database/database.service";
+import type { FilesystemRepository } from "../database/repositories";
 import type { LoggerService } from "../logger/logger.service";
 import type {
   CreateNodeDto,
@@ -17,7 +16,7 @@ import type {
 @Injectable()
 export class FilesystemService {
   constructor(
-    private db: DatabaseService,
+    private repository: FilesystemRepository,
     private logger: LoggerService
   ) {
     this.logger.setContext("FilesystemService");
@@ -27,11 +26,7 @@ export class FilesystemService {
     userId: number,
     nodeId: number
   ): Promise<FilesystemNode | null> {
-    const result = await this.db.query<FilesystemNode>(
-      "SELECT * FROM filesystem_nodes WHERE id = $1 AND user_id = $2",
-      [nodeId, userId]
-    );
-    return result.rows[0] || null;
+    return this.repository.findById(userId, nodeId);
   }
 
   async getNodeByPath(
@@ -39,33 +34,20 @@ export class FilesystemService {
     path: string
   ): Promise<FilesystemNode | null> {
     if (path === "/") {
-      const result = await this.db.query<FilesystemNode>(
-        "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
-        [userId, "/"]
-      );
-      return result.rows[0] || null;
+      return this.repository.findRoot(userId);
     }
 
     const parts = path.split("/").filter((p) => p);
-    const rootResult = await this.db.query<FilesystemNode>(
-      "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
-      [userId, "/"]
-    );
-
-    let currentNode: FilesystemNode | null = rootResult.rows[0] || null;
+    let currentNode = await this.repository.findRoot(userId);
     if (!currentNode) return null;
 
     for (const part of parts) {
       if (!currentNode) return null;
-      const parentId: number = currentNode.id;
-      const queryResult: QueryResult<FilesystemNode> =
-        await this.db.query<FilesystemNode>(
-          "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
-          [userId, parentId, part]
-        );
-
-      if (queryResult.rows.length === 0) return null;
-      currentNode = queryResult.rows[0];
+      currentNode = await this.repository.findByParentAndName(
+        userId,
+        currentNode.id,
+        part
+      );
     }
 
     return currentNode;
@@ -75,15 +57,7 @@ export class FilesystemService {
     userId: number,
     parentId: number | null
   ): Promise<FilesystemNode[]> {
-    const query =
-      parentId === null
-        ? "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL ORDER BY type DESC, name"
-        : "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 ORDER BY type DESC, name";
-
-    const params = parentId === null ? [userId] : [userId, parentId];
-    const result = await this.db.query<FilesystemNode>(query, params);
-
-    return result.rows;
+    return this.repository.findChildren(userId, parentId);
   }
 
   async getTree(userId: number, nodeId?: number): Promise<FilesystemTree> {
@@ -142,33 +116,13 @@ export class FilesystemService {
     }
 
     // Check for duplicate
-    const existing = await this.db.query(
-      "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
-      [userId, dto.parentId, dto.name]
-    );
-
-    if (existing.rows.length > 0) {
+    if (await this.repository.exists(userId, dto.parentId, dto.name)) {
       throw new ConflictException(
         `${dto.type === "directory" ? "Directory" : "File"} already exists`
       );
     }
 
-    const result = await this.db.query<FilesystemNode>(
-      `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, content, permissions)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [
-        userId,
-        dto.parentId,
-        dto.name,
-        dto.type,
-        dto.content || null,
-        dto.permissions ||
-          (dto.type === "directory" ? "rwxr-xr-x" : "rw-r--r--"),
-      ]
-    );
-
-    return result.rows[0];
+    return this.repository.create(userId, dto);
   }
 
   async updateNode(
@@ -186,44 +140,35 @@ export class FilesystemService {
       throw new BadRequestException("Cannot modify root directory");
     }
 
-    const updates: string[] = [];
-    const values: (string | null)[] = [];
-    let paramIndex = 1;
+    // Validate name if provided
+    if (dto.name !== undefined && (!dto.name || dto.name.includes("/"))) {
+      throw new BadRequestException("Invalid name");
+    }
+
+    // Build updates object
+    const updates: {
+      name?: string;
+      content?: string;
+      permissions?: string;
+    } = {};
 
     if (dto.name !== undefined) {
-      if (!dto.name || dto.name.includes("/")) {
-        throw new BadRequestException("Invalid name");
-      }
-      updates.push(`name = $${paramIndex++}`);
-      values.push(dto.name);
+      updates.name = dto.name;
     }
 
     if (dto.content !== undefined && node.type === "file") {
-      updates.push(`content = $${paramIndex++}`);
-      values.push(dto.content);
+      updates.content = dto.content;
     }
 
     if (dto.permissions !== undefined) {
-      updates.push(`permissions = $${paramIndex++}`);
-      values.push(dto.permissions);
+      updates.permissions = dto.permissions;
     }
 
-    if (updates.length === 0) {
+    if (Object.keys(updates).length === 0) {
       return node;
     }
 
-    updates.push("updated_at = CURRENT_TIMESTAMP");
-    values.push(String(userId), String(nodeId));
-
-    const result = await this.db.query<FilesystemNode>(
-      `UPDATE filesystem_nodes 
-       SET ${updates.join(", ")}
-       WHERE user_id = $${paramIndex++} AND id = $${paramIndex++}
-       RETURNING *`,
-      values
-    );
-
-    return result.rows[0];
+    return this.repository.update(userId, nodeId, updates);
   }
 
   async deleteNode(userId: number, nodeId: number): Promise<void> {
@@ -237,10 +182,7 @@ export class FilesystemService {
       throw new BadRequestException("Cannot delete root directory");
     }
 
-    await this.db.query(
-      "DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
-      [userId, nodeId]
-    );
+    await this.repository.delete(userId, nodeId);
   }
 
   async moveNode(
@@ -258,36 +200,11 @@ export class FilesystemService {
       throw new BadRequestException("Invalid destination directory");
     }
 
-    // Check for cycles
-    if (await this.wouldCreateCycle(userId, nodeId, newParentId)) {
+    // Check for cycles using repository's efficient recursive CTE
+    if (await this.repository.isDescendant(userId, nodeId, newParentId)) {
       throw new BadRequestException("Cannot move directory into itself");
     }
 
-    const result = await this.db.query<FilesystemNode>(
-      `UPDATE filesystem_nodes 
-       SET parent_id = $1, updated_at = CURRENT_TIMESTAMP
-       WHERE user_id = $2 AND id = $3
-       RETURNING *`,
-      [newParentId, userId, nodeId]
-    );
-
-    return result.rows[0];
-  }
-
-  private async wouldCreateCycle(
-    userId: number,
-    nodeId: number,
-    newParentId: number
-  ): Promise<boolean> {
-    let currentId: number | null = newParentId;
-
-    while (currentId !== null) {
-      if (currentId === nodeId) return true;
-
-      const parent = await this.getNodeById(userId, currentId);
-      currentId = parent?.parentId || null;
-    }
-
-    return false;
+    return this.repository.move(userId, nodeId, newParentId);
   }
 }

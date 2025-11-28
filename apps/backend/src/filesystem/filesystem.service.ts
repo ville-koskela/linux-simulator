@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import type { QueryResult } from "pg";
 import type { DatabaseService } from "../database/database.service";
 import type { LoggerService } from "../logger/logger.service";
 import type {
@@ -55,12 +56,13 @@ export class FilesystemService {
     if (!currentNode) return null;
 
     for (const part of parts) {
-      // TypeScript doesn't narrow type in loop, so we assert non-null
-      const parentId = currentNode.id;
-      const queryResult = await this.db.query<FilesystemNode>(
-        "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
-        [userId, parentId, part]
-      );
+      if (!currentNode) return null;
+      const parentId: number = currentNode.id;
+      const queryResult: QueryResult<FilesystemNode> =
+        await this.db.query<FilesystemNode>(
+          "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
+          [userId, parentId, part]
+        );
 
       if (queryResult.rows.length === 0) return null;
       currentNode = queryResult.rows[0];
@@ -211,7 +213,7 @@ export class FilesystemService {
     }
 
     updates.push("updated_at = CURRENT_TIMESTAMP");
-    values.push(userId, nodeId);
+    values.push(String(userId), String(nodeId));
 
     const result = await this.db.query<FilesystemNode>(
       `UPDATE filesystem_nodes 

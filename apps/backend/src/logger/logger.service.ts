@@ -2,8 +2,8 @@ import {
   Injectable,
   type LoggerService as NestLoggerService,
   Scope,
-} from '@nestjs/common';
-import type { ConfigService } from '../config/config.service';
+} from "@nestjs/common";
+import type { ConfigService } from "../config/config.service";
 
 export enum LogLevel {
   ERROR = 0,
@@ -14,7 +14,7 @@ export enum LogLevel {
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService implements NestLoggerService {
-  private context = '';
+  private context = "";
   private logLevel: LogLevel;
 
   constructor(private config: ConfigService) {
@@ -24,13 +24,13 @@ export class LoggerService implements NestLoggerService {
   private getLogLevelFromConfig(): LogLevel {
     const level = this.config.logLevel.toUpperCase();
     switch (level) {
-      case 'ERROR':
+      case "ERROR":
         return LogLevel.ERROR;
-      case 'WARN':
+      case "WARN":
         return LogLevel.WARN;
-      case 'INFO':
+      case "INFO":
         return LogLevel.INFO;
-      case 'DEBUG':
+      case "DEBUG":
         return LogLevel.DEBUG;
       default:
         return LogLevel.INFO;
@@ -39,7 +39,7 @@ export class LoggerService implements NestLoggerService {
 
   private formatMessage(level: string, message: string): string {
     const timestamp = new Date().toISOString();
-    const contextStr = this.context ? `[${this.context}]` : '';
+    const contextStr = this.context ? `[${this.context}]` : "";
     return `${timestamp} [${level}] ${contextStr} ${message}`;
   }
 
@@ -50,14 +50,14 @@ export class LoggerService implements NestLoggerService {
   log(message: string): void {
     if (this.shouldLog(LogLevel.INFO)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
-      console.log(this.formatMessage('INFO', message));
+      console.log(this.formatMessage("INFO", message));
     }
   }
 
   error(message: string, trace?: string): void {
     if (this.shouldLog(LogLevel.ERROR)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
-      console.error(this.formatMessage('ERROR', message));
+      console.error(this.formatMessage("ERROR", message));
       if (trace) {
         // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
         console.error(trace);
@@ -68,21 +68,21 @@ export class LoggerService implements NestLoggerService {
   warn(message: string): void {
     if (this.shouldLog(LogLevel.WARN)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
-      console.warn(this.formatMessage('WARN', message));
+      console.warn(this.formatMessage("WARN", message));
     }
   }
 
   debug(message: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
-      console.debug(this.formatMessage('DEBUG', message));
+      console.debug(this.formatMessage("DEBUG", message));
     }
   }
 
   verbose(message: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
-      console.log(this.formatMessage('VERBOSE', message));
+      console.log(this.formatMessage("VERBOSE", message));
     }
   }
 

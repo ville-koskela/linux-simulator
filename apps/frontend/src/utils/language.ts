@@ -6,7 +6,7 @@
  */
 export const getBrowserLanguage = (
   availableLanguages: string[],
-  fallback = 'en'
+  fallback = "en"
 ): string => {
   // Get browser languages in order of preference
   const browserLanguages = navigator.languages || [navigator.language];
@@ -18,7 +18,7 @@ export const getBrowserLanguage = (
     }
 
     // Check language code without region (e.g., 'en-US' -> 'en')
-    const langCode = lang.split('-')[0];
+    const langCode = lang.split("-")[0];
     if (availableLanguages.includes(langCode)) {
       return langCode;
     }

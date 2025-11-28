@@ -1,1 +1,1 @@
-export { WindowTaskbar } from './WindowTaskbar';
+export { WindowTaskbar } from "./WindowTaskbar";

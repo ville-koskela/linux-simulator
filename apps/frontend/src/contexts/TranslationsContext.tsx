@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
-import translationsEn from '../data/translations-en.json';
-import translationsFi from '../data/translations-fi.json';
-import { useSettings } from './SettingsContext';
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import translationsEn from "../data/translations-en.json";
+import translationsFi from "../data/translations-fi.json";
+import { useSettings } from "./SettingsContext";
 
 export type Translations = typeof translationsEn;
 
@@ -19,7 +19,7 @@ export const useTranslations = () => {
   const context = useContext(TranslationsContext);
   if (!context) {
     throw new Error(
-      'useTranslations must be used within a TranslationsProvider'
+      "useTranslations must be used within a TranslationsProvider"
     );
   }
   return context;

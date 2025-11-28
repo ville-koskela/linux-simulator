@@ -1,8 +1,8 @@
-import { type FC, useState } from 'react';
-import { useTranslations, useWindows } from '../../contexts';
-import { Settings } from '../Settings';
-import { Terminal } from '../Terminal';
-import './WindowTaskbar.css';
+import { type FC, useState } from "react";
+import { useTranslations, useWindows } from "../../contexts";
+import { Settings } from "../Settings";
+import { Terminal } from "../Terminal";
+import "./WindowTaskbar.css";
 
 export const WindowTaskbar: FC = () => {
   const { t } = useTranslations();
@@ -36,7 +36,7 @@ export const WindowTaskbar: FC = () => {
   };
 
   const handleCreateSettings = () => {
-    const settingsId = 'settings';
+    const settingsId = "settings";
     createWindow({
       id: settingsId,
       title: tApps.settings,
@@ -56,7 +56,7 @@ export const WindowTaskbar: FC = () => {
       <div className="taskbar-start">
         <button
           type="button"
-          className={`start-menu-button ${isStartMenuOpen ? 'active' : ''}`}
+          className={`start-menu-button ${isStartMenuOpen ? "active" : ""}`}
           onClick={() => setIsStartMenuOpen(!isStartMenuOpen)}
           title={tTaskbar.start.title}
         >
@@ -70,7 +70,7 @@ export const WindowTaskbar: FC = () => {
               className="start-menu-backdrop"
               onClick={() => setIsStartMenuOpen(false)}
               onKeyDown={(e) => {
-                if (e.key === 'Escape') {
+                if (e.key === "Escape") {
                   setIsStartMenuOpen(false);
                 }
               }}
@@ -109,7 +109,7 @@ export const WindowTaskbar: FC = () => {
             <div key={window.id} className="taskbar-item">
               <button
                 type="button"
-                className={`taskbar-button ${window.isMinimized ? 'minimized' : ''}`}
+                className={`taskbar-button ${window.isMinimized ? "minimized" : ""}`}
                 onClick={() => {
                   if (window.isMinimized) {
                     restoreWindow(window.id);
@@ -137,7 +137,7 @@ export const WindowTaskbar: FC = () => {
                     : tTaskbar.window.minimize
                 }
               >
-                {window.isMinimized ? '▢' : '_'}
+                {window.isMinimized ? "▢" : "_"}
               </button>
               <button
                 type="button"

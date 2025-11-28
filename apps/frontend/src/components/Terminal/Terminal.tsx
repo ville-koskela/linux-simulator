@@ -1,11 +1,11 @@
-import type { FC, KeyboardEvent } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from '../../contexts';
-import terminalCommands from '../../data/terminal-commands.json';
-import './Terminal.css';
+import type { FC, KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "../../contexts";
+import terminalCommands from "../../data/terminal-commands.json";
+import "./Terminal.css";
 
 interface TerminalLine {
-  type: 'input' | 'output' | 'error';
+  type: "input" | "output" | "error";
   content: string;
 }
 
@@ -22,11 +22,11 @@ export const Terminal: FC = () => {
   const tCommands = t.terminalCommands;
 
   const [history, setHistory] = useState<TerminalLine[]>([
-    { type: 'output', content: tTerminal.welcome.version },
-    { type: 'output', content: tTerminal.welcome.help },
-    { type: 'output', content: '' },
+    { type: "output", content: tTerminal.welcome.version },
+    { type: "output", content: tTerminal.welcome.help },
+    { type: "output", content: "" },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const terminalEndRef = useRef<HTMLDivElement>(null);
@@ -37,7 +37,7 @@ export const Terminal: FC = () => {
 
   useEffect(() => {
     if (history.length !== historyLengthRef.current) {
-      terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
       historyLengthRef.current = history.length;
     }
   }, [history]);
@@ -51,15 +51,15 @@ export const Terminal: FC = () => {
     if (!trimmed) return;
 
     // Add command to history
-    setHistory((prev) => [...prev, { type: 'input', content: `$ ${trimmed}` }]);
+    setHistory((prev) => [...prev, { type: "input", content: `$ ${trimmed}` }]);
 
-    const [commandName, ...args] = trimmed.split(' ');
+    const [commandName, ...args] = trimmed.split(" ");
     const command = commands.find((cmd) => cmd.name === commandName);
 
-    if (commandName === 'help') {
+    if (commandName === "help") {
       const helpText = [
         tTerminal.help.title,
-        '',
+        "",
         ...commands.map((cmd) => {
           const cmdKey = cmd.name as keyof typeof tCommands;
           const description = tCommands[cmdKey]?.description || cmd.description;
@@ -70,29 +70,29 @@ export const Terminal: FC = () => {
       ];
       setHistory((prev) => [
         ...prev,
-        ...helpText.map((line) => ({ type: 'output' as const, content: line })),
-        { type: 'output', content: '' },
+        ...helpText.map((line) => ({ type: "output" as const, content: line })),
+        { type: "output", content: "" },
       ]);
-    } else if (commandName === 'clear') {
+    } else if (commandName === "clear") {
       setHistory([]);
     } else if (command) {
       const output = executeBuiltinCommand(command.execute, args);
       setHistory((prev) => [
         ...prev,
-        { type: 'output', content: output },
-        { type: 'output', content: '' },
+        { type: "output", content: output },
+        { type: "output", content: "" },
       ]);
     } else {
       setHistory((prev) => [
         ...prev,
         {
-          type: 'error',
+          type: "error",
           content: tTerminal.errors.commandNotFound.replace(
-            '{command}',
+            "{command}",
             commandName
           ),
         },
-        { type: 'output', content: '' },
+        { type: "output", content: "" },
       ]);
     }
 
@@ -106,9 +106,9 @@ export const Terminal: FC = () => {
     args: string[]
   ): string => {
     switch (commandType) {
-      case 'echo':
-        return args.join(' ') || '';
-      case 'date':
+      case "echo":
+        return args.join(" ") || "";
+      case "date":
         return new Date().toLocaleString();
       default:
         return tTerminal.errors.notImplemented;
@@ -118,14 +118,14 @@ export const Terminal: FC = () => {
   const handleSubmit = () => {
     if (input.trim()) {
       executeCommand(input);
-      setInput('');
+      setInput("");
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSubmit();
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       if (commandHistory.length > 0) {
         const newIndex =
@@ -135,13 +135,13 @@ export const Terminal: FC = () => {
         setHistoryIndex(newIndex);
         setInput(commandHistory[newIndex]);
       }
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
       if (historyIndex !== -1) {
         const newIndex = historyIndex + 1;
         if (newIndex >= commandHistory.length) {
           setHistoryIndex(-1);
-          setInput('');
+          setInput("");
         } else {
           setHistoryIndex(newIndex);
           setInput(commandHistory[newIndex]);
@@ -156,7 +156,7 @@ export const Terminal: FC = () => {
       className="terminal"
       onClick={() => inputRef.current?.focus()}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           inputRef.current?.focus();
         }
       }}

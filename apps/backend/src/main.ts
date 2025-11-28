@@ -1,11 +1,11 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import * as dotenv from 'dotenv';
-import { AppModule } from './app.module';
-import { ConfigService } from './config/config.service';
-import { DatabaseService } from './database/database.service';
-import { runMigrations } from './database/migrations';
-import { LoggerService } from './logger/logger.service';
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import * as dotenv from "dotenv";
+import { AppModule } from "./app.module";
+import { ConfigService } from "./config/config.service";
+import { DatabaseService } from "./database/database.service";
+import { runMigrations } from "./database/migrations";
+import { LoggerService } from "./logger/logger.service";
 
 // Load environment variables
 dotenv.config();
@@ -17,7 +17,7 @@ async function bootstrap() {
 
   const config = app.get(ConfigService);
   const logger = app.get(LoggerService);
-  logger.setContext('Bootstrap');
+  logger.setContext("Bootstrap");
   app.useLogger(logger);
 
   // Enable CORS for frontend
@@ -42,7 +42,7 @@ async function bootstrap() {
     await runMigrations(db, logger);
   } catch (error) {
     logger.error(
-      'Failed to run migrations',
+      "Failed to run migrations",
       error instanceof Error ? error.stack : String(error)
     );
     process.exit(1);

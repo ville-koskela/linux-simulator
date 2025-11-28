@@ -4,7 +4,7 @@ export interface FilesystemNode {
   userId: number;
   parentId: number | null;
   name: string;
-  type: 'file' | 'directory';
+  type: "file" | "directory";
   content: string | null;
   permissions: string;
   createdAt: Date;
@@ -14,7 +14,7 @@ export interface FilesystemNode {
 export interface CreateNodeDto {
   parentId: number | null;
   name: string;
-  type: 'file' | 'directory';
+  type: "file" | "directory";
   content?: string;
   permissions?: string;
 }
@@ -28,7 +28,7 @@ export interface UpdateNodeDto {
 export interface FilesystemTree {
   id: number;
   name: string;
-  type: 'file' | 'directory';
+  type: "file" | "directory";
   permissions: string;
   content?: string;
   children?: FilesystemTree[];

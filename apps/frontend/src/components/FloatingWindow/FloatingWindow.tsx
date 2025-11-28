@@ -1,7 +1,7 @@
-import type { CSSProperties, FC, ReactNode } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslations } from '../../contexts';
-import './FloatingWindow.css';
+import type { CSSProperties, FC, ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "../../contexts";
+import "./FloatingWindow.css";
 
 interface FloatingWindowProps {
   children: ReactNode;
@@ -29,7 +29,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
   minHeight = 150,
   onClose,
   onMinimize,
-  className = '',
+  className = "",
   style = {},
 }) => {
   const { t } = useTranslations();
@@ -44,7 +44,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
   });
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
-  const [resizeDirection, setResizeDirection] = useState<string>('');
+  const [resizeDirection, setResizeDirection] = useState<string>("");
   const dragStart = useRef({ x: 0, y: 0 });
   const resizeStart = useRef({ x: 0, y: 0, width: 0, height: 0 });
 
@@ -52,9 +52,9 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
   const handleMouseDownDrag = useCallback(
     (e: React.MouseEvent) => {
       if (
-        (e.target as HTMLElement).closest('.floating-window-header') &&
-        !(e.target as HTMLElement).closest('.floating-window-close') &&
-        !(e.target as HTMLElement).closest('.floating-window-minimize')
+        (e.target as HTMLElement).closest(".floating-window-header") &&
+        !(e.target as HTMLElement).closest(".floating-window-close") &&
+        !(e.target as HTMLElement).closest(".floating-window-minimize")
       ) {
         setIsDragging(true);
         dragStart.current = {
@@ -99,20 +99,20 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
         let newX = position.x;
         let newY = position.y;
 
-        if (resizeDirection.includes('e')) {
+        if (resizeDirection.includes("e")) {
           newWidth = Math.max(minWidth, resizeStart.current.width + deltaX);
         }
-        if (resizeDirection.includes('s')) {
+        if (resizeDirection.includes("s")) {
           newHeight = Math.max(minHeight, resizeStart.current.height + deltaY);
         }
-        if (resizeDirection.includes('w')) {
+        if (resizeDirection.includes("w")) {
           const potentialWidth = resizeStart.current.width - deltaX;
           if (potentialWidth >= minWidth) {
             newWidth = potentialWidth;
             newX = position.x + deltaX;
           }
         }
-        if (resizeDirection.includes('n')) {
+        if (resizeDirection.includes("n")) {
           const potentialHeight = resizeStart.current.height - deltaY;
           if (potentialHeight >= minHeight) {
             newHeight = potentialHeight;
@@ -121,7 +121,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
         }
 
         setSize({ width: newWidth, height: newHeight });
-        if (resizeDirection.includes('w') || resizeDirection.includes('n')) {
+        if (resizeDirection.includes("w") || resizeDirection.includes("n")) {
           setPosition({ x: newX, y: newY });
         }
       }
@@ -130,16 +130,16 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
     const handleMouseUp = () => {
       setIsDragging(false);
       setIsResizing(false);
-      setResizeDirection('');
+      setResizeDirection("");
     };
 
     if (isDragging || isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
 
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [isDragging, isResizing, resizeDirection, position, minWidth, minHeight]);
@@ -163,7 +163,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
           }
         }}
@@ -199,7 +199,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       {/* biome-ignore lint/a11y/useSemanticElements: Resize handles need to be divs for proper positioning and cursor styling */}
       <div
         className="resize-handle resize-s"
-        onMouseDown={(e) => handleMouseDownResize(e, 's')}
+        onMouseDown={(e) => handleMouseDownResize(e, "s")}
         role="button"
         tabIndex={-1}
         aria-label={tWindow.aria.resizeBottom}
@@ -207,7 +207,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       {/* biome-ignore lint/a11y/useSemanticElements: Resize handles need to be divs for proper positioning and cursor styling */}
       <div
         className="resize-handle resize-e"
-        onMouseDown={(e) => handleMouseDownResize(e, 'e')}
+        onMouseDown={(e) => handleMouseDownResize(e, "e")}
         role="button"
         tabIndex={-1}
         aria-label={tWindow.aria.resizeRight}
@@ -215,7 +215,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       {/* biome-ignore lint/a11y/useSemanticElements: Resize handles need to be divs for proper positioning and cursor styling */}
       <div
         className="resize-handle resize-se"
-        onMouseDown={(e) => handleMouseDownResize(e, 'se')}
+        onMouseDown={(e) => handleMouseDownResize(e, "se")}
         role="button"
         tabIndex={-1}
         aria-label={tWindow.aria.resizeBottomRight}

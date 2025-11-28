@@ -1,6 +1,6 @@
-import type { FC } from 'react';
-import { useWindows } from '../../contexts';
-import { FloatingWindow } from '../FloatingWindow';
+import type { FC } from "react";
+import { useWindows } from "../../contexts";
+import { FloatingWindow } from "../FloatingWindow";
 
 export const WindowManager: FC = () => {
   const { windows, closeWindow, bringToFront, minimizeWindow } = useWindows();
@@ -18,7 +18,7 @@ export const WindowManager: FC = () => {
             key={window.id}
             onMouseDown={() => bringToFront(window.id)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 bringToFront(window.id);
               }
             }}

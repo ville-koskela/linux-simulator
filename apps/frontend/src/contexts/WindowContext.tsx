@@ -1,5 +1,5 @@
-import type { CSSProperties, ReactNode } from 'react';
-import { createContext, useCallback, useContext, useState } from 'react';
+import type { CSSProperties, ReactNode } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 export interface WindowConfig {
   id: string;
@@ -35,7 +35,7 @@ const WindowContext = createContext<WindowContextValue | undefined>(undefined);
 export const useWindows = () => {
   const context = useContext(WindowContext);
   if (!context) {
-    throw new Error('useWindows must be used within a WindowProvider');
+    throw new Error("useWindows must be used within a WindowProvider");
   }
   return context;
 };

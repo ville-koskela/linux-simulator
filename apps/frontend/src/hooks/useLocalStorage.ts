@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 /**
  * Custom hook for managing state that persists in localStorage
@@ -55,8 +55,8 @@ export function useLocalStorage<T>(
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [key]);
 
   return [storedValue, setValue];

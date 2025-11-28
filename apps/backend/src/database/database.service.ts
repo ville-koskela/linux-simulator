@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   Pool,
   type PoolClient,
   type QueryResult,
   type QueryResultRow,
-} from 'pg';
-import type { LoggerService } from '../logger/logger.service';
+} from "pg";
+import type { LoggerService } from "../logger/logger.service";
 
 @Injectable()
 export class DatabaseService {
@@ -14,13 +14,13 @@ export class DatabaseService {
 
   constructor(logger: LoggerService) {
     this.logger = logger;
-    this.logger.setContext('DatabaseService');
+    this.logger.setContext("DatabaseService");
     this.pool = new Pool({
-      host: process.env.DATABASE_HOST || 'localhost',
-      port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-      database: process.env.DATABASE_NAME || 'linux_simulator',
-      user: process.env.DATABASE_USER || 'postgres',
-      password: process.env.DATABASE_PASSWORD || 'postgres',
+      host: process.env.DATABASE_HOST || "localhost",
+      port: parseInt(process.env.DATABASE_PORT || "5432", 10),
+      database: process.env.DATABASE_NAME || "linux_simulator",
+      user: process.env.DATABASE_USER || "postgres",
+      password: process.env.DATABASE_PASSWORD || "postgres",
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
@@ -54,12 +54,12 @@ export class DatabaseService {
     const client = await this.getClient();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
       const result = await callback(client);
-      await client.query('COMMIT');
+      await client.query("COMMIT");
       return result;
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();

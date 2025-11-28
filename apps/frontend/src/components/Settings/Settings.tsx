@@ -1,9 +1,9 @@
-import type { ThemeColors } from '@linux-simulator/shared';
-import { defaultThemes } from '@linux-simulator/shared';
-import type { FC } from 'react';
-import { useRef, useState } from 'react';
-import { useSettings, useTranslations } from '../../contexts';
-import './Settings.css';
+import type { ThemeColors } from "@linux-simulator/shared";
+import { defaultThemes } from "@linux-simulator/shared";
+import type { FC } from "react";
+import { useRef, useState } from "react";
+import { useSettings, useTranslations } from "../../contexts";
+import "./Settings.css";
 
 export const Settings: FC = () => {
   const { settings, updateLanguage, updateTheme, applyPresetTheme } =
@@ -37,7 +37,7 @@ export const Settings: FC = () => {
     const defaultTheme = defaultThemes.light;
     setCustomTheme(defaultTheme);
     updateTheme(defaultTheme);
-    updateLanguage('en');
+    updateLanguage("en");
   };
 
   const getCurrentPresetName = (): string | null => {
@@ -54,22 +54,22 @@ export const Settings: FC = () => {
   const tSettings = t.settings;
 
   const colorFields: { key: keyof ThemeColors; label: string }[] = [
-    { key: 'primary', label: tSettings.customTheme.colors.primary },
-    { key: 'secondary', label: tSettings.customTheme.colors.secondary },
-    { key: 'background', label: tSettings.customTheme.colors.background },
-    { key: 'surface', label: tSettings.customTheme.colors.surface },
-    { key: 'text', label: tSettings.customTheme.colors.text },
-    { key: 'textSecondary', label: tSettings.customTheme.colors.textSecondary },
-    { key: 'border', label: tSettings.customTheme.colors.border },
-    { key: 'success', label: tSettings.customTheme.colors.success },
-    { key: 'warning', label: tSettings.customTheme.colors.warning },
-    { key: 'error', label: tSettings.customTheme.colors.error },
+    { key: "primary", label: tSettings.customTheme.colors.primary },
+    { key: "secondary", label: tSettings.customTheme.colors.secondary },
+    { key: "background", label: tSettings.customTheme.colors.background },
+    { key: "surface", label: tSettings.customTheme.colors.surface },
+    { key: "text", label: tSettings.customTheme.colors.text },
+    { key: "textSecondary", label: tSettings.customTheme.colors.textSecondary },
+    { key: "border", label: tSettings.customTheme.colors.border },
+    { key: "success", label: tSettings.customTheme.colors.success },
+    { key: "warning", label: tSettings.customTheme.colors.warning },
+    { key: "error", label: tSettings.customTheme.colors.error },
   ];
 
   // Map language codes to display names
   const languageNames: Record<string, string> = {
-    en: 'English',
-    fi: 'Suomi',
+    en: "English",
+    fi: "Suomi",
   };
 
   return (
@@ -109,7 +109,7 @@ export const Settings: FC = () => {
             <button
               key={themeName}
               type="button"
-              className={`theme-preset-button ${currentPreset === themeName ? 'active' : ''}`}
+              className={`theme-preset-button ${currentPreset === themeName ? "active" : ""}`}
               onClick={() => handlePresetTheme(themeName)}
             >
               {tSettings.themePresets[
@@ -137,7 +137,7 @@ export const Settings: FC = () => {
                   style={{ backgroundColor: customTheme[key] }}
                   onClick={() => colorPickerRefs.current[key]?.click()}
                   aria-label={tSettings.customTheme.aria.pickColor.replace(
-                    '{label}',
+                    "{label}",
                     label
                   )}
                 />
@@ -156,13 +156,13 @@ export const Settings: FC = () => {
                   type="color"
                   className="color-picker-native"
                   value={
-                    customTheme[key].startsWith('#')
+                    customTheme[key].startsWith("#")
                       ? customTheme[key]
-                      : '#000000'
+                      : "#000000"
                   }
                   onChange={(e) => handleColorChange(key, e.target.value)}
                   aria-label={tSettings.customTheme.aria.colorPicker.replace(
-                    '{label}',
+                    "{label}",
                     label
                   )}
                 />

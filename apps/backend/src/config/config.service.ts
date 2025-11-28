@@ -1,24 +1,24 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const envSchema = z.object({
   // Server
   NODE_ENV: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+    .enum(["development", "production", "test"])
+    .default("development"),
   PORT: z.coerce.number().int().positive().default(3001),
 
   // Database
-  DATABASE_HOST: z.string().default('localhost'),
+  DATABASE_HOST: z.string().default("localhost"),
   DATABASE_PORT: z.coerce.number().int().positive().default(5432),
-  DATABASE_NAME: z.string().default('linux_simulator'),
-  DATABASE_USER: z.string().default('postgres'),
-  DATABASE_PASSWORD: z.string().default('postgres'),
+  DATABASE_NAME: z.string().default("linux_simulator"),
+  DATABASE_USER: z.string().default("postgres"),
+  DATABASE_PASSWORD: z.string().default("postgres"),
 
   // Logging
-  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+  LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("info"),
 
   // CORS
-  CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  CORS_ORIGIN: z.string().default("http://localhost:5173"),
 
   // Application
   DEFAULT_USER_ID: z.coerce.number().int().positive().default(1),
@@ -34,10 +34,10 @@ export class ConfigService {
 
     if (!result.success) {
       // biome-ignore lint/suspicious/noConsole: Config validation errors must be logged before app starts
-      console.error('❌ Invalid environment configuration:');
+      console.error("❌ Invalid environment configuration:");
       // biome-ignore lint/suspicious/noConsole: Config validation errors must be logged before app starts
       console.error(result.error.format());
-      throw new Error('Environment validation failed');
+      throw new Error("Environment validation failed");
     }
 
     this.config = result.data;
@@ -52,15 +52,15 @@ export class ConfigService {
   }
 
   get isProduction(): boolean {
-    return this.config.NODE_ENV === 'production';
+    return this.config.NODE_ENV === "production";
   }
 
   get isDevelopment(): boolean {
-    return this.config.NODE_ENV === 'development';
+    return this.config.NODE_ENV === "development";
   }
 
   get isTest(): boolean {
-    return this.config.NODE_ENV === 'test';
+    return this.config.NODE_ENV === "test";
   }
 
   // Database

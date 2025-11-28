@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { DatabaseService } from '../database/database.service';
+import { LoggerService } from '../logger/logger.service';
 import type {
   CreateNodeDto,
   FilesystemNode,
@@ -14,7 +15,12 @@ import type {
 
 @Injectable()
 export class FilesystemService {
-  constructor(private db: DatabaseService) {}
+  constructor(
+    private db: DatabaseService,
+    private logger: LoggerService
+  ) {
+    this.logger.setContext('FilesystemService');
+  }
 
   async getNodeById(
     userId: number,
@@ -40,22 +46,24 @@ export class FilesystemService {
     }
 
     const parts = path.split('/').filter((p) => p);
-    let currentNode: FilesystemNode | null = await this.getNodeByPath(
-      userId,
-      '/'
+    const rootResult = await this.db.query<FilesystemNode>(
+      'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2',
+      [userId, '/']
     );
 
+    let currentNode: FilesystemNode | null = rootResult.rows[0] || null;
     if (!currentNode) return null;
 
     for (const part of parts) {
-      const currentId = currentNode.id; // Extract id before null check
-      const result = await this.db.query<FilesystemNode>(
+      // TypeScript doesn't narrow type in loop, so we assert non-null
+      const parentId = currentNode.id;
+      const queryResult = await this.db.query<FilesystemNode>(
         'SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3',
-        [userId, currentId, part]
+        [userId, parentId, part]
       );
 
-      if (result.rows.length === 0) return null;
-      currentNode = result.rows[0];
+      if (queryResult.rows.length === 0) return null;
+      currentNode = queryResult.rows[0];
     }
 
     return currentNode;

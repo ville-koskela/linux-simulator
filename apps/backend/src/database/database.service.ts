@@ -4,11 +4,17 @@ import {
   type QueryResult,
   type QueryResultRow,
 } from 'pg';
+import { Injectable } from '@nestjs/common';
+import { LoggerService } from '../logger/logger.service';
 
+@Injectable()
 export class DatabaseService {
   private pool: Pool;
+  private logger: LoggerService;
 
-  constructor() {
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+    this.logger.setContext('DatabaseService');
     this.pool = new Pool({
       host: process.env.DATABASE_HOST || 'localhost',
       port: parseInt(process.env.DATABASE_PORT || '5432', 10),
@@ -30,7 +36,9 @@ export class DatabaseService {
     const duration = Date.now() - start;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('Executed query', { text, duration, rows: result.rowCount });
+      this.logger.debug(
+        `Query executed in ${duration}ms - ${result.rowCount} rows`
+      );
     }
 
     return result;

@@ -1,6 +1,7 @@
 import {
   Injectable,
   type LoggerService as NestLoggerService,
+  Scope,
 } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { ConfigService } from "../config/config.service";
@@ -12,7 +13,7 @@ export enum LogLevel {
   DEBUG = 3,
 }
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService implements NestLoggerService {
   private context = "";
   private logLevel: LogLevel;

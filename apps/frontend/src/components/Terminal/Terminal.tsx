@@ -101,11 +101,7 @@ export const Terminal: FC = () => {
   };
 
   const addOutput = (content: string, type: "output" | "error" = "output") => {
-    setHistory((prev) => [
-      ...prev,
-      { type, content },
-      { type: "output", content: "" },
-    ]);
+    setHistory((prev) => [...prev, { type, content }, { type: "output", content: "" }]);
   };
 
   const resolvePath = (path: string): string => {
@@ -133,10 +129,7 @@ export const Terminal: FC = () => {
         ...prev,
         {
           type: "error",
-          content: tTerminal.errors.commandNotFound.replace(
-            "{command}",
-            commandName
-          ),
+          content: tTerminal.errors.commandNotFound.replace("{command}", commandName),
         },
         { type: "output", content: "" },
       ]);
@@ -170,9 +163,7 @@ export const Terminal: FC = () => {
       e.preventDefault();
       if (commandHistory.length > 0) {
         const newIndex =
-          historyIndex === -1
-            ? commandHistory.length - 1
-            : Math.max(0, historyIndex - 1);
+          historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
         setHistoryIndex(newIndex);
         setInput(commandHistory[newIndex]);
       }

@@ -10,7 +10,4 @@ export interface CommandContext {
   openEditor?: (filepath: string, content: string) => void;
 }
 
-export type CommandHandler = (
-  args: string[],
-  context: CommandContext
-) => void | Promise<void>;
+export type CommandHandler = (args: string[], context: CommandContext) => void | Promise<void>;

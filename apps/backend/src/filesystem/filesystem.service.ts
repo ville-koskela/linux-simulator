@@ -24,17 +24,11 @@ export class FilesystemService {
     this.logger.setContext("FilesystemService");
   }
 
-  async getNodeById(
-    userId: number,
-    nodeId: number
-  ): Promise<FilesystemNode | null> {
+  async getNodeById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
     return this.repository.findById(userId, nodeId);
   }
 
-  async getNodeByPath(
-    userId: number,
-    path: string
-  ): Promise<FilesystemNode | null> {
+  async getNodeByPath(userId: number, path: string): Promise<FilesystemNode | null> {
     if (path === "/") {
       return this.repository.findRoot(userId);
     }
@@ -45,20 +39,13 @@ export class FilesystemService {
 
     for (const part of parts) {
       if (!currentNode) return null;
-      currentNode = await this.repository.findByParentAndName(
-        userId,
-        currentNode.id,
-        part
-      );
+      currentNode = await this.repository.findByParentAndName(userId, currentNode.id, part);
     }
 
     return currentNode;
   }
 
-  async getChildren(
-    userId: number,
-    parentId: number | null
-  ): Promise<FilesystemNode[]> {
+  async getChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
     return this.repository.findChildren(userId, parentId);
   }
 
@@ -74,10 +61,7 @@ export class FilesystemService {
     return this.buildTree(userId, rootNode);
   }
 
-  private async buildTree(
-    userId: number,
-    node: FilesystemNode
-  ): Promise<FilesystemTree> {
+  private async buildTree(userId: number, node: FilesystemNode): Promise<FilesystemTree> {
     const tree: FilesystemTree = {
       id: node.id,
       name: node.name,
@@ -89,18 +73,13 @@ export class FilesystemService {
       tree.content = node.content || "";
     } else {
       const children = await this.getChildren(userId, node.id);
-      tree.children = await Promise.all(
-        children.map((child) => this.buildTree(userId, child))
-      );
+      tree.children = await Promise.all(children.map((child) => this.buildTree(userId, child)));
     }
 
     return tree;
   }
 
-  async createNode(
-    userId: number,
-    dto: CreateNodeDto
-  ): Promise<FilesystemNode> {
+  async createNode(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
     // Validate parent exists if provided
     if (dto.parentId !== null) {
       const parent = await this.getNodeById(userId, dto.parentId);
@@ -127,11 +106,7 @@ export class FilesystemService {
     return this.repository.create(userId, dto);
   }
 
-  async updateNode(
-    userId: number,
-    nodeId: number,
-    dto: UpdateNodeDto
-  ): Promise<FilesystemNode> {
+  async updateNode(userId: number, nodeId: number, dto: UpdateNodeDto): Promise<FilesystemNode> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
       throw new NotFoundException("Node not found");
@@ -187,11 +162,7 @@ export class FilesystemService {
     await this.repository.delete(userId, nodeId);
   }
 
-  async moveNode(
-    userId: number,
-    nodeId: number,
-    newParentId: number
-  ): Promise<FilesystemNode> {
+  async moveNode(userId: number, nodeId: number, newParentId: number): Promise<FilesystemNode> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
       throw new NotFoundException("Node not found");

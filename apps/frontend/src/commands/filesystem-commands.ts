@@ -25,9 +25,7 @@ export const lsCommand: CommandHandler = async (args, context) => {
       return;
     }
 
-    const dirs = children
-      .filter((c) => c.type === "directory")
-      .map((c) => c.name);
+    const dirs = children.filter((c) => c.type === "directory").map((c) => c.name);
     const files = children.filter((c) => c.type === "file").map((c) => c.name);
     const allNames = [...dirs, ...files];
 
@@ -105,10 +103,7 @@ export const mkdirCommand: CommandHandler = async (args, context) => {
   try {
     const name = args[0];
     if (name.includes("/")) {
-      context.addOutput(
-        "mkdir: only simple names supported (no paths)",
-        "error"
-      );
+      context.addOutput("mkdir: only simple names supported (no paths)", "error");
       return;
     }
 
@@ -117,11 +112,7 @@ export const mkdirCommand: CommandHandler = async (args, context) => {
       return;
     }
 
-    await FilesystemService.createNode(
-      context.currentNode.id,
-      name,
-      "directory"
-    );
+    await FilesystemService.createNode(context.currentNode.id, name, "directory");
     context.addOutput("");
   } catch (error) {
     context.addOutput(`mkdir: error: ${error}`, "error");
@@ -137,10 +128,7 @@ export const touchCommand: CommandHandler = async (args, context) => {
   try {
     const name = args[0];
     if (name.includes("/")) {
-      context.addOutput(
-        "touch: only simple names supported (no paths)",
-        "error"
-      );
+      context.addOutput("touch: only simple names supported (no paths)", "error");
       return;
     }
 
@@ -149,12 +137,7 @@ export const touchCommand: CommandHandler = async (args, context) => {
       return;
     }
 
-    await FilesystemService.createNode(
-      context.currentNode.id,
-      name,
-      "file",
-      ""
-    );
+    await FilesystemService.createNode(context.currentNode.id, name, "file", "");
     context.addOutput("");
   } catch (error) {
     context.addOutput(`touch: error: ${error}`, "error");
@@ -172,20 +155,14 @@ export const rmCommand: CommandHandler = async (args, context) => {
     const node = await FilesystemService.getNodeByPath(path);
 
     if (!node) {
-      context.addOutput(
-        `rm: cannot remove '${args[0]}': No such file or directory`,
-        "error"
-      );
+      context.addOutput(`rm: cannot remove '${args[0]}': No such file or directory`, "error");
       return;
     }
 
     if (node.type === "directory") {
       const children = await FilesystemService.getChildren(node.id);
       if (children.length > 0) {
-        context.addOutput(
-          `rm: cannot remove '${args[0]}': Directory not empty`,
-          "error"
-        );
+        context.addOutput(`rm: cannot remove '${args[0]}': Directory not empty`, "error");
         return;
       }
     }
@@ -209,10 +186,7 @@ export const mvCommand: CommandHandler = async (args, context) => {
 
     const sourceNode = await FilesystemService.getNodeByPath(sourcePath);
     if (!sourceNode) {
-      context.addOutput(
-        `mv: cannot stat '${args[0]}': No such file or directory`,
-        "error"
-      );
+      context.addOutput(`mv: cannot stat '${args[0]}': No such file or directory`, "error");
       return;
     }
 
@@ -223,10 +197,7 @@ export const mvCommand: CommandHandler = async (args, context) => {
       return;
     }
 
-    context.addOutput(
-      "mv: moving between directories not yet supported",
-      "error"
-    );
+    context.addOutput("mv: moving between directories not yet supported", "error");
   } catch (error) {
     context.addOutput(`mv: error: ${error}`, "error");
   }

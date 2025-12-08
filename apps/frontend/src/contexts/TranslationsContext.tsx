@@ -11,16 +11,12 @@ interface TranslationsContextValue {
   availableLanguages: string[];
 }
 
-const TranslationsContext = createContext<TranslationsContextValue | undefined>(
-  undefined
-);
+const TranslationsContext = createContext<TranslationsContextValue | undefined>(undefined);
 
 export const useTranslations = () => {
   const context = useContext(TranslationsContext);
   if (!context) {
-    throw new Error(
-      "useTranslations must be used within a TranslationsProvider"
-    );
+    throw new Error("useTranslations must be used within a TranslationsProvider");
   }
   return context;
 };
@@ -37,12 +33,9 @@ const translationsMap: Record<string, Translations> = {
 // Get list of available languages from the translations map
 const availableLanguages = Object.keys(translationsMap);
 
-export const TranslationsProvider = ({
-  children,
-}: TranslationsProviderProps) => {
+export const TranslationsProvider = ({ children }: TranslationsProviderProps) => {
   const { settings } = useSettings();
-  const [translations, setTranslations] =
-    useState<Translations>(translationsEn);
+  const [translations, setTranslations] = useState<Translations>(translationsEn);
 
   useEffect(() => {
     // Load the appropriate translation based on the language setting
@@ -60,9 +53,5 @@ export const TranslationsProvider = ({
     availableLanguages,
   };
 
-  return (
-    <TranslationsContext.Provider value={value}>
-      {children}
-    </TranslationsContext.Provider>
-  );
+  return <TranslationsContext.Provider value={value}>{children}</TranslationsContext.Provider>;
 };

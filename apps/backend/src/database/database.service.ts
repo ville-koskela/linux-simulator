@@ -1,10 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-  Pool,
-  type PoolClient,
-  type QueryResult,
-  type QueryResultRow,
-} from "pg";
+import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from "pg";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { ConfigService } from "../config/config.service";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
@@ -41,9 +36,7 @@ export class DatabaseService {
     const duration = Date.now() - start;
 
     if (this.config.isDevelopment) {
-      this.logger.debug(
-        `Query executed in ${duration}ms - ${result.rowCount} rows`
-      );
+      this.logger.debug(`Query executed in ${duration}ms - ${result.rowCount} rows`);
     }
 
     return result;
@@ -53,9 +46,7 @@ export class DatabaseService {
     return this.pool.connect();
   }
 
-  async transaction<T>(
-    callback: (client: PoolClient) => Promise<T>
-  ): Promise<T> {
+  async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.getClient();
 
     try {

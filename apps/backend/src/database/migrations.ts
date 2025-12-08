@@ -9,10 +9,7 @@ interface Migration {
   executed_at: Date;
 }
 
-export async function runMigrations(
-  db: DatabaseService,
-  logger: LoggerService
-): Promise<void> {
+export async function runMigrations(db: DatabaseService, logger: LoggerService): Promise<void> {
   logger.log("Running database migrations...");
 
   // Create migrations tracking table if it doesn't exist
@@ -28,9 +25,7 @@ export async function runMigrations(
   const executedMigrations = await db.query<Migration>(
     "SELECT filename FROM migrations ORDER BY id"
   );
-  const executedFilenames = new Set(
-    executedMigrations.rows.map((m) => m.filename)
-  );
+  const executedFilenames = new Set(executedMigrations.rows.map((m) => m.filename));
 
   // Read migration files from migrations directory
   const migrationsDir = path.join(__dirname, "migrations");
@@ -73,9 +68,7 @@ export async function runMigrations(
         // Run the migration SQL
         await client.query(sql);
         // Record the migration
-        await client.query("INSERT INTO migrations (filename) VALUES ($1)", [
-          filename,
-        ]);
+        await client.query("INSERT INTO migrations (filename) VALUES ($1)", [filename]);
       });
 
       logger.log(`✓ Migration executed: ${filename}`);
@@ -92,8 +85,6 @@ export async function runMigrations(
   if (executedCount === 0) {
     logger.log("No pending migrations");
   } else {
-    logger.log(
-      `Database migrations completed successfully (${executedCount} executed)`
-    );
+    logger.log(`Database migrations completed successfully (${executedCount} executed)`);
   }
 }

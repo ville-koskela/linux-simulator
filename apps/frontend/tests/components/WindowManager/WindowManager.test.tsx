@@ -10,9 +10,7 @@ import { renderWithProviders } from "../../test-utils/render-with-providers";
 const WindowCreator = ({
   onCreate,
 }: {
-  onCreate: (
-    createWindow: ReturnType<typeof useWindows>["createWindow"]
-  ) => void;
+  onCreate: (createWindow: ReturnType<typeof useWindows>["createWindow"]) => void;
 }) => {
   const { createWindow } = useWindows();
 
@@ -132,9 +130,7 @@ describe("WindowManager", () => {
       );
     };
 
-    const { container, getByText, queryByText } = renderWithProviders(
-      <TestComponent />
-    );
+    const { container, getByText, queryByText } = renderWithProviders(<TestComponent />);
 
     const createButton = getByText("Create Windows");
     fireEvent.click(createButton);
@@ -188,9 +184,7 @@ describe("WindowManager", () => {
     const createButton = getByText("Create Windows");
     fireEvent.click(createButton);
 
-    const windowWrappers = container.querySelectorAll(
-      '[role="button"][aria-label^="Window:"]'
-    );
+    const windowWrappers = container.querySelectorAll('[role="button"][aria-label^="Window:"]');
     assert.equal(windowWrappers.length, 2);
 
     const window1Wrapper = Array.from(windowWrappers).find(
@@ -200,25 +194,15 @@ describe("WindowManager", () => {
     assert.ok(window1Wrapper);
 
     // Get initial z-index values
-    const zIndexDisplay = container.querySelector(
-      '[data-testid="z-index-display"]'
-    );
-    const initialZIndex1 = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
-    const initialZIndex2 = zIndexDisplay?.querySelector(
-      '[data-window-id="window-2"]'
-    )?.textContent;
+    const zIndexDisplay = container.querySelector('[data-testid="z-index-display"]');
+    const initialZIndex1 = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
+    const initialZIndex2 = zIndexDisplay?.querySelector('[data-window-id="window-2"]')?.textContent;
 
     // Click on window 1 to bring it to front
     fireEvent.mouseDown(window1Wrapper);
 
-    const newZIndex1 = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
-    const newZIndex2 = zIndexDisplay?.querySelector(
-      '[data-window-id="window-2"]'
-    )?.textContent;
+    const newZIndex1 = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
+    const newZIndex2 = zIndexDisplay?.querySelector('[data-window-id="window-2"]')?.textContent;
 
     // Window 1 should have a higher z-index after being clicked
     assert.notEqual(initialZIndex1, newZIndex1);
@@ -260,24 +244,16 @@ describe("WindowManager", () => {
     const createButton = getByText("Create Window");
     fireEvent.click(createButton);
 
-    const windowWrapper = container.querySelector(
-      '[role="button"][aria-label="Window: Window 1"]'
-    );
+    const windowWrapper = container.querySelector('[role="button"][aria-label="Window: Window 1"]');
     assert.ok(windowWrapper);
 
-    const zIndexDisplay = container.querySelector(
-      '[data-testid="z-index-display"]'
-    );
-    const initialZIndex = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
+    const zIndexDisplay = container.querySelector('[data-testid="z-index-display"]');
+    const initialZIndex = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
 
     // Press Enter on the window wrapper
     fireEvent.keyDown(windowWrapper, { key: "Enter" });
 
-    const newZIndex = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
+    const newZIndex = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
 
     // Z-index should increase after Enter key
     assert.notEqual(initialZIndex, newZIndex);
@@ -318,24 +294,16 @@ describe("WindowManager", () => {
     const createButton = getByText("Create Window");
     fireEvent.click(createButton);
 
-    const windowWrapper = container.querySelector(
-      '[role="button"][aria-label="Window: Window 1"]'
-    );
+    const windowWrapper = container.querySelector('[role="button"][aria-label="Window: Window 1"]');
     assert.ok(windowWrapper);
 
-    const zIndexDisplay = container.querySelector(
-      '[data-testid="z-index-display"]'
-    );
-    const initialZIndex = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
+    const zIndexDisplay = container.querySelector('[data-testid="z-index-display"]');
+    const initialZIndex = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
 
     // Press Space on the window wrapper
     fireEvent.keyDown(windowWrapper, { key: " " });
 
-    const newZIndex = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
+    const newZIndex = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
 
     // Z-index should increase after Space key
     assert.notEqual(initialZIndex, newZIndex);
@@ -376,24 +344,16 @@ describe("WindowManager", () => {
     const createButton = getByText("Create Window");
     fireEvent.click(createButton);
 
-    const windowWrapper = container.querySelector(
-      '[role="button"][aria-label="Window: Window 1"]'
-    );
+    const windowWrapper = container.querySelector('[role="button"][aria-label="Window: Window 1"]');
     assert.ok(windowWrapper);
 
-    const zIndexDisplay = container.querySelector(
-      '[data-testid="z-index-display"]'
-    );
-    const initialZIndex = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
+    const zIndexDisplay = container.querySelector('[data-testid="z-index-display"]');
+    const initialZIndex = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
 
     // Press Tab key (should not trigger bringToFront)
     fireEvent.keyDown(windowWrapper, { key: "Tab" });
 
-    const newZIndex = zIndexDisplay?.querySelector(
-      '[data-window-id="window-1"]'
-    )?.textContent;
+    const newZIndex = zIndexDisplay?.querySelector('[data-window-id="window-1"]')?.textContent;
 
     // Z-index should remain the same
     assert.equal(initialZIndex, newZIndex);
@@ -426,9 +386,7 @@ describe("WindowManager", () => {
     const createButton = getByText("Create Window");
     fireEvent.click(createButton);
 
-    const window = container.querySelector(
-      ".floating-window.custom-class"
-    ) as HTMLElement;
+    const window = container.querySelector(".floating-window.custom-class") as HTMLElement;
     assert.ok(window);
     assert.equal(window.style.left, "250px");
     assert.equal(window.style.top, "300px");
@@ -466,9 +424,7 @@ describe("WindowManager", () => {
     const createButton = getByText("Create Window");
     fireEvent.click(createButton);
 
-    const windows = container.querySelectorAll(
-      ".floating-window"
-    ) as NodeListOf<HTMLElement>;
+    const windows = container.querySelectorAll(".floating-window") as NodeListOf<HTMLElement>;
     assert.equal(windows.length, 2);
 
     // Each window should have a z-index
@@ -543,10 +499,7 @@ describe("WindowManager", () => {
     assert.ok(wrapper);
     assert.equal(wrapper.getAttribute("role"), "button");
     assert.equal(wrapper.getAttribute("tabIndex"), "0");
-    assert.equal(
-      wrapper.getAttribute("aria-label"),
-      "Window: Accessible Window"
-    );
+    assert.equal(wrapper.getAttribute("aria-label"), "Window: Accessible Window");
   });
 
   test("renders windows with unique keys", () => {
@@ -629,16 +582,10 @@ describe("WindowManager", () => {
           >
             Create
           </button>
-          <button
-            type="button"
-            onClick={() => minimizeWindow("restorable-window")}
-          >
+          <button type="button" onClick={() => minimizeWindow("restorable-window")}>
             Minimize
           </button>
-          <button
-            type="button"
-            onClick={() => restoreWindow("restorable-window")}
-          >
+          <button type="button" onClick={() => restoreWindow("restorable-window")}>
             Restore
           </button>
           <WindowManager />

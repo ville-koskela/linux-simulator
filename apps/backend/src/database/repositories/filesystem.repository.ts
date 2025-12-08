@@ -1,9 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { PoolClient } from "pg";
-import type {
-  CreateNodeDto,
-  FilesystemNode,
-} from "../../filesystem/filesystem.types";
+import type { CreateNodeDto, FilesystemNode } from "../../filesystem/filesystem.types";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { DatabaseService } from "../database.service";
 
@@ -11,10 +8,7 @@ import { DatabaseService } from "../database.service";
 export class FilesystemRepository {
   constructor(private db: DatabaseService) {}
 
-  async findById(
-    userId: number,
-    nodeId: number
-  ): Promise<FilesystemNode | null> {
+  async findById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
     const result = await this.db.query<FilesystemNode>(
       "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
       [userId, nodeId]
@@ -22,10 +16,7 @@ export class FilesystemRepository {
     return result.rows[0] || null;
   }
 
-  async findByPath(
-    userId: number,
-    path: string
-  ): Promise<FilesystemNode | null> {
+  async findByPath(userId: number, path: string): Promise<FilesystemNode | null> {
     // Handle root path
     if (path === "/") {
       const result = await this.db.query<FilesystemNode>(
@@ -60,10 +51,7 @@ export class FilesystemRepository {
     return result.rows[0] || null;
   }
 
-  async findChildren(
-    userId: number,
-    parentId: number | null
-  ): Promise<FilesystemNode[]> {
+  async findChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
     const query =
       parentId === null
         ? "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL ORDER BY type DESC, name"
@@ -75,11 +63,7 @@ export class FilesystemRepository {
     return result.rows;
   }
 
-  async exists(
-    userId: number,
-    parentId: number | null,
-    name: string
-  ): Promise<boolean> {
+  async exists(userId: number, parentId: number | null, name: string): Promise<boolean> {
     const result = await this.db.query(
       "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
       [userId, parentId, name]
@@ -98,8 +82,7 @@ export class FilesystemRepository {
         dto.name,
         dto.type,
         dto.content || null,
-        dto.permissions ||
-          (dto.type === "directory" ? "rwxr-xr-x" : "rw-r--r--"),
+        dto.permissions || (dto.type === "directory" ? "rwxr-xr-x" : "rw-r--r--"),
       ]
     );
     return result.rows[0];
@@ -147,11 +130,7 @@ export class FilesystemRepository {
     return result.rows[0];
   }
 
-  async move(
-    userId: number,
-    nodeId: number,
-    newParentId: number | null
-  ): Promise<FilesystemNode> {
+  async move(userId: number, nodeId: number, newParentId: number | null): Promise<FilesystemNode> {
     const result = await this.db.query<FilesystemNode>(
       `UPDATE filesystem_nodes 
        SET parent_id = $1, updated_at = CURRENT_TIMESTAMP
@@ -163,10 +142,10 @@ export class FilesystemRepository {
   }
 
   async delete(userId: number, nodeId: number): Promise<void> {
-    await this.db.query(
-      "DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
-      [userId, nodeId]
-    );
+    await this.db.query("DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2", [
+      userId,
+      nodeId,
+    ]);
   }
 
   async isDescendant(
@@ -193,9 +172,7 @@ export class FilesystemRepository {
   /**
    * Execute operations in a transaction
    */
-  async transaction<T>(
-    callback: (client: PoolClient) => Promise<T>
-  ): Promise<T> {
+  async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
     return this.db.transaction(callback);
   }
 }

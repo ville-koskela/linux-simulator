@@ -328,9 +328,7 @@ describe("FloatingWindow", () => {
 
     const title = getByText("Complete Window");
     const content = getByText("Full featured window");
-    const window = container.querySelector(
-      ".floating-window.custom-class"
-    ) as HTMLElement;
+    const window = container.querySelector(".floating-window.custom-class") as HTMLElement;
     const closeButton = container.querySelector(".floating-window-close");
 
     assert.ok(title);
@@ -545,9 +543,7 @@ describe("FloatingWindow", () => {
 
     const title = getByText("Complete Window");
     const content = getByText("Full featured window");
-    const window = container.querySelector(
-      ".floating-window.custom-class"
-    ) as HTMLElement;
+    const window = container.querySelector(".floating-window.custom-class") as HTMLElement;
     const minimizeButton = getByRole("button", { name: "Minimize window" });
     const closeButton = getByRole("button", { name: "Close window" });
 

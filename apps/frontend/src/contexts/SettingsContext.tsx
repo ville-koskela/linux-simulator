@@ -12,9 +12,7 @@ interface SettingsContextValue {
   applyPresetTheme: (themeName: string) => void;
 }
 
-const SettingsContext = createContext<SettingsContextValue | undefined>(
-  undefined
-);
+const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
 
 export const useSettings = () => {
   const context = useContext(SettingsContext);
@@ -47,10 +45,7 @@ const getDefaultSettings = (): Settings => {
 };
 
 export const SettingsProvider = ({ children }: SettingsProviderProps) => {
-  const [settings, setSettings] = useLocalStorage<Settings>(
-    STORAGE_KEY,
-    getDefaultSettings()
-  );
+  const [settings, setSettings] = useLocalStorage<Settings>(STORAGE_KEY, getDefaultSettings());
 
   // Apply theme to CSS variables
   useEffect(() => {
@@ -60,10 +55,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     root.style.setProperty("--color-background", settings.theme.background);
     root.style.setProperty("--color-surface", settings.theme.surface);
     root.style.setProperty("--color-text", settings.theme.text);
-    root.style.setProperty(
-      "--color-text-secondary",
-      settings.theme.textSecondary
-    );
+    root.style.setProperty("--color-text-secondary", settings.theme.textSecondary);
     root.style.setProperty("--color-border", settings.theme.border);
     root.style.setProperty("--color-success", settings.theme.success);
     root.style.setProperty("--color-warning", settings.theme.warning);
@@ -92,9 +84,5 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     applyPresetTheme,
   };
 
-  return (
-    <SettingsContext.Provider value={value}>
-      {children}
-    </SettingsContext.Provider>
-  );
+  return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 };

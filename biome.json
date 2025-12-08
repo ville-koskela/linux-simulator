@@ -12,8 +12,7 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 80,
-    "lineEnding": "lf"
+    "lineWidth": 100
   },
   "linter": {
     "enabled": true,
@@ -29,7 +28,9 @@
         "noExplicitAny": "error"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "warn",
+        "noUnusedFunctionParameters": "off",
+        "noUndeclaredDependencies": "error"
       }
     }
   },

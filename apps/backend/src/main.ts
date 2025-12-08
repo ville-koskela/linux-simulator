@@ -22,9 +22,7 @@ async function bootstrap() {
     app.useLogger(logger);
 
     logger.log(`Starting application in ${config.nodeEnv} mode`);
-    logger.log(
-      `Database: ${config.databaseHost}:${config.databasePort}/${config.databaseName}`
-    );
+    logger.log(`Database: ${config.databaseHost}:${config.databasePort}/${config.databaseName}`);
 
     // Enable CORS for frontend
     app.enableCors({

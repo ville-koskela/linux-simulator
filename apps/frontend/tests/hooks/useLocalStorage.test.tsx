@@ -30,9 +30,7 @@ describe("useLocalStorage", () => {
   });
 
   it("should return initial value when localStorage is empty", () => {
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     assert.strictEqual(result.current[0], "initial value");
   });
@@ -40,27 +38,20 @@ describe("useLocalStorage", () => {
   it("should return stored value when localStorage has data", () => {
     localStorage.setItem("test-key", JSON.stringify("stored value"));
 
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     assert.strictEqual(result.current[0], "stored value");
   });
 
   it("should update localStorage when value changes", () => {
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     act(() => {
       result.current[1]("new value");
     });
 
     assert.strictEqual(result.current[0], "new value");
-    assert.strictEqual(
-      localStorage.getItem("test-key"),
-      JSON.stringify("new value")
-    );
+    assert.strictEqual(localStorage.getItem("test-key"), JSON.stringify("new value"));
   });
 
   it("should work with complex objects", () => {
@@ -71,9 +62,7 @@ describe("useLocalStorage", () => {
     }
 
     const initialObj: TestObject = { name: "John", age: 30, active: true };
-    const { result } = renderHook(() =>
-      useLocalStorage("test-obj", initialObj)
-    );
+    const { result } = renderHook(() => useLocalStorage("test-obj", initialObj));
 
     assert.deepStrictEqual(result.current[0], initialObj);
 
@@ -83,10 +72,7 @@ describe("useLocalStorage", () => {
     });
 
     assert.deepStrictEqual(result.current[0], updatedObj);
-    assert.deepStrictEqual(
-      JSON.parse(localStorage.getItem("test-obj") || "{}"),
-      updatedObj
-    );
+    assert.deepStrictEqual(JSON.parse(localStorage.getItem("test-obj") || "{}"), updatedObj);
   });
 
   it("should support updater function like useState", () => {
@@ -108,17 +94,13 @@ describe("useLocalStorage", () => {
   it("should handle invalid JSON in localStorage gracefully", () => {
     localStorage.setItem("test-key", "invalid json {");
 
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "fallback value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "fallback value"));
 
     assert.strictEqual(result.current[0], "fallback value");
   });
 
   it("should handle localStorage quota exceeded error", () => {
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     // Mock localStorage.setItem to throw quota exceeded error
     const originalSetItem = Storage.prototype.setItem;
@@ -137,9 +119,7 @@ describe("useLocalStorage", () => {
   });
 
   it("should sync across tabs when storage event is fired", () => {
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     assert.strictEqual(result.current[0], "initial value");
 
@@ -157,9 +137,7 @@ describe("useLocalStorage", () => {
   });
 
   it("should ignore storage events for different keys", () => {
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     act(() => {
       result.current[1]("updated value");
@@ -182,9 +160,7 @@ describe("useLocalStorage", () => {
   });
 
   it("should handle storage event with null newValue", () => {
-    const { result } = renderHook(() =>
-      useLocalStorage("test-key", "initial value")
-    );
+    const { result } = renderHook(() => useLocalStorage("test-key", "initial value"));
 
     act(() => {
       result.current[1]("updated value");

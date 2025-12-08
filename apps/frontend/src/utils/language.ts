@@ -4,10 +4,7 @@
  * @param fallback - Fallback language if browser language is not supported
  * @returns The best matching language code
  */
-export const getBrowserLanguage = (
-  availableLanguages: string[],
-  fallback = "en"
-): string => {
+export const getBrowserLanguage = (availableLanguages: string[], fallback = "en"): string => {
   // Get browser languages in order of preference
   const browserLanguages = navigator.languages || [navigator.language];
 

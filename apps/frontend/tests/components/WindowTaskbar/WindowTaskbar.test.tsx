@@ -63,9 +63,7 @@ describe("WindowTaskbar", () => {
   });
 
   test("start menu closes when clicking backdrop", () => {
-    const { getByTitle, getByRole, container } = renderWithProviders(
-      <WindowTaskbar />
-    );
+    const { getByTitle, getByRole, container } = renderWithProviders(<WindowTaskbar />);
 
     const startButton = getByTitle("Start Menu");
     fireEvent.click(startButton);
@@ -81,9 +79,7 @@ describe("WindowTaskbar", () => {
   });
 
   test("start menu closes when pressing Escape on backdrop", () => {
-    const { getByTitle, getByRole, container } = renderWithProviders(
-      <WindowTaskbar />
-    );
+    const { getByTitle, getByRole, container } = renderWithProviders(<WindowTaskbar />);
 
     const startButton = getByTitle("Start Menu");
     fireEvent.click(startButton);
@@ -116,9 +112,7 @@ describe("WindowTaskbar", () => {
   });
 
   test('start menu closes when "Terminal" is clicked', () => {
-    const { getByTitle, getByText, container } = renderWithProviders(
-      <WindowTaskbar />
-    );
+    const { getByTitle, getByText, container } = renderWithProviders(<WindowTaskbar />);
 
     const startButton = getByTitle("Start Menu");
     fireEvent.click(startButton);
@@ -177,9 +171,7 @@ describe("WindowTaskbar", () => {
   });
 
   test("all buttons have proper type attribute", () => {
-    const { getByTitle, getByRole, container } = renderWithProviders(
-      <WindowTaskbar />
-    );
+    const { getByTitle, getByRole, container } = renderWithProviders(<WindowTaskbar />);
 
     const startButton = getByTitle("Start Menu") as HTMLButtonElement;
     assert.equal(startButton.type, "button");

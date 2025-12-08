@@ -8,9 +8,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 export async function resolve(specifier, context, nextResolve) {
   if (specifier.endsWith(".css")) {
     // Need to resolve to an absolute URL
-    const parentURL = context.parentURL
-      ? fileURLToPath(context.parentURL)
-      : process.cwd();
+    const parentURL = context.parentURL ? fileURLToPath(context.parentURL) : process.cwd();
     const resolvedPath = resolvePath(parentURL, "..", specifier);
     return {
       url: pathToFileURL(resolvedPath).href,

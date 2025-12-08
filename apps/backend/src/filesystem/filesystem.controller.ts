@@ -54,10 +54,7 @@ export class FilesystemController {
   }
 
   @Put("node/:id")
-  async updateNode(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() dto: UpdateNodeDto
-  ) {
+  async updateNode(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateNodeDto) {
     return this.filesystemService.updateNode(this.DEFAULT_USER_ID, id, dto);
   }
 
@@ -72,10 +69,6 @@ export class FilesystemController {
     @Param("id", ParseIntPipe) id: number,
     @Body("newParentId", ParseIntPipe) newParentId: number
   ) {
-    return this.filesystemService.moveNode(
-      this.DEFAULT_USER_ID,
-      id,
-      newParentId
-    );
+    return this.filesystemService.moveNode(this.DEFAULT_USER_ID, id, newParentId);
   }
 }

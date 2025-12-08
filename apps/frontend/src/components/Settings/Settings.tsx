@@ -6,14 +6,11 @@ import { useSettings, useTranslations } from "../../contexts";
 import "./Settings.css";
 
 export const Settings: FC = () => {
-  const { settings, updateLanguage, updateTheme, applyPresetTheme } =
-    useSettings();
+  const { settings, updateLanguage, updateTheme, applyPresetTheme } = useSettings();
   const { t, availableLanguages } = useTranslations();
 
   const [customTheme, setCustomTheme] = useState<ThemeColors>(settings.theme);
-  const colorPickerRefs = useRef<{ [key: string]: HTMLInputElement | null }>(
-    {}
-  );
+  const colorPickerRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateLanguage(e.target.value);
@@ -75,9 +72,7 @@ export const Settings: FC = () => {
   return (
     <div className="settings-container">
       <div className="settings-section">
-        <h2 className="settings-section-title">
-          {tSettings.languageSettings.title}
-        </h2>
+        <h2 className="settings-section-title">{tSettings.languageSettings.title}</h2>
         <div className="settings-field">
           <label htmlFor="language-select" className="settings-label">
             {tSettings.languageSettings.label}
@@ -94,16 +89,12 @@ export const Settings: FC = () => {
               </option>
             ))}
           </select>
-          <p className="settings-description">
-            {tSettings.languageSettings.description}
-          </p>
+          <p className="settings-description">{tSettings.languageSettings.description}</p>
         </div>
       </div>
 
       <div className="settings-section">
-        <h2 className="settings-section-title">
-          {tSettings.themePresets.title}
-        </h2>
+        <h2 className="settings-section-title">{tSettings.themePresets.title}</h2>
         <div className="theme-presets">
           {Object.keys(defaultThemes).map((themeName) => (
             <button
@@ -112,18 +103,15 @@ export const Settings: FC = () => {
               className={`theme-preset-button ${currentPreset === themeName ? "active" : ""}`}
               onClick={() => handlePresetTheme(themeName)}
             >
-              {tSettings.themePresets[
-                themeName as keyof typeof tSettings.themePresets
-              ] || themeName.charAt(0).toUpperCase() + themeName.slice(1)}
+              {tSettings.themePresets[themeName as keyof typeof tSettings.themePresets] ||
+                themeName.charAt(0).toUpperCase() + themeName.slice(1)}
             </button>
           ))}
         </div>
       </div>
 
       <div className="settings-section">
-        <h2 className="settings-section-title">
-          {tSettings.customTheme.title}
-        </h2>
+        <h2 className="settings-section-title">{tSettings.customTheme.title}</h2>
         <div className="theme-colors">
           {colorFields.map(({ key, label }) => (
             <div key={key} className="color-field">
@@ -136,10 +124,7 @@ export const Settings: FC = () => {
                   className="color-preview"
                   style={{ backgroundColor: customTheme[key] }}
                   onClick={() => colorPickerRefs.current[key]?.click()}
-                  aria-label={tSettings.customTheme.aria.pickColor.replace(
-                    "{label}",
-                    label
-                  )}
+                  aria-label={tSettings.customTheme.aria.pickColor.replace("{label}", label)}
                 />
                 <input
                   type="text"
@@ -155,16 +140,9 @@ export const Settings: FC = () => {
                   }}
                   type="color"
                   className="color-picker-native"
-                  value={
-                    customTheme[key].startsWith("#")
-                      ? customTheme[key]
-                      : "#000000"
-                  }
+                  value={customTheme[key].startsWith("#") ? customTheme[key] : "#000000"}
                   onChange={(e) => handleColorChange(key, e.target.value)}
-                  aria-label={tSettings.customTheme.aria.colorPicker.replace(
-                    "{label}",
-                    label
-                  )}
+                  aria-label={tSettings.customTheme.aria.colorPicker.replace("{label}", label)}
                 />
               </div>
             </div>

@@ -12,16 +12,9 @@ interface VimEditorProps {
   onSave?: (content: string) => void;
 }
 
-export const VimEditor: FC<VimEditorProps> = ({
-  filepath,
-  initialContent,
-  onClose,
-  onSave,
-}) => {
+export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClose, onSave }) => {
   const [mode, setMode] = useState<VimMode>("normal");
-  const [lines, setLines] = useState<string[]>(
-    initialContent ? initialContent.split("\n") : [""]
-  );
+  const [lines, setLines] = useState<string[]>(initialContent ? initialContent.split("\n") : [""]);
   const [cursorRow, setCursorRow] = useState(0);
   const [cursorCol, setCursorCol] = useState(0);
   const [commandInput, setCommandInput] = useState("");
@@ -62,9 +55,7 @@ export const VimEditor: FC<VimEditorProps> = ({
         onSave(content);
       }
     } catch (error) {
-      setStatusMessage(
-        `Error: ${error instanceof Error ? error.message : "Failed to save"}`
-      );
+      setStatusMessage(`Error: ${error instanceof Error ? error.message : "Failed to save"}`);
     }
   };
 

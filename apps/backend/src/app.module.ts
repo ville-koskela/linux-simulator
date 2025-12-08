@@ -7,13 +7,7 @@ import { HealthController } from "./health/health.controller";
 import { LoggerModule } from "./logger/logger.module";
 
 @Module({
-  imports: [
-    ConfigModule,
-    LoggerModule,
-    DatabaseModule,
-    FilesystemModule,
-    CommandsModule,
-  ],
+  imports: [ConfigModule, LoggerModule, DatabaseModule, FilesystemModule, CommandsModule],
   controllers: [HealthController],
 })
 export class AppModule {}

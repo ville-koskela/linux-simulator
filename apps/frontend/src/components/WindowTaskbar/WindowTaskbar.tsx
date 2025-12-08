@@ -9,14 +9,8 @@ export const WindowTaskbar: FC = () => {
   const tTaskbar = t.taskbar;
   const tApps = t.taskbar.applications;
 
-  const {
-    windows,
-    bringToFront,
-    minimizeWindow,
-    restoreWindow,
-    closeWindow,
-    createWindow,
-  } = useWindows();
+  const { windows, bringToFront, minimizeWindow, restoreWindow, closeWindow, createWindow } =
+    useWindows();
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
 
   const handleCreateTerminal = () => {
@@ -79,19 +73,11 @@ export const WindowTaskbar: FC = () => {
             <div className="start-menu">
               <div className="start-menu-header">{tTaskbar.start.header}</div>
               <div className="start-menu-items">
-                <button
-                  type="button"
-                  className="start-menu-item"
-                  onClick={handleCreateTerminal}
-                >
+                <button type="button" className="start-menu-item" onClick={handleCreateTerminal}>
                   <span className="menu-item-icon">▶</span>
                   <span className="menu-item-text">{tApps.terminal}</span>
                 </button>
-                <button
-                  type="button"
-                  className="start-menu-item"
-                  onClick={handleCreateSettings}
-                >
+                <button type="button" className="start-menu-item" onClick={handleCreateSettings}>
                   <span className="menu-item-icon">⚙</span>
                   <span className="menu-item-text">{tApps.settings}</span>
                 </button>
@@ -131,11 +117,7 @@ export const WindowTaskbar: FC = () => {
                     minimizeWindow(window.id);
                   }
                 }}
-                title={
-                  window.isMinimized
-                    ? tTaskbar.window.restore
-                    : tTaskbar.window.minimize
-                }
+                title={window.isMinimized ? tTaskbar.window.restore : tTaskbar.window.minimize}
               >
                 {window.isMinimized ? "▢" : "_"}
               </button>

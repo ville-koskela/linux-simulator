@@ -49,10 +49,7 @@ export const WindowProvider = ({ children }: WindowProviderProps) => {
   const baseZIndex = 1000;
 
   const getNextZIndex = useCallback(() => {
-    const maxZ = windows.reduce(
-      (max, win) => Math.max(max, win.zIndex),
-      baseZIndex
-    );
+    const maxZ = windows.reduce((max, win) => Math.max(max, win.zIndex), baseZIndex);
     return maxZ + 1;
   }, [windows]);
 
@@ -63,9 +60,7 @@ export const WindowProvider = ({ children }: WindowProviderProps) => {
 
       const maxZ = prev.reduce((max, win) => Math.max(max, win.zIndex), 1000);
       const newZIndex = maxZ + 1;
-      return prev.map((win) =>
-        win.id === id ? { ...win, zIndex: newZIndex } : win
-      );
+      return prev.map((win) => (win.id === id ? { ...win, zIndex: newZIndex } : win));
     });
   }, []);
 
@@ -98,9 +93,7 @@ export const WindowProvider = ({ children }: WindowProviderProps) => {
   }, []);
 
   const minimizeWindow = useCallback((id: string) => {
-    setWindows((prev) =>
-      prev.map((win) => (win.id === id ? { ...win, isMinimized: true } : win))
-    );
+    setWindows((prev) => prev.map((win) => (win.id === id ? { ...win, isMinimized: true } : win)));
   }, []);
 
   const restoreWindow = useCallback((id: string) => {
@@ -122,7 +115,5 @@ export const WindowProvider = ({ children }: WindowProviderProps) => {
     getNextZIndex,
   };
 
-  return (
-    <WindowContext.Provider value={value}>{children}</WindowContext.Provider>
-  );
+  return <WindowContext.Provider value={value}>{children}</WindowContext.Provider>;
 };

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  type LoggerService as NestLoggerService,
-  Scope,
-} from "@nestjs/common";
+import { Injectable, type LoggerService as NestLoggerService, Scope } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { ConfigService } from "../config/config.service";
 

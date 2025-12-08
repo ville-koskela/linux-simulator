@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
 import { Test, type TestingModule } from "@nestjs/testing";
+import { MockLoggerModule } from "../logger/logger.module.mock";
 import { HealthController } from "./health.controller";
 
 describe("HealthController", () => {
@@ -8,6 +9,7 @@ describe("HealthController", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [MockLoggerModule],
       controllers: [HealthController],
     }).compile();
 

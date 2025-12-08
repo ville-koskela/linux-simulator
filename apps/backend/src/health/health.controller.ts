@@ -1,10 +1,9 @@
-import { Controller, Get } from "@nestjs/common";
-// biome-ignore lint/style/useImportType: Needed for dependency injection
+import { Controller, Get, Inject } from "@nestjs/common";
 import { LoggerService } from "../logger/logger.service";
 
 @Controller("health")
 export class HealthController {
-  constructor(private readonly logger: LoggerService) {
+  constructor(@Inject(LoggerService) private readonly logger: LoggerService) {
     this.logger.setContext("HealthController");
   }
 

@@ -10,7 +10,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "echo 'Use root lint command'",
-    "test": "echo 'Backend tests not yet implemented'",
+    "test": "node --import tsx --test 'src/**/*.spec.ts'",
     "type-check": "tsc --noEmit"
   },
   "description": "Backend implementation - to be implemented.",
@@ -37,6 +37,7 @@
     "@types/pg": "8.15.6",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
+    "tsx": "4.19.2",
     "typescript": "5.9.3"
   }
 }

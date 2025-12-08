@@ -3,6 +3,7 @@ import { LoggerService } from "./logger.service";
 
 // Mock logger service that doesn't output anything and is not transient
 class MockLoggerService implements Partial<LoggerService> {
+  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: this is a mocker
   private context = "";
 
   setContext(context: string): void {

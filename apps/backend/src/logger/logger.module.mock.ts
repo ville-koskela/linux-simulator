@@ -1,34 +1,31 @@
+import { mock } from "node:test";
 import { Global, Module } from "@nestjs/common";
 import { LoggerService } from "./logger.service";
 
-// Mock logger service that doesn't output anything and is not transient
 class MockLoggerService implements Partial<LoggerService> {
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: this is a mocker
-  private context = "";
-
-  setContext(context: string): void {
-    this.context = context;
-  }
-
-  log(_message: string): void {
+  setContext = mock.fn((): void => {
     // Mock - do nothing
-  }
+  });
 
-  error(_message: string, _trace?: string): void {
+  log = mock.fn((): void => {
     // Mock - do nothing
-  }
+  });
 
-  warn(_message: string): void {
+  error = mock.fn((): void => {
     // Mock - do nothing
-  }
+  });
 
-  debug(_message: string): void {
+  warn = mock.fn((): void => {
     // Mock - do nothing
-  }
+  });
 
-  verbose(_message: string): void {
+  debug = mock.fn((): void => {
     // Mock - do nothing
-  }
+  });
+
+  verbose = mock.fn((): void => {
+    // Mock - do nothing
+  });
 }
 
 @Global()

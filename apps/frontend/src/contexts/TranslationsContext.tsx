@@ -43,17 +43,10 @@ export const TranslationsProvider = ({ children }: TranslationsProviderProps): J
       translationSchema.nullable()
     );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: If we define the missing dependnecy, we end up in an infinite loop
   useEffect(() => {
     let isMounted = true;
 
     async function loadTranslations(): Promise<void> {
-      // If we have cached translations, use them immediately
-      if (cachedTranslations) {
-        setIsLoading(false);
-        return;
-      }
-
       setIsLoading(true);
 
       try {

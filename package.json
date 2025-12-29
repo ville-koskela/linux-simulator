@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "dev:frontend": "npm run dev -w @linux-simulator/frontend",

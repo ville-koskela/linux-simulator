@@ -1,13 +1,18 @@
 import { strict as assert } from "node:assert";
-import { beforeEach, describe, test } from "node:test";
-import { fireEvent } from "@testing-library/react";
+import { afterEach, beforeEach, describe, test } from "node:test";
+import { cleanup, fireEvent } from "@testing-library/react";
 import { WindowTaskbar } from "../../../src/components/WindowTaskbar";
-import { createDOM } from "../../test-utils/create-dom";
+import { cleanupDOM, createDOM } from "../../test-utils/create-dom";
 import { renderWithProviders } from "../../test-utils/render-with-providers";
 
 describe("WindowTaskbar", () => {
   beforeEach(() => {
     createDOM();
+  });
+
+  afterEach(() => {
+    cleanup();
+    cleanupDOM();
   });
 
   test("renders taskbar with start menu button", () => {

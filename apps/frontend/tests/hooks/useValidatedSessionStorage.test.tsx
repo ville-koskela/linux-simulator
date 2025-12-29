@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, it } from "node:test";
 import { act, renderHook } from "@testing-library/react";
 import { z } from "zod";
 import { useValidatedSessionStorage } from "../../src/hooks/useValidatedSessionStorage";
-import { createDOM } from "../test-utils/create-dom";
+import { cleanupDOM, createDOM } from "../test-utils/create-dom";
 
 describe("useValidatedSessionStorage", () => {
   beforeEach(() => {
@@ -13,6 +13,7 @@ describe("useValidatedSessionStorage", () => {
 
   afterEach(() => {
     sessionStorage.clear();
+    cleanupDOM();
   });
 
   it("should return initial value when sessionStorage is empty", () => {

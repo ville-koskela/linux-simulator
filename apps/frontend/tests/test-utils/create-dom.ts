@@ -1,11 +1,20 @@
 import { JSDOM } from "jsdom";
 import React from "react";
 
+let currentDOM: JSDOM | null = null;
+
 export function createDOM(): void {
+  // Clean up existing DOM if any
+  if (currentDOM) {
+    currentDOM.window.close();
+  }
+
   const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
     url: "http://localhost",
     pretendToBeVisual: true,
   });
+
+  currentDOM = dom;
 
   // Use Object.defineProperty to avoid "Cannot set property" errors
   Object.defineProperty(globalThis, "document", {
@@ -52,4 +61,11 @@ export function createDOM(): void {
     writable: true,
     configurable: true,
   });
+}
+
+export function cleanupDOM(): void {
+  if (currentDOM) {
+    currentDOM.window.close();
+    currentDOM = null;
+  }
 }

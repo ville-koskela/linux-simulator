@@ -1,10 +1,10 @@
 import { strict as assert } from "node:assert";
-import { beforeEach, describe, test } from "node:test";
-import { fireEvent } from "@testing-library/react";
+import { afterEach, beforeEach, describe, test } from "node:test";
+import { cleanup, fireEvent } from "@testing-library/react";
 import type { JSX } from "react";
 import { WindowManager } from "../../../src/components/WindowManager";
 import { useWindows } from "../../../src/contexts";
-import { createDOM } from "../../test-utils/create-dom";
+import { cleanupDOM, createDOM } from "../../test-utils/create-dom";
 import { renderWithProviders } from "../../test-utils/render-with-providers";
 
 // Helper component to create windows programmatically
@@ -25,6 +25,11 @@ const WindowCreator = ({
 describe("WindowManager", () => {
   beforeEach(() => {
     createDOM();
+  });
+
+  afterEach(() => {
+    cleanup();
+    cleanupDOM();
   });
 
   test("renders nothing when no windows exist", () => {

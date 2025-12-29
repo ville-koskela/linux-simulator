@@ -27,6 +27,7 @@ describe("useLocalStorage", () => {
 
   afterEach(() => {
     localStorage.clear();
+    dom.window.close();
   });
 
   it("should return initial value when localStorage is empty", () => {

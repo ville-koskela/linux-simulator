@@ -1,8 +1,8 @@
 import { strict as assert } from "node:assert";
-import { beforeEach, describe, test } from "node:test";
-import { fireEvent } from "@testing-library/react";
+import { afterEach, beforeEach, describe, test } from "node:test";
+import { cleanup, fireEvent } from "@testing-library/react";
 import { Settings } from "../../../src/components/Settings/Settings";
-import { createDOM } from "../../test-utils/create-dom";
+import { cleanupDOM, createDOM } from "../../test-utils/create-dom";
 import { renderWithProviders } from "../../test-utils/render-with-providers";
 
 describe("Settings Component", () => {
@@ -24,6 +24,11 @@ describe("Settings Component", () => {
         dispatchEvent: () => true,
       }),
     });
+  });
+
+  afterEach(() => {
+    cleanup();
+    cleanupDOM();
   });
 
   test("renders without crashing", () => {

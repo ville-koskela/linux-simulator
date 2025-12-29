@@ -1,11 +1,15 @@
 import assert from "node:assert";
-import { describe, it } from "node:test";
+import { afterEach, describe, it } from "node:test";
 import type { LanguageCode } from "@linux-simulator/shared";
 import { getBrowserLanguage } from "../../src/utils/language";
-import { createDOM } from "../test-utils/create-dom";
+import { cleanupDOM, createDOM } from "../test-utils/create-dom";
 
 describe("getBrowserLanguage", () => {
   const availableLanguages: readonly LanguageCode[] = ["en", "fi"];
+
+  afterEach(() => {
+    cleanupDOM();
+  });
 
   const createMockNavigator = (languages: string[] | undefined, language?: string): void => {
     createDOM();

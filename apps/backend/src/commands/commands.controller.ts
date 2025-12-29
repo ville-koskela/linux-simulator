@@ -5,7 +5,7 @@ import { Controller, Get } from "@nestjs/common";
 export class CommandsController {
   @Get()
   public getCommands(): CommandResponse {
-    return {
+    const response = {
       commands: [
         {
           name: "echo",
@@ -63,6 +63,8 @@ export class CommandsController {
           usage: "exit",
         },
       ],
-    };
+    } satisfies CommandResponse;
+
+    return response;
   }
 }

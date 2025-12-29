@@ -1,3 +1,14 @@
+import type {
+  CreateNodeRequest,
+  FilesystemNode,
+  GetTreeResponse,
+  UpdateNodeRequest,
+} from "@linux-simulator/shared";
+import {
+  createNodeRequestSchema,
+  moveNodeRequestSchema,
+  updateNodeRequestSchema,
+} from "@linux-simulator/shared";
 import {
   Body,
   Controller,
@@ -11,11 +22,8 @@ import {
   Put,
   Query,
 } from "@nestjs/common";
-// biome-ignore lint/style/useImportType: <Needed by dependency injection>
+// biome-ignore lint/style/useImportType: Needed by dependency injection
 import { FilesystemService } from "./filesystem.service";
-import type { FilesystemNode, FilesystemTree } from "./filesystem.types";
-// biome-ignore lint/style/useImportType: <Needed by dependency injection>
-import { CreateNodeDto, UpdateNodeDto } from "./filesystem.types";
 
 @Controller("filesystem")
 export class FilesystemController {
@@ -25,7 +33,7 @@ export class FilesystemController {
   public constructor(private filesystemService: FilesystemService) {}
 
   @Get("tree")
-  public async getTree(@Query("nodeId") nodeId?: string): Promise<FilesystemTree> {
+  public async getTree(@Query("nodeId") nodeId?: string): Promise<GetTreeResponse> {
     const id = nodeId ? parseInt(nodeId, 10) : undefined;
     return this.filesystemService.getTree(this.DEFAULT_USER_ID, id);
   }
@@ -50,15 +58,17 @@ export class FilesystemController {
   }
 
   @Post("node")
-  public async createNode(@Body() dto: CreateNodeDto): Promise<FilesystemNode> {
+  public async createNode(@Body() body: unknown): Promise<FilesystemNode> {
+    const dto: CreateNodeRequest = createNodeRequestSchema.parse(body);
     return this.filesystemService.createNode(this.DEFAULT_USER_ID, dto);
   }
 
   @Put("node/:id")
   public async updateNode(
     @Param("id", ParseIntPipe) id: number,
-    @Body() dto: UpdateNodeDto
+    @Body() body: unknown
   ): Promise<FilesystemNode> {
+    const dto: UpdateNodeRequest = updateNodeRequestSchema.parse(body);
     return this.filesystemService.updateNode(this.DEFAULT_USER_ID, id, dto);
   }
 
@@ -71,8 +81,9 @@ export class FilesystemController {
   @Put("node/:id/move")
   public async moveNode(
     @Param("id", ParseIntPipe) id: number,
-    @Body("newParentId", ParseIntPipe) newParentId: number
+    @Body() body: unknown
   ): Promise<FilesystemNode> {
+    const { newParentId } = moveNodeRequestSchema.parse(body);
     return this.filesystemService.moveNode(this.DEFAULT_USER_ID, id, newParentId);
   }
 }

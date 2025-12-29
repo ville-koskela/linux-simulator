@@ -1,3 +1,4 @@
+import type { HealthResponse } from "@linux-simulator/shared";
 import { Controller, Get, Inject } from "@nestjs/common";
 import { LoggerService } from "../logger/logger.service";
 
@@ -8,7 +9,7 @@ export class HealthController {
   }
 
   @Get()
-  public getHealth(): { status: string; timestamp: string; service: string } {
+  public getHealth(): HealthResponse {
     this.logger.debug("Health check requested");
     return {
       status: "ok",

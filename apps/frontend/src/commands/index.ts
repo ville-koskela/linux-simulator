@@ -1,4 +1,4 @@
-import { dateCommand, echoCommand, pwdCommand } from "./basic-commands";
+import { dateCommand, echoCommand, exitCommand, pwdCommand } from "./basic-commands";
 import { vimCommand } from "./editor-commands";
 import {
   catCommand,
@@ -24,6 +24,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
   mv: mvCommand,
   vim: vimCommand,
   vi: vimCommand,
+  exit: exitCommand,
 };
 
 export type { CommandContext, CommandHandler } from "./types";

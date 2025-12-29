@@ -57,6 +57,11 @@ export class CommandsController {
           description: "Move or rename a file",
           usage: "mv <source> <destination>",
         },
+        {
+          name: "exit",
+          description: "Close the current terminal window",
+          usage: "exit",
+        },
       ],
     };
   }

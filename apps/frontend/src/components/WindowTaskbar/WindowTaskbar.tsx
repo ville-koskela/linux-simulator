@@ -18,7 +18,7 @@ export const WindowTaskbar: FC = () => {
     createWindow({
       id: terminalId,
       title: tApps.terminal,
-      content: <Terminal />,
+      content: <Terminal onClose={() => closeWindow(terminalId)} />,
       initialX: 150 + windows.length * 30,
       initialY: 150 + windows.length * 30,
       initialWidth: 600,

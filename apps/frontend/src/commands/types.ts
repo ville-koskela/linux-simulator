@@ -8,6 +8,7 @@ export interface CommandContext {
   setCurrentNode: (node: FilesystemNode | null) => void;
   resolvePath: (path: string) => string;
   openEditor?: (filepath: string, content: string) => void;
+  closeWindow?: () => void;
 }
 
 export type CommandHandler = (args: string[], context: CommandContext) => void | Promise<void>;

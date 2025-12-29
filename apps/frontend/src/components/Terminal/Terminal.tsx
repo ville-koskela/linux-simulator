@@ -13,7 +13,11 @@ interface TerminalLine {
   content: string;
 }
 
-export const Terminal: FC = () => {
+interface TerminalProps {
+  onClose?: () => void;
+}
+
+export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const { t } = useTranslations();
   const tTerminal = t.terminal;
   const tCommands = t.terminalCommands;
@@ -62,6 +66,13 @@ export const Terminal: FC = () => {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // Re-focus input when editor closes
+  useEffect(() => {
+    if (!editorState?.isOpen) {
+      inputRef.current?.focus();
+    }
+  }, [editorState?.isOpen]);
 
   const executeCommand = (commandLine: string): void => {
     const trimmed = commandLine.trim();
@@ -118,7 +129,6 @@ export const Terminal: FC = () => {
 
   const closeEditor = (): void => {
     setEditorState(null);
-    inputRef.current?.focus();
   };
 
   const executeBuiltinCommand = (commandName: string, args: string[]): void => {
@@ -144,6 +154,7 @@ export const Terminal: FC = () => {
       setCurrentNode,
       resolvePath,
       openEditor,
+      closeWindow: onClose,
     };
 
     handler(args, context);

@@ -4,6 +4,7 @@ import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from "pg
 import { ConfigService } from "../config/config.service";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { LoggerService } from "../logger/logger.service";
+import { toCamelCaseArray } from "./utils/case-converter";
 
 @Injectable()
 export class DatabaseService {
@@ -39,7 +40,11 @@ export class DatabaseService {
       this.logger.debug(`Query executed in ${duration}ms - ${result.rowCount} rows`);
     }
 
-    return result;
+    // Convert snake_case to camelCase automatically
+    return {
+      ...result,
+      rows: toCamelCaseArray<T>(result.rows as Record<string, unknown>[]),
+    };
   }
 
   public async getClient(): Promise<PoolClient> {

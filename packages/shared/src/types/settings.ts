@@ -14,18 +14,25 @@ export interface ThemeColors {
 }
 
 // Language codes - single source of truth
-export const languageCodes = ["en", "fi"] as const; // "es", "fr", "de"
+export const languageCodes = ["en", "fi"] as const;
 export const languageCodeSchema: z.ZodEnum<["en", "fi"]> = z.enum(languageCodes);
 export type LanguageCode = z.infer<typeof languageCodeSchema>;
 export const fallbackLanguage: LanguageCode = "en";
 
-export const availableLanguages: ReadonlyArray<{ code: LanguageCode; name: string }> = [
-  { code: "en", name: "English" },
-  { code: "fi", name: "Suomi" },
-  //{ code: "es", name: "Español" },
-  //{ code: "fr", name: "Français" },
-  //{ code: "de", name: "Deutsch" },
-];
+// Helper type to enforce all language codes have a name
+type LanguageMetadata = {
+  readonly [K in LanguageCode]: { code: K; name: string };
+};
+
+// Enforce that all language codes are present
+const languageMetadata: LanguageMetadata = {
+  en: { code: "en", name: "English" },
+  fi: { code: "fi", name: "Suomi" },
+} as const;
+
+// Export as array for easier iteration in UI
+export const availableLanguages: ReadonlyArray<{ code: LanguageCode; name: string }> =
+  Object.values(languageMetadata);
 
 export interface Settings {
   language: LanguageCode;

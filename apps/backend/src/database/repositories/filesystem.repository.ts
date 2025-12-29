@@ -1,29 +1,45 @@
+import { filesystemNodeSchema } from "@linux-simulator/shared";
 import { Injectable } from "@nestjs/common";
 import type { PoolClient } from "pg";
+import { z } from "zod";
 import type { CreateNodeDto, FilesystemNode } from "../../filesystem/filesystem.types";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { DatabaseService } from "../database.service";
+
+// Schema for array results
+// biome-ignore lint/nursery/useExplicitType: We don't re-write all the types when definning schemas
+const filesystemNodeArraySchema = z.array(filesystemNodeSchema);
 
 @Injectable()
 export class FilesystemRepository {
   public constructor(private db: DatabaseService) {}
 
   public async findById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
-    const result = await this.db.query<FilesystemNode>(
+    const result = await this.db.query(
       "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
       [userId, nodeId]
     );
-    return result.rows[0] || null;
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return filesystemNodeSchema.parse(result.rows[0]);
   }
 
   public async findByPath(userId: number, path: string): Promise<FilesystemNode | null> {
     // Handle root path
     if (path === "/") {
-      const result = await this.db.query<FilesystemNode>(
+      const result = await this.db.query(
         "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
         [userId, "/"]
       );
-      return result.rows[0] || null;
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return filesystemNodeSchema.parse(result.rows[0]);
     }
 
     // For other paths, we need to traverse the tree
@@ -32,11 +48,16 @@ export class FilesystemRepository {
   }
 
   public async findRoot(userId: number): Promise<FilesystemNode | null> {
-    const result = await this.db.query<FilesystemNode>(
+    const result = await this.db.query(
       "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
       [userId, "/"]
     );
-    return result.rows[0] || null;
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return filesystemNodeSchema.parse(result.rows[0]);
   }
 
   public async findByParentAndName(
@@ -44,11 +65,16 @@ export class FilesystemRepository {
     parentId: number,
     name: string
   ): Promise<FilesystemNode | null> {
-    const result = await this.db.query<FilesystemNode>(
+    const result = await this.db.query(
       "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
       [userId, parentId, name]
     );
-    return result.rows[0] || null;
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return filesystemNodeSchema.parse(result.rows[0]);
   }
 
   public async findChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
@@ -58,9 +84,9 @@ export class FilesystemRepository {
         : "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 ORDER BY type DESC, name";
 
     const params = parentId === null ? [userId] : [userId, parentId];
-    const result = await this.db.query<FilesystemNode>(query, params);
+    const result = await this.db.query(query, params);
 
-    return result.rows;
+    return filesystemNodeArraySchema.parse(result.rows);
   }
 
   public async exists(userId: number, parentId: number | null, name: string): Promise<boolean> {
@@ -72,7 +98,7 @@ export class FilesystemRepository {
   }
 
   public async create(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
-    const result = await this.db.query<FilesystemNode>(
+    const result = await this.db.query(
       `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, content, permissions)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
@@ -85,7 +111,7 @@ export class FilesystemRepository {
         dto.permissions || (dto.type === "directory" ? "rwxr-xr-x" : "rw-r--r--"),
       ]
     );
-    return result.rows[0];
+    return filesystemNodeSchema.parse(result.rows[0]);
   }
 
   public async update(
@@ -119,7 +145,7 @@ export class FilesystemRepository {
     fields.push("updated_at = CURRENT_TIMESTAMP");
     values.push(userId, nodeId);
 
-    const result = await this.db.query<FilesystemNode>(
+    const result = await this.db.query(
       `UPDATE filesystem_nodes 
        SET ${fields.join(", ")}
        WHERE user_id = $${paramIndex++} AND id = $${paramIndex++}
@@ -127,7 +153,7 @@ export class FilesystemRepository {
       values
     );
 
-    return result.rows[0];
+    return filesystemNodeSchema.parse(result.rows[0]);
   }
 
   public async move(
@@ -135,14 +161,14 @@ export class FilesystemRepository {
     nodeId: number,
     newParentId: number | null
   ): Promise<FilesystemNode> {
-    const result = await this.db.query<FilesystemNode>(
+    const result = await this.db.query(
       `UPDATE filesystem_nodes 
        SET parent_id = $1, updated_at = CURRENT_TIMESTAMP
        WHERE user_id = $2 AND id = $3
        RETURNING *`,
       [newParentId, userId, nodeId]
     );
-    return result.rows[0];
+    return filesystemNodeSchema.parse(result.rows[0]);
   }
 
   public async delete(userId: number, nodeId: number): Promise<void> {

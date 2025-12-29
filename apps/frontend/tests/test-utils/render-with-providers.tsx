@@ -1,6 +1,7 @@
 import { type RenderResult, render } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { SettingsProvider, TranslationsProvider, WindowProvider } from "../../src/contexts";
+import { mockTranslations } from "./mock-translation";
 
 /**
  * Renders a component wrapped in all necessary providers for testing
@@ -23,6 +24,10 @@ export const renderWithProviders = (component: ReactElement): RenderResult => {
       }),
     });
   }
+
+  // Pre-populate sessionStorage with mock translations for both languages
+  sessionStorage.setItem("translations-en", JSON.stringify(mockTranslations));
+  sessionStorage.setItem("translations-fi", JSON.stringify(mockTranslations));
 
   return render(
     <SettingsProvider>

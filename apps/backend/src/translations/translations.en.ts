@@ -1,0 +1,139 @@
+import type { Translation } from "@linux-simulator/shared";
+
+export const translationsEn: Translation = {
+  settings: {
+    title: "Settings",
+    languageSettings: {
+      title: "Language Settings",
+      label: "Language",
+      description: "Select your preferred language.",
+    },
+    themePresets: {
+      title: "Theme Presets",
+      light: "Light",
+      dark: "Dark",
+      ocean: "Ocean",
+      forest: "Forest",
+      sunset: "Sunset",
+    },
+    customTheme: {
+      title: "Custom Theme Colors",
+      colors: {
+        primary: "Primary Color",
+        secondary: "Secondary Color",
+        background: "Background",
+        surface: "Surface",
+        text: "Text",
+        textSecondary: "Secondary Text",
+        border: "Border",
+        success: "Success",
+        warning: "Warning",
+        error: "Error",
+      },
+      tip: "💡 Tip: Click the color preview to use the color picker, or type hex/rgb values directly.",
+      actions: {
+        apply: "Apply Custom Theme",
+        reset: "Reset to Defaults",
+      },
+      aria: {
+        pickColor: "Pick {label} color",
+        colorPicker: "{label} color picker",
+      },
+    },
+  },
+  terminal: {
+    title: "Terminal",
+    welcome: {
+      version: "Terminal Emulator v1.0",
+      help: 'Type "help" for available commands.',
+    },
+    prompt: "$",
+    help: {
+      title: "Available commands:",
+      helpCommand: "help      - Show this help message",
+      clearCommand: "clear     - Clear the terminal",
+    },
+    errors: {
+      commandNotFound: 'Command not found: {command}. Type "help" for available commands.',
+      notImplemented: "Command execution not implemented",
+    },
+  },
+  terminalCommands: {
+    echo: {
+      description: "Display a line of text",
+      usage: "echo [text]",
+    },
+    date: {
+      description: "Display current date and time",
+      usage: "date",
+    },
+    pwd: {
+      description: "Print working directory",
+      usage: "pwd",
+    },
+    ls: {
+      description: "List directory contents",
+      usage: "ls [directory]",
+    },
+    cd: {
+      description: "Change directory",
+      usage: "cd [directory]",
+    },
+    cat: {
+      description: "Display file contents",
+      usage: "cat <file>",
+    },
+    mkdir: {
+      description: "Create a directory",
+      usage: "mkdir <directory>",
+    },
+    touch: {
+      description: "Create an empty file",
+      usage: "touch <file>",
+    },
+    rm: {
+      description: "Remove files or directories",
+      usage: "rm <file|directory>",
+    },
+    mv: {
+      description: "Move or rename files",
+      usage: "mv <source> <destination>",
+    },
+    vim: {
+      description: "Text editor (vi-compatible)",
+      usage: "vim <file>",
+    },
+    vi: {
+      description: "Text editor",
+      usage: "vi <file>",
+    },
+  },
+  taskbar: {
+    start: {
+      title: "Start Menu",
+      text: "Start",
+      header: "Applications",
+      closeMenu: "Close start menu",
+    },
+    applications: {
+      terminal: "Terminal",
+      settings: "Settings",
+    },
+    window: {
+      restore: "Restore",
+      minimize: "Minimize",
+      close: "Close",
+    },
+    noWindows: "No open windows",
+  },
+  floatingWindow: {
+    defaultTitle: "Window",
+    aria: {
+      minimize: "Minimize window",
+      close: "Close window",
+      resizeBottom: "Resize bottom",
+      resizeRight: "Resize right",
+      resizeBottomRight: "Resize bottom-right",
+    },
+  },
+};

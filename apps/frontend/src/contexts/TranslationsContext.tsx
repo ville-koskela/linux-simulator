@@ -1,19 +1,18 @@
-import type { LanguageCode } from "@linux-simulator/shared";
-import { availableLanguages } from "@linux-simulator/shared";
+import type { LanguageCode, Translation } from "@linux-simulator/shared";
+import { availableLanguages, fallbackLanguage, translationSchema } from "@linux-simulator/shared";
 import type { JSX, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import translationsEn from "../data/translations-en.json";
-import translationsFi from "../data/translations-fi.json";
+import { useValidatedSessionStorage } from "../hooks";
+import { fetchTranslations } from "../services/api.service";
 import { useSettings } from "./SettingsContext";
 
-export type Translations = typeof translationsEn;
-
 interface TranslationsContextValue {
-  t: Translations;
+  t: Translation;
   availableLanguages: ReadonlyArray<{
     code: LanguageCode;
     name: string;
   }>;
+  isLoading: boolean;
 }
 
 const TranslationsContext: React.Context<TranslationsContextValue | undefined> = createContext<
@@ -32,31 +31,112 @@ interface TranslationsProviderProps {
   children: ReactNode;
 }
 
-const translationsMap: Record<LanguageCode, Translations> = {
-  en: translationsEn,
-  fi: translationsFi,
-};
-
-// Use the language codes from shared package as single source of truth
-
 export const TranslationsProvider = ({ children }: TranslationsProviderProps): JSX.Element => {
   const { settings } = useSettings();
-  const [translations, setTranslations] = useState<Translations>(translationsEn);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Use validated session storage for caching translations
+  const [cachedTranslations, setCachedTranslations] =
+    useValidatedSessionStorage<Translation | null>(
+      `translations-${settings.language}`,
+      null,
+      translationSchema.nullable()
+    );
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: If we define the missing dependnecy, we end up in an infinite loop
   useEffect(() => {
-    // Load the appropriate translation based on the language setting
-    const selectedTranslation = translationsMap[settings.language];
-    if (selectedTranslation) {
-      setTranslations(selectedTranslation);
-    } else {
-      // Fallback to English if language not found
-      setTranslations(translationsEn);
-    }
-  }, [settings.language]);
+    let isMounted = true;
 
+    async function loadTranslations(): Promise<void> {
+      // If we have cached translations, use them immediately
+      if (cachedTranslations) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        // Fetch from API
+        const fetched = await fetchTranslations(settings.language);
+
+        if (isMounted) {
+          setCachedTranslations(fetched);
+          setIsLoading(false);
+        }
+      } catch {
+        // Try to use fallback language
+        if (settings.language !== fallbackLanguage) {
+          try {
+            const fallbackFetched = await fetchTranslations(fallbackLanguage);
+            if (isMounted) {
+              setCachedTranslations(fallbackFetched);
+              setIsLoading(false);
+            }
+            return;
+          } catch {
+            // Fallback also failed
+          }
+        }
+
+        // Last resort: show error or empty state
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadTranslations();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [settings.language, setCachedTranslations]);
+
+  // Don't render children until we have translations
+  if (!cachedTranslations && isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          backgroundColor: "var(--color-background)",
+          color: "var(--color-text)",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              width: "50px",
+              height: "50px",
+              border: "4px solid var(--color-border)",
+              borderTop: "4px solid var(--color-primary)",
+              borderRadius: "50%",
+              animation: "spin 1s linear infinite",
+              margin: "0 auto 1rem",
+            }}
+          />
+          <p>Loading translations...</p>
+          <style>
+            {`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}
+          </style>
+        </div>
+      </div>
+    );
+  }
+
+  // Provide translations to children
   const value: TranslationsContextValue = {
-    t: translations,
+    t: cachedTranslations || ({} as Translation),
     availableLanguages,
+    isLoading,
   };
 
   return <TranslationsContext.Provider value={value}>{children}</TranslationsContext.Provider>;

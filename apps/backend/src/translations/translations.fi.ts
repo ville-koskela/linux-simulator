@@ -1,0 +1,140 @@
+import type { Translation } from "@linux-simulator/shared";
+
+export const translationsFi: Translation = {
+  settings: {
+    title: "Asetukset",
+    languageSettings: {
+      title: "Kieliasetukset",
+      label: "Kieli",
+      description: "Valitse haluamasi kieli.",
+    },
+    themePresets: {
+      title: "Teemapohjat",
+      light: "Vaalea",
+      dark: "Tumma",
+      ocean: "Meri",
+      forest: "Metsä",
+      sunset: "Auringonlasku",
+    },
+    customTheme: {
+      title: "Mukautetun teeman värit",
+      colors: {
+        primary: "Ensisijainen väri",
+        secondary: "Toissijainen väri",
+        background: "Tausta",
+        surface: "Pinta",
+        text: "Teksti",
+        textSecondary: "Toissijainen teksti",
+        border: "Reunus",
+        success: "Onnistuminen",
+        warning: "Varoitus",
+        error: "Virhe",
+      },
+      tip: "💡 Vinkki: Napsauta värin esikatselua käyttääksesi värivalitsinta tai kirjoita hex/rgb-arvot suoraan.",
+      actions: {
+        apply: "Käytä mukautettua teemaa",
+        reset: "Palauta oletusasetukset",
+      },
+      aria: {
+        pickColor: "Valitse {label}",
+        colorPicker: "{label} värivalitsin",
+      },
+    },
+  },
+  terminal: {
+    title: "Pääte",
+    welcome: {
+      version: "Pääte-emulaattori v1.0",
+      help: 'Kirjoita "help" nähdäksesi käytettävissä olevat komennot.',
+    },
+    prompt: "$",
+    help: {
+      title: "Käytettävissä olevat komennot:",
+      helpCommand: "help      - Näytä tämä ohjeviesti",
+      clearCommand: "clear     - Tyhjennä pääte",
+    },
+    errors: {
+      commandNotFound:
+        'Komentoa ei löytynyt: {command}. Kirjoita "help" nähdäksesi käytettävissä olevat komennot.',
+      notImplemented: "Komennon suoritus ei ole toteutettu",
+    },
+  },
+  terminalCommands: {
+    echo: {
+      description: "Näytä tekstirivi",
+      usage: "echo [teksti]",
+    },
+    date: {
+      description: "Näytä nykyinen päivämäärä ja aika",
+      usage: "date",
+    },
+    pwd: {
+      description: "Tulosta työkansio",
+      usage: "pwd",
+    },
+    ls: {
+      description: "Listaa kansion sisältö",
+      usage: "ls [kansio]",
+    },
+    cd: {
+      description: "Vaihda kansiota",
+      usage: "cd [kansio]",
+    },
+    cat: {
+      description: "Näytä tiedoston sisältö",
+      usage: "cat <tiedosto>",
+    },
+    mkdir: {
+      description: "Luo kansio",
+      usage: "mkdir <kansio>",
+    },
+    touch: {
+      description: "Luo tyhjä tiedosto",
+      usage: "touch <tiedosto>",
+    },
+    rm: {
+      description: "Poista tiedostoja tai kansioita",
+      usage: "rm <tiedosto|kansio>",
+    },
+    mv: {
+      description: "Siirrä tai nimeä tiedostoja uudelleen",
+      usage: "mv <lähde> <kohde>",
+    },
+    vim: {
+      description: "Tekstieditori (vi-yhteensopiva)",
+      usage: "vim <tiedosto>",
+    },
+    vi: {
+      description: "Tekstieditori",
+      usage: "vi <tiedosto>",
+    },
+  },
+  taskbar: {
+    start: {
+      title: "Käynnistä-valikko",
+      text: "Käynnistä",
+      header: "Sovellukset",
+      closeMenu: "Sulje käynnistä-valikko",
+    },
+    applications: {
+      terminal: "Pääte",
+      settings: "Asetukset",
+    },
+    window: {
+      restore: "Palauta",
+      minimize: "Pienennä",
+      close: "Sulje",
+    },
+    noWindows: "Ei avoimia ikkunoita",
+  },
+  floatingWindow: {
+    defaultTitle: "Ikkuna",
+    aria: {
+      minimize: "Pienennä ikkuna",
+      close: "Sulje ikkuna",
+      resizeBottom: "Muuta kokoa alhaalta",
+      resizeRight: "Muuta kokoa oikealta",
+      resizeBottomRight: "Muuta kokoa alhaalta oikealta",
+    },
+  },
+};

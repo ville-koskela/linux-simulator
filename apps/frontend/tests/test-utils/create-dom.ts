@@ -33,41 +33,22 @@ export function createDOM(): void {
     configurable: true,
   });
 
-  // Mock sessionStorage
-  const sessionStorageMock = (() => {
-    let store: Record<string, string> = {};
-
-    return {
-      getItem(key: string): string | null {
-        return store[key] || null;
-      },
-      setItem(key: string, value: string): void {
-        store[key] = value.toString();
-      },
-      removeItem(key: string): void {
-        delete store[key];
-      },
-      clear(): void {
-        store = {};
-      },
-      get length(): number {
-        return Object.keys(store).length;
-      },
-      key(index: number): string | null {
-        const keys = Object.keys(store);
-        return keys[index] || null;
-      },
-    };
-  })();
-
-  Object.defineProperty(dom.window, "sessionStorage", {
-    value: sessionStorageMock,
+  // Use JSDOM's built-in sessionStorage
+  Object.defineProperty(globalThis, "sessionStorage", {
+    value: dom.window.sessionStorage,
     writable: true,
     configurable: true,
   });
 
-  Object.defineProperty(globalThis, "sessionStorage", {
-    value: sessionStorageMock,
+  // Expose Storage and StorageEvent constructors
+  Object.defineProperty(globalThis, "Storage", {
+    value: dom.window.Storage,
+    writable: true,
+    configurable: true,
+  });
+
+  Object.defineProperty(globalThis, "StorageEvent", {
+    value: dom.window.StorageEvent,
     writable: true,
     configurable: true,
   });

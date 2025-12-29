@@ -64,56 +64,6 @@ export const translationSchema = z.object({
       notImplemented: z.string(),
     }),
   }),
-  terminalCommands: z.object({
-    echo: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    date: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    pwd: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    ls: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    cd: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    cat: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    mkdir: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    touch: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    rm: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    mv: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    vim: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-    vi: z.object({
-      description: z.string(),
-      usage: z.string(),
-    }),
-  }),
   taskbar: z.object({
     start: z.object({
       title: z.string(),

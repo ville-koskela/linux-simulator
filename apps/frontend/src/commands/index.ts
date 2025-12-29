@@ -18,6 +18,8 @@ export function getCommandHandler(commandName: TerminalCommand["name"]): Command
       return catCommand;
     case "cd":
       return cdCommand;
+    case "clear":
+      throw new Error("Clear command should be handled separately in the frontend");
     case "echo":
       return echoCommand;
     case "exit":

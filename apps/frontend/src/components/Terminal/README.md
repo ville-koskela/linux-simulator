@@ -5,7 +5,8 @@ A terminal emulator component that can be run inside the FloatingWindow componen
 ## Features
 
 - **Command History**: Navigate through previous commands using arrow keys (↑/↓)
-- **Command Execution**: Execute commands defined in the JSON configuration file
+- **Command Execution**: Execute commands loaded from the backend API
+- **Auto-copy Selection**: Selected text is automatically copied to clipboard (Linux-style)
 - **Built-in Commands**: 
   - `help` - Display available commands
   - `clear` - Clear the terminal screen
@@ -14,20 +15,13 @@ A terminal emulator component that can be run inside the FloatingWindow componen
 
 ## Commands
 
-Commands are loaded from `/src/data/terminal-commands.json`. Each command has:
+Commands are loaded dynamically from the backend API at `/commands`. Each command has:
 - `name`: The command name to type
 - `description`: What the command does
 - `usage`: How to use the command
-- `execute`: The internal command type to execute
+- `level`: The level required to unlock the command
 
-### Current Available Commands
-
-1. **echo** - Display a line of text
-   - Usage: `echo [text]`
-   - Example: `echo Hello World`
-
-2. **date** - Display current date and time
-   - Usage: `date`
+All commands are defined centrally in `packages/shared/src/commands.ts`.
 
 ## Usage
 
@@ -37,25 +31,26 @@ The terminal can be opened from the Start menu in the taskbar. It will open in a
 
 To add new commands:
 
-1. Open `/src/data/terminal-commands.json`
-2. Add a new command object to the `commands` array
-3. Implement the command logic in the `executeBuiltinCommand` function in `Terminal.tsx`
+1. Add the command name to the enum in `packages/shared/src/types/commands.ts`
+2. Add the command definition to `packages/shared/src/commands.ts`
+3. Add translations for the command in `apps/backend/src/translations/translations.en.ts` and `translations.fi.ts`
+4. Implement the command handler in the appropriate file under `apps/frontend/src/commands/`
+5. Add the case to the switch statement in `apps/frontend/src/commands/index.ts`
 
 Example:
-```json
-{
-  "name": "mycommand",
-  "description": "My custom command",
-  "usage": "mycommand [args]",
-  "execute": "mycommand"
-}
-```
-
-Then add the case in `executeBuiltinCommand`:
 ```typescript
-case 'mycommand':
-  // Your command logic here
-  return 'Command output';
+// In packages/shared/src/commands.ts
+{
+  name: "mycommand",
+  description: "My custom command",
+  usage: "mycommand [args]",
+  level: 1,
+}
+
+// In apps/frontend/src/commands/basic-commands.ts
+export const myCommand: CommandHandler = (args: string[], context: CommandContext) => {
+  context.addOutput("Command output");
+};
 ```
 
 ## Styling

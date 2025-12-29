@@ -58,56 +58,6 @@ export const translationsEn: Translation = {
       notImplemented: "Command execution not implemented",
     },
   },
-  terminalCommands: {
-    echo: {
-      description: "Display a line of text",
-      usage: "echo [text]",
-    },
-    date: {
-      description: "Display current date and time",
-      usage: "date",
-    },
-    pwd: {
-      description: "Print working directory",
-      usage: "pwd",
-    },
-    ls: {
-      description: "List directory contents",
-      usage: "ls [directory]",
-    },
-    cd: {
-      description: "Change directory",
-      usage: "cd [directory]",
-    },
-    cat: {
-      description: "Display file contents",
-      usage: "cat <file>",
-    },
-    mkdir: {
-      description: "Create a directory",
-      usage: "mkdir <directory>",
-    },
-    touch: {
-      description: "Create an empty file",
-      usage: "touch <file>",
-    },
-    rm: {
-      description: "Remove files or directories",
-      usage: "rm <file|directory>",
-    },
-    mv: {
-      description: "Move or rename files",
-      usage: "mv <source> <destination>",
-    },
-    vim: {
-      description: "Text editor (vi-compatible)",
-      usage: "vim <file>",
-    },
-    vi: {
-      description: "Text editor",
-      usage: "vi <file>",
-    },
-  },
   taskbar: {
     start: {
       title: "Start Menu",

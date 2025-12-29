@@ -7,7 +7,7 @@ import type { FC, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandContext } from "../../commands";
 import { getCommandHandler } from "../../commands";
-import { useTranslations } from "../../contexts";
+import { useSettings, useTranslations } from "../../contexts";
 import { CommandsService, FilesystemService } from "../../services";
 import { VimEditor } from "../VimEditor/VimEditor";
 import "./Terminal.css";
@@ -23,6 +23,7 @@ interface TerminalProps {
 
 export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const { t } = useTranslations();
+  const { settings } = useSettings();
   const tTerminal = t.terminal;
 
   const [history, setHistory] = useState<TerminalLine[]>([
@@ -197,6 +198,7 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       closeWindow: onClose,
       commands,
       translations: t,
+      languageCode: settings.language,
     };
 
     handler(args, context);

@@ -1,3 +1,4 @@
+import { fallbackLanguage } from "@linux-simulator/shared";
 import type { CommandContext, CommandHandler } from "./types";
 
 export const echoCommand: CommandHandler = (args: Array<string>, context: CommandContext) => {
@@ -26,14 +27,15 @@ export const helpCommand: CommandHandler = (_args: Array<string>, context: Comma
 
   const t = context.translations;
   const tTerminal = t.terminal;
-  const tCommands = t.terminalCommands;
+  const languageCode = context.languageCode || fallbackLanguage;
 
   const helpText = [
     tTerminal.help.title,
     "",
     ...context.commands.map((cmd) => {
-      const cmdKey = cmd.name as keyof typeof tCommands;
-      const description = tCommands[cmdKey]?.description || cmd.description;
+      // Get translated description from command translations or fallback to default
+      const translation = cmd.translations?.[languageCode];
+      const description = translation?.description || cmd.description;
       return `  ${cmd.name.padEnd(10)} - ${description}`;
     }),
   ];

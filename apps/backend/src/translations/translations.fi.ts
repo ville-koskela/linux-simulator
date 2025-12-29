@@ -59,56 +59,6 @@ export const translationsFi: Translation = {
       notImplemented: "Komennon suoritus ei ole toteutettu",
     },
   },
-  terminalCommands: {
-    echo: {
-      description: "Näytä tekstirivi",
-      usage: "echo [teksti]",
-    },
-    date: {
-      description: "Näytä nykyinen päivämäärä ja aika",
-      usage: "date",
-    },
-    pwd: {
-      description: "Tulosta työkansio",
-      usage: "pwd",
-    },
-    ls: {
-      description: "Listaa kansion sisältö",
-      usage: "ls [kansio]",
-    },
-    cd: {
-      description: "Vaihda kansiota",
-      usage: "cd [kansio]",
-    },
-    cat: {
-      description: "Näytä tiedoston sisältö",
-      usage: "cat <tiedosto>",
-    },
-    mkdir: {
-      description: "Luo kansio",
-      usage: "mkdir <kansio>",
-    },
-    touch: {
-      description: "Luo tyhjä tiedosto",
-      usage: "touch <tiedosto>",
-    },
-    rm: {
-      description: "Poista tiedostoja tai kansioita",
-      usage: "rm <tiedosto|kansio>",
-    },
-    mv: {
-      description: "Siirrä tai nimeä tiedostoja uudelleen",
-      usage: "mv <lähde> <kohde>",
-    },
-    vim: {
-      description: "Tekstieditori (vi-yhteensopiva)",
-      usage: "vim <tiedosto>",
-    },
-    vi: {
-      description: "Tekstieditori",
-      usage: "vi <tiedosto>",
-    },
-  },
   taskbar: {
     start: {
       title: "Käynnistä-valikko",

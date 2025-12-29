@@ -25,6 +25,15 @@ export const terminalCommandSchema = z.object({
   description: z.string(),
   usage: z.string(),
   level: z.number().int().min(1), // Level required to unlock this command
+  translations: z
+    .record(
+      z.string(), // language code
+      z.object({
+        description: z.string(),
+        usage: z.string(),
+      })
+    )
+    .optional(), // Translations for different languages
 });
 
 export type TerminalCommand = z.infer<typeof terminalCommandSchema>;

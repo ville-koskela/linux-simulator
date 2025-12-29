@@ -1,4 +1,4 @@
-import type { FilesystemNode } from "@linux-simulator/shared";
+import type { FilesystemNode, TerminalCommand, Translation } from "@linux-simulator/shared";
 
 export interface CommandContext {
   currentPath: string;
@@ -9,6 +9,8 @@ export interface CommandContext {
   resolvePath: (path: string) => string;
   openEditor?: (filepath: string, content: string) => void;
   closeWindow?: () => void;
+  commands?: TerminalCommand[];
+  translations?: Translation;
 }
 
 export type CommandHandler = (args: string[], context: CommandContext) => void | Promise<void>;

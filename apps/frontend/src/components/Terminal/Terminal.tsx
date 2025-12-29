@@ -1,8 +1,12 @@
-import type { FilesystemNode, TerminalCommand } from "@linux-simulator/shared";
+import {
+  type FilesystemNode,
+  type TerminalCommand,
+  commandNameSchema,
+} from "@linux-simulator/shared";
 import type { FC, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandContext } from "../../commands";
-import { commandHandlers } from "../../commands";
+import { getCommandHandler } from "../../commands";
 import { useTranslations } from "../../contexts";
 import { CommandsService, FilesystemService } from "../../services";
 import { VimEditor } from "../VimEditor/VimEditor";
@@ -20,7 +24,6 @@ interface TerminalProps {
 export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const { t } = useTranslations();
   const tTerminal = t.terminal;
-  const tCommands = t.terminalCommands;
 
   const [history, setHistory] = useState<TerminalLine[]>([
     { type: "output", content: tTerminal.welcome.version },
@@ -83,27 +86,26 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
 
     const [commandName, ...args] = trimmed.split(" ");
 
-    if (commandName === "help") {
-      const helpText = [
-        tTerminal.help.title,
-        "",
-        ...commands.map((cmd) => {
-          const cmdKey = cmd.name as keyof typeof tCommands;
-          const description = tCommands[cmdKey]?.description || cmd.description;
-          return `  ${cmd.name.padEnd(10)} - ${description}`;
-        }),
-        `  ${tTerminal.help.helpCommand}`,
-        `  ${tTerminal.help.clearCommand}`,
-      ];
+    const parsedCommandName = commandNameSchema.safeParse(commandName);
+    if (!parsedCommandName.success) {
       setHistory((prev) => [
         ...prev,
-        ...helpText.map((line) => ({ type: "output" as const, content: line })),
+        {
+          type: "error",
+          content: tTerminal.errors.commandNotFound.replace("{command}", commandName),
+        },
         { type: "output", content: "" },
       ]);
-    } else if (commandName === "clear") {
+      // Add to command history
+      setCommandHistory((prev) => [...prev, trimmed]);
+      setHistoryIndex(-1);
+      return;
+    }
+
+    if (commandName === "clear") {
       setHistory([]);
     } else {
-      executeBuiltinCommand(commandName, args);
+      executeBuiltinCommand(parsedCommandName.data, args);
     }
 
     // Add to command history
@@ -145,8 +147,8 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
     setEditorState(null);
   };
 
-  const executeBuiltinCommand = (commandName: string, args: string[]): void => {
-    const handler = commandHandlers[commandName];
+  const executeBuiltinCommand = (commandName: TerminalCommand["name"], args: string[]): void => {
+    const handler = getCommandHandler(commandName);
 
     if (!handler) {
       setHistory((prev) => [
@@ -169,6 +171,8 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       resolvePath,
       openEditor,
       closeWindow: onClose,
+      commands,
+      translations: t,
     };
 
     handler(args, context);

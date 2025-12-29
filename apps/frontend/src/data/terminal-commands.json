@@ -59,6 +59,36 @@
       "description": "Move or rename files",
       "usage": "mv <source> <destination>",
       "execute": "mv"
+    },
+    {
+      "name": "vim",
+      "description": "Text editor (vi-compatible)",
+      "usage": "vim <file>",
+      "execute": "vim"
+    },
+    {
+      "name": "vi",
+      "description": "Text editor",
+      "usage": "vi <file>",
+      "execute": "vi"
+    },
+    {
+      "name": "help",
+      "description": "Show available commands",
+      "usage": "help",
+      "execute": "help"
+    },
+    {
+      "name": "exit",
+      "description": "Close the current terminal window",
+      "usage": "exit",
+      "execute": "exit"
+    },
+    {
+      "name": "clear",
+      "description": "Clear terminal screen",
+      "usage": "clear",
+      "execute": "clear"
     }
   ]
 }

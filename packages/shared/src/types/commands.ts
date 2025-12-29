@@ -2,6 +2,7 @@
 import { z } from "zod";
 
 export const commandNameSchema = z.enum([
+  "clear",
   "help",
   "echo",
   "date",

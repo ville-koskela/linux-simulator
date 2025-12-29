@@ -36,8 +36,6 @@ export const helpCommand: CommandHandler = (_args: Array<string>, context: Comma
       const description = tCommands[cmdKey]?.description || cmd.description;
       return `  ${cmd.name.padEnd(10)} - ${description}`;
     }),
-    `  ${tTerminal.help.helpCommand}`,
-    `  ${tTerminal.help.clearCommand}`,
   ];
 
   for (const line of helpText) {

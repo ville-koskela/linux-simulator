@@ -43,6 +43,7 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   } | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
   const historyLengthRef = useRef(history.length);
 
   // Load commands from API
@@ -76,6 +77,29 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       inputRef.current?.focus();
     }
   }, [editorState?.isOpen]);
+
+  // Auto-copy selected text (Linux-style terminal behavior)
+  useEffect(() => {
+    const handleMouseUp = (): void => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString();
+
+      if (selectedText?.trim()) {
+        navigator.clipboard.writeText(selectedText).catch((err) => {
+          // biome-ignore lint/suspicious/noConsole: we want to log clipboard errors
+          console.error("Failed to copy text:", err);
+        });
+      }
+    };
+
+    const terminalElement = terminalRef.current;
+    if (terminalElement) {
+      terminalElement.addEventListener("mouseup", handleMouseUp);
+      return (): void => {
+        terminalElement.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, []);
 
   const executeCommand = (commandLine: string): void => {
     const trimmed = commandLine.trim();
@@ -224,6 +248,7 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   return (
     // biome-ignore lint/a11y/useSemanticElements: Terminal needs to be a clickable div for proper styling
     <div
+      ref={terminalRef}
       className="terminal"
       onClick={(): void => inputRef.current?.focus()}
       onKeyDown={(e: KeyboardEvent<HTMLDivElement>): void => {

@@ -19,6 +19,12 @@
     "rules": {
       "recommended": true,
       "style": {
+        "useConsistentMemberAccessibility": {
+          "options": {
+            "accessibility": "explicit"
+          },
+          "level": "error"
+        },
         "noUnusedTemplateLiteral": "error",
         "useConst": "error"
       },
@@ -29,8 +35,24 @@
       },
       "correctness": {
         "useExhaustiveDependencies": "warn",
-        "noUnusedFunctionParameters": "off",
+        "noUnusedFunctionParameters": "error",
         "noUndeclaredDependencies": "error"
+      },
+      "nursery": {
+        "useExplicitType": "error"
+      }
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [":NODE:", ":ALIAS:", ":PACKAGE:", ":PATH:"],
+            "identifierOrder": "lexicographic"
+          }
+        }
       }
     }
   },

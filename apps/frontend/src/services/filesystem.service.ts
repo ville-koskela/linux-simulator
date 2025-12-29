@@ -1,28 +1,21 @@
-import type { FilesystemNode } from "@linux-simulator/shared";
-
-const API_BASE_URL: string = import.meta.env?.VITE_API_URL || "http://localhost:3000";
-
-async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || `HTTP error! status: ${response.status}`);
-  }
-
-  return response.json();
-}
+import type {
+  CreateNodeRequest,
+  FilesystemNode,
+  MoveNodeRequest,
+  UpdateNodeRequest,
+} from "@linux-simulator/shared";
+import {
+  filesystemNodeSchema,
+  getChildrenResponseSchema,
+  getNodeResponseSchema,
+} from "@linux-simulator/shared";
+import { apiFetch } from "./api.service";
 
 export const FilesystemService = {
   async getNodeByPath(path: string): Promise<FilesystemNode | null> {
     try {
-      return await apiFetch<FilesystemNode>(`/filesystem/path?path=${encodeURIComponent(path)}`);
+      const response = await apiFetch<unknown>(`/filesystem/path?path=${encodeURIComponent(path)}`);
+      return getNodeResponseSchema.parse(response);
     } catch {
       return null;
     }
@@ -30,7 +23,8 @@ export const FilesystemService = {
 
   async getChildren(parentId: number | null): Promise<FilesystemNode[]> {
     const query = parentId !== null ? `?parentId=${parentId}` : "";
-    return apiFetch<FilesystemNode[]>(`/filesystem/children${query}`);
+    const response = await apiFetch<unknown>(`/filesystem/children${query}`);
+    return getChildrenResponseSchema.parse(response);
   },
 
   async createNode(
@@ -39,39 +33,45 @@ export const FilesystemService = {
     type: "file" | "directory",
     content?: string
   ): Promise<FilesystemNode> {
-    return apiFetch<FilesystemNode>("/filesystem/node", {
+    const response = await apiFetch<unknown>("/filesystem/node", {
       method: "POST",
       body: JSON.stringify({
         parentId,
         name,
         type,
-        content: content || null,
+        content: content || undefined,
         permissions: "rwxr-xr-x",
-      }),
+      } satisfies CreateNodeRequest),
     });
+
+    return filesystemNodeSchema.parse(response);
   },
 
   async updateNode(
     id: number,
     updates: { name?: string; content?: string; permissions?: string }
   ): Promise<FilesystemNode> {
-    return apiFetch<FilesystemNode>(`/filesystem/node/${id}`, {
+    const response = await apiFetch<unknown>(`/filesystem/node/${id}`, {
       method: "PUT",
-      body: JSON.stringify(updates),
+      body: JSON.stringify(updates satisfies UpdateNodeRequest),
     });
+
+    return filesystemNodeSchema.parse(response);
   },
 
   async deleteNode(id: number): Promise<void> {
-    await fetch(`${API_BASE_URL}/filesystem/node/${id}`, {
+    await apiFetch<void>(`/filesystem/node/${id}`, {
       method: "DELETE",
     });
   },
 
   async moveNode(id: number, newParentId: number): Promise<FilesystemNode> {
-    return apiFetch<FilesystemNode>(`/filesystem/node/${id}/move`, {
+    const response = await apiFetch<unknown>(`/filesystem/node/${id}/move`, {
       method: "PUT",
-      body: JSON.stringify({ newParentId }),
+      body: JSON.stringify({ newParentId } satisfies MoveNodeRequest),
     });
+
+    return filesystemNodeSchema.parse(response);
   },
 
   async updateFileContent(path: string, content: string): Promise<void> {

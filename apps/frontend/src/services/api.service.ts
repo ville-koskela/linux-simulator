@@ -3,7 +3,7 @@ import { fallbackLanguage, translationSchema } from "@linux-simulator/shared";
 
 const API_BASE_URL: string = import.meta.env?.VITE_API_URL || "http://localhost:3000";
 
-export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T | undefined> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers: {
@@ -17,7 +17,9 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
     throw new Error(error || `HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  // Handle empty responses (e.g., DELETE requests)
+  const text = await response.text();
+  return text ? JSON.parse(text) : undefined;
 }
 
 /**

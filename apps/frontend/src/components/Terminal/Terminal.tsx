@@ -120,7 +120,21 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       return path;
     }
     const base = currentPath === "/" ? "" : currentPath;
-    return `${base}/${path}`.replace(/\/+/g, "/");
+    const fullPath = `${base}/${path}`.replace(/\/+/g, "/");
+
+    // Handle .. (parent directory) and . (current directory)
+    const parts = fullPath.split("/").filter((p) => p !== "");
+    const resolved: string[] = [];
+
+    for (const part of parts) {
+      if (part === "..") {
+        resolved.pop(); // Go up one level
+      } else if (part !== ".") {
+        resolved.push(part);
+      }
+    }
+
+    return resolved.length === 0 ? "/" : `/${resolved.join("/")}`;
   };
 
   const openEditor = (filepath: string, content: string): void => {

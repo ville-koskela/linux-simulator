@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/nursery/useExplicitType: For now we don't type schemas explicitly */
 import { z } from "zod";
+import { languageCodeSchema } from "./settings.js";
 
 export const commandNameSchema = z.enum([
   "clear",
@@ -22,18 +23,14 @@ export const commandNameSchema = z.enum([
 // Terminal command schemas
 export const terminalCommandSchema = z.object({
   name: commandNameSchema,
-  description: z.string(),
-  usage: z.string(),
   level: z.number().int().min(1), // Level required to unlock this command
-  translations: z
-    .record(
-      z.string(), // language code
-      z.object({
-        description: z.string(),
-        usage: z.string(),
-      })
-    )
-    .optional(), // Translations for different languages
+  translations: z.record(
+    languageCodeSchema,
+    z.object({
+      description: z.string(),
+      usage: z.string(),
+    })
+  ), // Translations for all supported languages
 });
 
 export type TerminalCommand = z.infer<typeof terminalCommandSchema>;

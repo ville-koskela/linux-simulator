@@ -9,10 +9,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   // Level 1 - Basic commands
   {
     name: "echo",
-    description: "Display a line of text",
-    usage: "echo [text]",
     level: 1,
     translations: {
+      en: {
+        description: "Display a line of text",
+        usage: "echo [text]",
+      },
       fi: {
         description: "Näytä tekstirivi",
         usage: "echo [teksti]",
@@ -21,10 +23,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "pwd",
-    description: "Print working directory",
-    usage: "pwd",
     level: 1,
     translations: {
+      en: {
+        description: "Print working directory",
+        usage: "pwd",
+      },
       fi: {
         description: "Tulosta työkansio",
         usage: "pwd",
@@ -33,10 +37,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "ls",
-    description: "List directory contents",
-    usage: "ls [directory]",
     level: 1,
     translations: {
+      en: {
+        description: "List directory contents",
+        usage: "ls [directory]",
+      },
       fi: {
         description: "Listaa kansion sisältö",
         usage: "ls [kansio]",
@@ -45,10 +51,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "cd",
-    description: "Change directory",
-    usage: "cd [directory]",
     level: 1,
     translations: {
+      en: {
+        description: "Change directory",
+        usage: "cd [directory]",
+      },
       fi: {
         description: "Vaihda kansiota",
         usage: "cd [kansio]",
@@ -57,10 +65,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "cat",
-    description: "Display file contents",
-    usage: "cat <file>",
     level: 1,
     translations: {
+      en: {
+        description: "Display file contents",
+        usage: "cat <file>",
+      },
       fi: {
         description: "Näytä tiedoston sisältö",
         usage: "cat <tiedosto>",
@@ -71,10 +81,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   // Level 2 - File manipulation
   {
     name: "touch",
-    description: "Create an empty file",
-    usage: "touch <file>",
     level: 2,
     translations: {
+      en: {
+        description: "Create an empty file",
+        usage: "touch <file>",
+      },
       fi: {
         description: "Luo tyhjä tiedosto",
         usage: "touch <tiedosto>",
@@ -83,10 +95,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "mkdir",
-    description: "Create a directory",
-    usage: "mkdir <directory>",
     level: 2,
     translations: {
+      en: {
+        description: "Create a directory",
+        usage: "mkdir <directory>",
+      },
       fi: {
         description: "Luo kansio",
         usage: "mkdir <kansio>",
@@ -95,10 +109,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "rm",
-    description: "Remove a file or empty directory",
-    usage: "rm <file>",
     level: 2,
     translations: {
+      en: {
+        description: "Remove a file or empty directory",
+        usage: "rm <file>",
+      },
       fi: {
         description: "Poista tiedostoja tai kansioita",
         usage: "rm <tiedosto|kansio>",
@@ -107,10 +123,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "mv",
-    description: "Move or rename a file",
-    usage: "mv <source> <destination>",
     level: 2,
     translations: {
+      en: {
+        description: "Move or rename a file",
+        usage: "mv <source> <destination>",
+      },
       fi: {
         description: "Siirrä tai nimeä tiedostoja uudelleen",
         usage: "mv <lähde> <kohde>",
@@ -121,10 +139,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   // Level 3 - Editors
   {
     name: "vim",
-    description: "Text editor (vi-compatible)",
-    usage: "vim <file>",
     level: 3,
     translations: {
+      en: {
+        description: "Text editor (vi-compatible)",
+        usage: "vim <file>",
+      },
       fi: {
         description: "Tekstieditori (vi-yhteensopiva)",
         usage: "vim <tiedosto>",
@@ -133,10 +153,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "vi",
-    description: "Text editor",
-    usage: "vi <file>",
     level: 3,
     translations: {
+      en: {
+        description: "Text editor",
+        usage: "vi <file>",
+      },
       fi: {
         description: "Tekstieditori",
         usage: "vi <tiedosto>",
@@ -147,10 +169,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   // Utility commands (available at all levels)
   {
     name: "help",
-    description: "Show available commands",
-    usage: "help",
     level: 1,
     translations: {
+      en: {
+        description: "Show available commands",
+        usage: "help",
+      },
       fi: {
         description: "Näytä käytettävissä olevat komennot",
         usage: "help",
@@ -159,10 +183,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "date",
-    description: "Display current date and time",
-    usage: "date",
     level: 1,
     translations: {
+      en: {
+        description: "Display current date and time",
+        usage: "date",
+      },
       fi: {
         description: "Näytä nykyinen päivämäärä ja aika",
         usage: "date",
@@ -171,10 +197,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "exit",
-    description: "Close the current terminal window",
-    usage: "exit",
     level: 1,
     translations: {
+      en: {
+        description: "Close the current terminal window",
+        usage: "exit",
+      },
       fi: {
         description: "Sulje nykyinen pääteikkuna",
         usage: "exit",
@@ -183,10 +211,12 @@ export const TERMINAL_COMMANDS: readonly TerminalCommand[] = [
   },
   {
     name: "clear",
-    description: "Clear terminal screen",
-    usage: "clear",
     level: 1,
     translations: {
+      en: {
+        description: "Clear terminal screen",
+        usage: "clear",
+      },
       fi: {
         description: "Tyhjennä pääte",
         usage: "clear",

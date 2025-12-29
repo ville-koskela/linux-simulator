@@ -33,10 +33,9 @@ export const helpCommand: CommandHandler = (_args: Array<string>, context: Comma
     tTerminal.help.title,
     "",
     ...context.commands.map((cmd) => {
-      // Get translated description from command translations or fallback to default
-      const translation = cmd.translations?.[languageCode];
-      const description = translation?.description || cmd.description;
-      return `  ${cmd.name.padEnd(10)} - ${description}`;
+      // Get translated description, fallback to fallback language if translation missing
+      const translation = cmd.translations[languageCode] || cmd.translations[fallbackLanguage];
+      return `  ${cmd.name.padEnd(10)} - ${translation?.description || "N/A"}`;
     }),
   ];
 

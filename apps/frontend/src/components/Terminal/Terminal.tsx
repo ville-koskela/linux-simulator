@@ -63,7 +63,7 @@ export const Terminal: FC = () => {
     inputRef.current?.focus();
   }, []);
 
-  const executeCommand = (commandLine: string) => {
+  const executeCommand = (commandLine: string): void => {
     const trimmed = commandLine.trim();
     if (!trimmed) return;
 
@@ -100,7 +100,7 @@ export const Terminal: FC = () => {
     setHistoryIndex(-1);
   };
 
-  const addOutput = (content: string, type: "output" | "error" = "output") => {
+  const addOutput = (content: string, type: "output" | "error" = "output"): void => {
     setHistory((prev) => [...prev, { type, content }, { type: "output", content: "" }]);
   };
 
@@ -112,11 +112,11 @@ export const Terminal: FC = () => {
     return `${base}/${path}`.replace(/\/+/g, "/");
   };
 
-  const openEditor = (filepath: string, content: string) => {
+  const openEditor = (filepath: string, content: string): void => {
     setEditorState({ isOpen: true, filepath, content });
   };
 
-  const closeEditor = () => {
+  const closeEditor = (): void => {
     setEditorState(null);
     inputRef.current?.focus();
   };
@@ -149,14 +149,14 @@ export const Terminal: FC = () => {
     handler(args, context);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
     if (input.trim()) {
       executeCommand(input);
       setInput("");
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
       handleSubmit();
     } else if (e.key === "ArrowUp") {
@@ -196,8 +196,8 @@ export const Terminal: FC = () => {
     // biome-ignore lint/a11y/useSemanticElements: Terminal needs to be a clickable div for proper styling
     <div
       className="terminal"
-      onClick={() => inputRef.current?.focus()}
-      onKeyDown={(e) => {
+      onClick={(): void => inputRef.current?.focus()}
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>): void => {
         if (e.key === "Enter" || e.key === " ") {
           inputRef.current?.focus();
         }
@@ -221,7 +221,7 @@ export const Terminal: FC = () => {
           type="text"
           className="terminal-input"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           spellCheck={false}
           autoComplete="off"

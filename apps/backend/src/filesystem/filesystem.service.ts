@@ -17,18 +17,18 @@ import type {
 
 @Injectable()
 export class FilesystemService {
-  constructor(
+  public constructor(
     private repository: FilesystemRepository,
     private logger: LoggerService
   ) {
     this.logger.setContext("FilesystemService");
   }
 
-  async getNodeById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
+  public async getNodeById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
     return this.repository.findById(userId, nodeId);
   }
 
-  async getNodeByPath(userId: number, path: string): Promise<FilesystemNode | null> {
+  public async getNodeByPath(userId: number, path: string): Promise<FilesystemNode | null> {
     if (path === "/") {
       return this.repository.findRoot(userId);
     }
@@ -45,11 +45,11 @@ export class FilesystemService {
     return currentNode;
   }
 
-  async getChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
+  public async getChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
     return this.repository.findChildren(userId, parentId);
   }
 
-  async getTree(userId: number, nodeId?: number): Promise<FilesystemTree> {
+  public async getTree(userId: number, nodeId?: number): Promise<FilesystemTree> {
     const rootNode = nodeId
       ? await this.getNodeById(userId, nodeId)
       : await this.getNodeByPath(userId, "/");
@@ -79,7 +79,7 @@ export class FilesystemService {
     return tree;
   }
 
-  async createNode(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
+  public async createNode(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
     // Validate parent exists if provided
     if (dto.parentId !== null) {
       const parent = await this.getNodeById(userId, dto.parentId);
@@ -106,7 +106,11 @@ export class FilesystemService {
     return this.repository.create(userId, dto);
   }
 
-  async updateNode(userId: number, nodeId: number, dto: UpdateNodeDto): Promise<FilesystemNode> {
+  public async updateNode(
+    userId: number,
+    nodeId: number,
+    dto: UpdateNodeDto
+  ): Promise<FilesystemNode> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
       throw new NotFoundException("Node not found");
@@ -148,7 +152,7 @@ export class FilesystemService {
     return this.repository.update(userId, nodeId, updates);
   }
 
-  async deleteNode(userId: number, nodeId: number): Promise<void> {
+  public async deleteNode(userId: number, nodeId: number): Promise<void> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
       throw new NotFoundException("Node not found");
@@ -162,7 +166,11 @@ export class FilesystemService {
     await this.repository.delete(userId, nodeId);
   }
 
-  async moveNode(userId: number, nodeId: number, newParentId: number): Promise<FilesystemNode> {
+  public async moveNode(
+    userId: number,
+    nodeId: number,
+    newParentId: number
+  ): Promise<FilesystemNode> {
     const node = await this.getNodeById(userId, nodeId);
     if (!node) {
       throw new NotFoundException("Node not found");

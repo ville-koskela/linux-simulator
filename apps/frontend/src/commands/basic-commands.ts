@@ -1,13 +1,15 @@
-import type { CommandHandler } from "./types";
+import type { CommandContext, CommandHandler } from "./types";
 
-export const echoCommand: CommandHandler = (_args, context) => {
-  context.addOutput(_args.join(" ") || "");
+export const echoCommand: CommandHandler = (args: Array<string>, context: CommandContext) => {
+  context.addOutput(args.join(" ") || "");
 };
 
-export const dateCommand: CommandHandler = (_args, context) => {
+// biome-ignore lint/correctness/noUnusedFunctionParameters: fix later
+export const dateCommand: CommandHandler = (args: Array<string>, context: CommandContext) => {
   context.addOutput(new Date().toLocaleString());
 };
 
-export const pwdCommand: CommandHandler = (_args, context) => {
+// biome-ignore lint/correctness/noUnusedFunctionParameters: fix later
+export const pwdCommand: CommandHandler = (args: Array<string>, context: CommandContext) => {
   context.addOutput(context.currentPath);
 };

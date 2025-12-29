@@ -1,7 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
 
-const envSchema = z.object({
+const envSchema: z.ZodObject<{
+  NODE_ENV: z.ZodDefault<z.ZodEnum<["development", "production", "test"]>>;
+  PORT: z.ZodDefault<z.ZodNumber>;
+  DATABASE_HOST: z.ZodDefault<z.ZodString>;
+  DATABASE_PORT: z.ZodDefault<z.ZodNumber>;
+  DATABASE_NAME: z.ZodDefault<z.ZodString>;
+  DATABASE_USER: z.ZodDefault<z.ZodString>;
+  DATABASE_PASSWORD: z.ZodDefault<z.ZodString>;
+  LOG_LEVEL: z.ZodDefault<z.ZodEnum<["error", "warn", "info", "debug"]>>;
+  CORS_ORIGIN: z.ZodDefault<z.ZodString>;
+  DEFAULT_USER_ID: z.ZodDefault<z.ZodNumber>;
+}> = z.object({
   // Server
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().int().positive().default(3001),
@@ -29,7 +40,7 @@ export type EnvConfig = z.infer<typeof envSchema>;
 export class ConfigService {
   private readonly config: EnvConfig;
 
-  constructor() {
+  public constructor() {
     const result = envSchema.safeParse(process.env);
 
     if (!result.success) {
@@ -43,59 +54,59 @@ export class ConfigService {
     this.config = result.data;
   }
 
-  get nodeEnv(): string {
+  public get nodeEnv(): string {
     return this.config.NODE_ENV;
   }
 
-  get port(): number {
+  public get port(): number {
     return this.config.PORT;
   }
 
-  get isProduction(): boolean {
+  public get isProduction(): boolean {
     return this.config.NODE_ENV === "production";
   }
 
-  get isDevelopment(): boolean {
+  public get isDevelopment(): boolean {
     return this.config.NODE_ENV === "development";
   }
 
-  get isTest(): boolean {
+  public get isTest(): boolean {
     return this.config.NODE_ENV === "test";
   }
 
   // Database
-  get databaseHost(): string {
+  public get databaseHost(): string {
     return this.config.DATABASE_HOST;
   }
 
-  get databasePort(): number {
+  public get databasePort(): number {
     return this.config.DATABASE_PORT;
   }
 
-  get databaseName(): string {
+  public get databaseName(): string {
     return this.config.DATABASE_NAME;
   }
 
-  get databaseUser(): string {
+  public get databaseUser(): string {
     return this.config.DATABASE_USER;
   }
 
-  get databasePassword(): string {
+  public get databasePassword(): string {
     return this.config.DATABASE_PASSWORD;
   }
 
   // Logging
-  get logLevel(): string {
+  public get logLevel(): string {
     return this.config.LOG_LEVEL;
   }
 
   // CORS
-  get corsOrigin(): string {
+  public get corsOrigin(): string {
     return this.config.CORS_ORIGIN;
   }
 
   // Application
-  get defaultUserId(): number {
+  public get defaultUserId(): number {
     return this.config.DEFAULT_USER_ID;
   }
 }

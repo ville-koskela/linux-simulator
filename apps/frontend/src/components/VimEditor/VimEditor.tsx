@@ -1,4 +1,4 @@
-import type { FC, KeyboardEvent } from "react";
+import type { FC, JSX, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { FilesystemService } from "../../services";
 import "./VimEditor.css";
@@ -12,7 +12,12 @@ interface VimEditorProps {
   onSave?: (content: string) => void;
 }
 
-export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClose, onSave }) => {
+export const VimEditor: FC<VimEditorProps> = ({
+  filepath,
+  initialContent,
+  onClose,
+  onSave,
+}: VimEditorProps): JSX.Element => {
   const [mode, setMode] = useState<VimMode>("normal");
   const [lines, setLines] = useState<string[]>(initialContent ? initialContent.split("\n") : [""]);
   const [cursorRow, setCursorRow] = useState(0);
@@ -27,16 +32,16 @@ export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClos
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getCurrentLine = () => lines[cursorRow] || "";
+  const getCurrentLine = (): string => lines[cursorRow] || "";
 
-  const setCurrentLine = (newLine: string) => {
+  const setCurrentLine = (newLine: string): void => {
     const newLines = [...lines];
     newLines[cursorRow] = newLine;
     setLines(newLines);
     setModified(true);
   };
 
-  const moveCursor = (row: number, col: number) => {
+  const moveCursor = (row: number, col: number): void => {
     const newRow = Math.max(0, Math.min(row, lines.length - 1));
     const lineLength = lines[newRow]?.length || 0;
     const maxCol = mode === "insert" ? lineLength : Math.max(0, lineLength - 1);
@@ -45,7 +50,7 @@ export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClos
     setCursorCol(newCol);
   };
 
-  const saveFile = async () => {
+  const saveFile = async (): Promise<void> => {
     try {
       const content = lines.join("\n");
       await FilesystemService.updateFileContent(filepath, content);
@@ -59,7 +64,7 @@ export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClos
     }
   };
 
-  const executeCommand = async (cmd: string) => {
+  const executeCommand = async (cmd: string): Promise<void> => {
     const trimmed = cmd.trim();
 
     if (trimmed === "q") {
@@ -80,7 +85,7 @@ export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClos
     }
   };
 
-  const handleNormalModeKey = (key: string) => {
+  const handleNormalModeKey = (key: string): void => {
     switch (key) {
       case "i":
         setMode("insert");
@@ -183,7 +188,7 @@ export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClos
     }
   };
 
-  const handleInsertModeKey = (key: string, char: string | null) => {
+  const handleInsertModeKey = (key: string, char: string | null): void => {
     if (key === "Escape") {
       setMode("normal");
       setStatusMessage("");
@@ -234,7 +239,7 @@ export const VimEditor: FC<VimEditorProps> = ({ filepath, initialContent, onClos
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     e.preventDefault();
 
     if (mode === "normal") {

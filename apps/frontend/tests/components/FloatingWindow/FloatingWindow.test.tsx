@@ -115,7 +115,7 @@ describe("FloatingWindow", () => {
 
   test("renders close button when onClose is provided", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onClose={() => {}}>
+      <FloatingWindow onClose={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -137,7 +137,7 @@ describe("FloatingWindow", () => {
 
   test("calls onClose when close button is clicked", () => {
     let closed = false;
-    const handleClose = () => {
+    const handleClose = (): void => {
       closed = true;
     };
 
@@ -294,7 +294,7 @@ describe("FloatingWindow", () => {
 
   test("close button has proper type attribute", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onClose={() => {}}>
+      <FloatingWindow onClose={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -306,7 +306,7 @@ describe("FloatingWindow", () => {
   });
 
   test("renders with all optional props", () => {
-    const handleClose = () => {};
+    const handleClose = (): void => {};
     const customStyle = { border: "1px solid black" };
 
     const { container, getByText } = renderWithProviders(
@@ -343,7 +343,7 @@ describe("FloatingWindow", () => {
 
   test("close button displays × symbol", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onClose={() => {}}>
+      <FloatingWindow onClose={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -366,7 +366,7 @@ describe("FloatingWindow", () => {
 
   test("renders minimize button when onMinimize is provided", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onMinimize={() => {}}>
+      <FloatingWindow onMinimize={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -388,7 +388,7 @@ describe("FloatingWindow", () => {
 
   test("calls onMinimize when minimize button is clicked", () => {
     let minimized = false;
-    const handleMinimize = () => {
+    const handleMinimize = (): void => {
       minimized = true;
     };
 
@@ -406,7 +406,7 @@ describe("FloatingWindow", () => {
 
   test("minimize button displays − symbol", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onMinimize={() => {}}>
+      <FloatingWindow onMinimize={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -417,7 +417,7 @@ describe("FloatingWindow", () => {
 
   test("minimize button has proper type attribute", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onMinimize={() => {}}>
+      <FloatingWindow onMinimize={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -430,7 +430,7 @@ describe("FloatingWindow", () => {
 
   test("renders both minimize and close buttons when both handlers provided", () => {
     const { getByRole } = renderWithProviders(
-      <FloatingWindow onMinimize={() => {}} onClose={() => {}}>
+      <FloatingWindow onMinimize={(): void => {}} onClose={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -444,7 +444,7 @@ describe("FloatingWindow", () => {
 
   test("renders controls container when minimize or close button exists", () => {
     const { container } = renderWithProviders(
-      <FloatingWindow onMinimize={() => {}} onClose={() => {}}>
+      <FloatingWindow onMinimize={(): void => {}} onClose={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -455,7 +455,7 @@ describe("FloatingWindow", () => {
 
   test("minimize button appears before close button", () => {
     const { container } = renderWithProviders(
-      <FloatingWindow onMinimize={() => {}} onClose={() => {}}>
+      <FloatingWindow onMinimize={(): void => {}} onClose={(): void => {}}>
         <p>Content</p>
       </FloatingWindow>
     );
@@ -474,10 +474,10 @@ describe("FloatingWindow", () => {
     let minimized = false;
     let closed = false;
 
-    const handleMinimize = () => {
+    const handleMinimize = (): void => {
       minimized = true;
     };
-    const handleClose = () => {
+    const handleClose = (): void => {
       closed = true;
     };
 
@@ -498,10 +498,10 @@ describe("FloatingWindow", () => {
     let minimized = false;
     let closed = false;
 
-    const handleMinimize = () => {
+    const handleMinimize = (): void => {
       minimized = true;
     };
-    const handleClose = () => {
+    const handleClose = (): void => {
       closed = true;
     };
 
@@ -519,8 +519,8 @@ describe("FloatingWindow", () => {
   });
 
   test("renders with all props including minimize", () => {
-    const handleClose = () => {};
-    const handleMinimize = () => {};
+    const handleClose = (): void => {};
+    const handleMinimize = (): void => {};
     const customStyle = { border: "1px solid black" };
 
     const { container, getByText, getByRole } = renderWithProviders(

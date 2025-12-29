@@ -26,7 +26,7 @@ export function useLocalStorage<T>(
 
   // Return a wrapped version of useState's setter function that
   // persists the new value to localStorage.
-  const setValue = (value: T | ((prev: T) => T)) => {
+  const setValue = (value: T | ((prev: T) => T)): void => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore = value instanceof Function ? value(storedValue) : value;
@@ -44,7 +44,7 @@ export function useLocalStorage<T>(
 
   // Listen for changes to localStorage from other tabs/windows
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
+    const handleStorageChange = (e: StorageEvent): void => {
       if (e.key === key && e.newValue !== null) {
         try {
           setStoredValue(JSON.parse(e.newValue));

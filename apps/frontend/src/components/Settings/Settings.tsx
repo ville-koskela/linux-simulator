@@ -1,5 +1,6 @@
 import type { ThemeColors } from "@linux-simulator/shared";
 import { defaultThemes } from "@linux-simulator/shared";
+import type React from "react";
 import type { FC } from "react";
 import { useRef, useState } from "react";
 import { useSettings, useTranslations } from "../../contexts";
@@ -12,25 +13,25 @@ export const Settings: FC = () => {
   const [customTheme, setCustomTheme] = useState<ThemeColors>(settings.theme);
   const colorPickerRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     updateLanguage(e.target.value);
   };
 
-  const handlePresetTheme = (themeName: string) => {
+  const handlePresetTheme = (themeName: string): void => {
     applyPresetTheme(themeName);
     setCustomTheme(defaultThemes[themeName]);
   };
 
-  const handleColorChange = (colorKey: keyof ThemeColors, value: string) => {
+  const handleColorChange = (colorKey: keyof ThemeColors, value: string): void => {
     const newTheme = { ...customTheme, [colorKey]: value };
     setCustomTheme(newTheme);
   };
 
-  const handleApplyCustomTheme = () => {
+  const handleApplyCustomTheme = (): void => {
     updateTheme(customTheme);
   };
 
-  const handleResetToDefaults = () => {
+  const handleResetToDefaults = (): void => {
     const defaultTheme = defaultThemes.light;
     setCustomTheme(defaultTheme);
     updateTheme(defaultTheme);
@@ -101,7 +102,7 @@ export const Settings: FC = () => {
               key={themeName}
               type="button"
               className={`theme-preset-button ${currentPreset === themeName ? "active" : ""}`}
-              onClick={() => handlePresetTheme(themeName)}
+              onClick={(): void => handlePresetTheme(themeName)}
             >
               {tSettings.themePresets[themeName as keyof typeof tSettings.themePresets] ||
                 themeName.charAt(0).toUpperCase() + themeName.slice(1)}
@@ -123,7 +124,7 @@ export const Settings: FC = () => {
                   type="button"
                   className="color-preview"
                   style={{ backgroundColor: customTheme[key] }}
-                  onClick={() => colorPickerRefs.current[key]?.click()}
+                  onClick={(): void => colorPickerRefs.current[key]?.click()}
                   aria-label={tSettings.customTheme.aria.pickColor.replace("{label}", label)}
                 />
                 <input
@@ -131,17 +132,21 @@ export const Settings: FC = () => {
                   id={`color-${key}`}
                   className="color-input"
                   value={customTheme[key]}
-                  onChange={(e) => handleColorChange(key, e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                    handleColorChange(key, e.target.value)
+                  }
                   placeholder="#000000"
                 />
                 <input
-                  ref={(el) => {
+                  ref={(el: HTMLInputElement | null): void => {
                     colorPickerRefs.current[key] = el;
                   }}
                   type="color"
                   className="color-picker-native"
                   value={customTheme[key].startsWith("#") ? customTheme[key] : "#000000"}
-                  onChange={(e) => handleColorChange(key, e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                    handleColorChange(key, e.target.value)
+                  }
                   aria-label={tSettings.customTheme.aria.colorPicker.replace("{label}", label)}
                 />
               </div>

@@ -11,7 +11,7 @@ export class DatabaseService {
   private logger: LoggerService;
   private config: ConfigService;
 
-  constructor(logger: LoggerService, config: ConfigService) {
+  public constructor(logger: LoggerService, config: ConfigService) {
     this.config = config;
     this.logger = logger;
     this.logger.setContext("DatabaseService");
@@ -27,7 +27,7 @@ export class DatabaseService {
     });
   }
 
-  async query<T extends QueryResultRow = QueryResultRow>(
+  public async query<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params?: unknown[]
   ): Promise<QueryResult<T>> {
@@ -42,11 +42,11 @@ export class DatabaseService {
     return result;
   }
 
-  async getClient(): Promise<PoolClient> {
+  public async getClient(): Promise<PoolClient> {
     return this.pool.connect();
   }
 
-  async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  public async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.getClient();
 
     try {
@@ -62,7 +62,7 @@ export class DatabaseService {
     }
   }
 
-  async close(): Promise<void> {
+  public async close(): Promise<void> {
     await this.pool.end();
   }
 }

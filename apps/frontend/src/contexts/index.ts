@@ -5,4 +5,4 @@ export {
   useTranslations,
 } from "./TranslationsContext";
 export type { WindowConfig, WindowState } from "./WindowContext";
-export { useWindows, WindowProvider } from "./WindowContext";
+export { WindowProvider, useWindows } from "./WindowContext";

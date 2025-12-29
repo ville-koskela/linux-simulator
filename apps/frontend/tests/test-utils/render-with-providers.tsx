@@ -1,11 +1,11 @@
-import { render } from "@testing-library/react";
+import { type RenderResult, render } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { SettingsProvider, TranslationsProvider, WindowProvider } from "../../src/contexts";
 
 /**
  * Renders a component wrapped in all necessary providers for testing
  */
-export const renderWithProviders = (component: ReactElement) => {
+export const renderWithProviders = (component: ReactElement): RenderResult => {
   // Mock window.matchMedia which is used by SettingsContext
   if (!window.matchMedia) {
     Object.defineProperty(window, "matchMedia", {

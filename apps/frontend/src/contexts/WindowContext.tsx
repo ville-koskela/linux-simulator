@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from "react";
+import type React from "react";
+import type { CSSProperties, JSX, ReactNode } from "react";
 import { createContext, useCallback, useContext, useState } from "react";
 
 export interface WindowConfig {
@@ -30,9 +31,11 @@ interface WindowContextValue {
   getNextZIndex: () => number;
 }
 
-const WindowContext = createContext<WindowContextValue | undefined>(undefined);
+const WindowContext: React.Context<WindowContextValue | undefined> = createContext<
+  WindowContextValue | undefined
+>(undefined);
 
-export const useWindows = () => {
+export const useWindows = (): WindowContextValue => {
   const context = useContext(WindowContext);
   if (!context) {
     throw new Error("useWindows must be used within a WindowProvider");
@@ -44,7 +47,7 @@ interface WindowProviderProps {
   children: ReactNode;
 }
 
-export const WindowProvider = ({ children }: WindowProviderProps) => {
+export const WindowProvider = ({ children }: WindowProviderProps): JSX.Element => {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const baseZIndex = 1000;
 

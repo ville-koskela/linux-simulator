@@ -1,7 +1,7 @@
 import { FilesystemService } from "../services";
-import type { CommandHandler } from "./types";
+import type { CommandContext, CommandHandler } from "./types";
 
-export const lsCommand: CommandHandler = async (args, context) => {
+export const lsCommand: CommandHandler = async (args: Array<string>, context: CommandContext) => {
   try {
     const path = args[0] ? context.resolvePath(args[0]) : context.currentPath;
     const node = await FilesystemService.getNodeByPath(path);
@@ -35,7 +35,7 @@ export const lsCommand: CommandHandler = async (args, context) => {
   }
 };
 
-export const cdCommand: CommandHandler = async (args, context) => {
+export const cdCommand: CommandHandler = async (args: Array<string>, context: CommandContext) => {
   try {
     if (args.length === 0) {
       // cd with no args goes to root
@@ -68,7 +68,7 @@ export const cdCommand: CommandHandler = async (args, context) => {
   }
 };
 
-export const catCommand: CommandHandler = async (args, context) => {
+export const catCommand: CommandHandler = async (args: Array<string>, context: CommandContext) => {
   if (args.length === 0) {
     context.addOutput("cat: missing file operand", "error");
     return;
@@ -94,7 +94,10 @@ export const catCommand: CommandHandler = async (args, context) => {
   }
 };
 
-export const mkdirCommand: CommandHandler = async (args, context) => {
+export const mkdirCommand: CommandHandler = async (
+  args: Array<string>,
+  context: CommandContext
+) => {
   if (args.length === 0) {
     context.addOutput("mkdir: missing operand", "error");
     return;
@@ -119,7 +122,10 @@ export const mkdirCommand: CommandHandler = async (args, context) => {
   }
 };
 
-export const touchCommand: CommandHandler = async (args, context) => {
+export const touchCommand: CommandHandler = async (
+  args: Array<string>,
+  context: CommandContext
+) => {
   if (args.length === 0) {
     context.addOutput("touch: missing file operand", "error");
     return;
@@ -144,7 +150,7 @@ export const touchCommand: CommandHandler = async (args, context) => {
   }
 };
 
-export const rmCommand: CommandHandler = async (args, context) => {
+export const rmCommand: CommandHandler = async (args: Array<string>, context: CommandContext) => {
   if (args.length === 0) {
     context.addOutput("rm: missing operand", "error");
     return;
@@ -174,7 +180,7 @@ export const rmCommand: CommandHandler = async (args, context) => {
   }
 };
 
-export const mvCommand: CommandHandler = async (args, context) => {
+export const mvCommand: CommandHandler = async (args: Array<string>, context: CommandContext) => {
   if (args.length < 2) {
     context.addOutput("mv: missing operand", "error");
     return;

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import translationsEn from "../data/translations-en.json";
 import translationsFi from "../data/translations-fi.json";
@@ -11,10 +11,12 @@ interface TranslationsContextValue {
   availableLanguages: string[];
 }
 
-const TranslationsContext = createContext<TranslationsContextValue | undefined>(undefined);
+const TranslationsContext: React.Context<TranslationsContextValue | undefined> = createContext<
+  TranslationsContextValue | undefined
+>(undefined);
 
-export const useTranslations = () => {
-  const context = useContext(TranslationsContext);
+export const useTranslations = (): TranslationsContextValue => {
+  const context: TranslationsContextValue | undefined = useContext(TranslationsContext);
   if (!context) {
     throw new Error("useTranslations must be used within a TranslationsProvider");
   }
@@ -31,9 +33,9 @@ const translationsMap: Record<string, Translations> = {
 };
 
 // Get list of available languages from the translations map
-const availableLanguages = Object.keys(translationsMap);
+const availableLanguages: string[] = Object.keys(translationsMap);
 
-export const TranslationsProvider = ({ children }: TranslationsProviderProps) => {
+export const TranslationsProvider = ({ children }: TranslationsProviderProps): JSX.Element => {
   const { settings } = useSettings();
   const [translations, setTranslations] = useState<Translations>(translationsEn);
 

@@ -13,6 +13,7 @@ import {
 } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { FilesystemService } from "./filesystem.service";
+import type { FilesystemNode, FilesystemTree } from "./filesystem.types";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
 import { CreateNodeDto, UpdateNodeDto } from "./filesystem.types";
 
@@ -21,21 +22,21 @@ export class FilesystemController {
   // Hardcoded user ID for now
   private readonly DEFAULT_USER_ID = 1;
 
-  constructor(private filesystemService: FilesystemService) {}
+  public constructor(private filesystemService: FilesystemService) {}
 
   @Get("tree")
-  async getTree(@Query("nodeId") nodeId?: string) {
+  public async getTree(@Query("nodeId") nodeId?: string): Promise<FilesystemTree> {
     const id = nodeId ? parseInt(nodeId, 10) : undefined;
     return this.filesystemService.getTree(this.DEFAULT_USER_ID, id);
   }
 
   @Get("node/:id")
-  async getNode(@Param("id", ParseIntPipe) id: number) {
+  public async getNode(@Param("id", ParseIntPipe) id: number): Promise<FilesystemNode | null> {
     return this.filesystemService.getNodeById(this.DEFAULT_USER_ID, id);
   }
 
   @Get("path")
-  async getNodeByPath(@Query("path") path: string) {
+  public async getNodeByPath(@Query("path") path: string): Promise<FilesystemNode | null> {
     if (!path) {
       path = "/";
     }
@@ -43,32 +44,35 @@ export class FilesystemController {
   }
 
   @Get("children")
-  async getChildren(@Query("parentId") parentId?: string) {
+  public async getChildren(@Query("parentId") parentId?: string): Promise<FilesystemNode[]> {
     const id = parentId ? parseInt(parentId, 10) : null;
     return this.filesystemService.getChildren(this.DEFAULT_USER_ID, id);
   }
 
   @Post("node")
-  async createNode(@Body() dto: CreateNodeDto) {
+  public async createNode(@Body() dto: CreateNodeDto): Promise<FilesystemNode> {
     return this.filesystemService.createNode(this.DEFAULT_USER_ID, dto);
   }
 
   @Put("node/:id")
-  async updateNode(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateNodeDto) {
+  public async updateNode(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: UpdateNodeDto
+  ): Promise<FilesystemNode> {
     return this.filesystemService.updateNode(this.DEFAULT_USER_ID, id, dto);
   }
 
   @Delete("node/:id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteNode(@Param("id", ParseIntPipe) id: number) {
+  public async deleteNode(@Param("id", ParseIntPipe) id: number): Promise<void> {
     await this.filesystemService.deleteNode(this.DEFAULT_USER_ID, id);
   }
 
   @Put("node/:id/move")
-  async moveNode(
+  public async moveNode(
     @Param("id", ParseIntPipe) id: number,
     @Body("newParentId", ParseIntPipe) newParentId: number
-  ) {
+  ): Promise<FilesystemNode> {
     return this.filesystemService.moveNode(this.DEFAULT_USER_ID, id, newParentId);
   }
 }

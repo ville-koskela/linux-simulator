@@ -3,27 +3,27 @@ import { Global, Module } from "@nestjs/common";
 import { LoggerService } from "./logger.service";
 
 class MockLoggerService implements Partial<LoggerService> {
-  setContext = mock.fn((): void => {
+  public setContext = mock.fn((): void => {
     // Mock - do nothing
   });
 
-  log = mock.fn((): void => {
+  public log = mock.fn((): void => {
     // Mock - do nothing
   });
 
-  error = mock.fn((): void => {
+  public error = mock.fn((): void => {
     // Mock - do nothing
   });
 
-  warn = mock.fn((): void => {
+  public warn = mock.fn((): void => {
     // Mock - do nothing
   });
 
-  debug = mock.fn((): void => {
+  public debug = mock.fn((): void => {
     // Mock - do nothing
   });
 
-  verbose = mock.fn((): void => {
+  public verbose = mock.fn((): void => {
     // Mock - do nothing
   });
 }

@@ -1,4 +1,4 @@
-import type { CSSProperties, FC, ReactNode } from "react";
+import type { CSSProperties, FC, JSX, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "../../contexts";
 import "./FloatingWindow.css";
@@ -31,7 +31,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
   onMinimize,
   className = "",
   style = {},
-}) => {
+}: FloatingWindowProps): JSX.Element => {
   const { t } = useTranslations();
   const tWindow = t.floatingWindow;
   const windowTitle = title || tWindow.defaultTitle;
@@ -84,7 +84,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
 
   // Mouse move handler
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent): void => {
       if (isDragging) {
         setPosition({
           x: e.clientX - dragStart.current.x,
@@ -127,7 +127,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (): void => {
       setIsDragging(false);
       setIsResizing(false);
       setResizeDirection("");
@@ -162,7 +162,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
         onMouseDown={handleMouseDownDrag}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>): void => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
           }
@@ -199,7 +199,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       {/* biome-ignore lint/a11y/useSemanticElements: Resize handles need to be divs for proper positioning and cursor styling */}
       <div
         className="resize-handle resize-s"
-        onMouseDown={(e) => handleMouseDownResize(e, "s")}
+        onMouseDown={(e: React.MouseEvent<HTMLDivElement>): void => handleMouseDownResize(e, "s")}
         role="button"
         tabIndex={-1}
         aria-label={tWindow.aria.resizeBottom}
@@ -207,7 +207,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       {/* biome-ignore lint/a11y/useSemanticElements: Resize handles need to be divs for proper positioning and cursor styling */}
       <div
         className="resize-handle resize-e"
-        onMouseDown={(e) => handleMouseDownResize(e, "e")}
+        onMouseDown={(e: React.MouseEvent<HTMLDivElement>): void => handleMouseDownResize(e, "e")}
         role="button"
         tabIndex={-1}
         aria-label={tWindow.aria.resizeRight}
@@ -215,7 +215,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       {/* biome-ignore lint/a11y/useSemanticElements: Resize handles need to be divs for proper positioning and cursor styling */}
       <div
         className="resize-handle resize-se"
-        onMouseDown={(e) => handleMouseDownResize(e, "se")}
+        onMouseDown={(e: React.MouseEvent<HTMLDivElement>): void => handleMouseDownResize(e, "se")}
         role="button"
         tabIndex={-1}
         aria-label={tWindow.aria.resizeBottomRight}

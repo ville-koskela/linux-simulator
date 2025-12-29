@@ -16,8 +16,8 @@ export const WindowManager: FC = () => {
           // biome-ignore lint/a11y/useSemanticElements: Window wrapper needs to be a div for proper positioning
           <div
             key={window.id}
-            onMouseDown={() => bringToFront(window.id)}
-            onKeyDown={(e) => {
+            onMouseDown={(): void => bringToFront(window.id)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>): void => {
               if (e.key === "Enter" || e.key === " ") {
                 bringToFront(window.id);
               }
@@ -34,8 +34,8 @@ export const WindowManager: FC = () => {
               initialHeight={window.initialHeight}
               minWidth={window.minWidth}
               minHeight={window.minHeight}
-              onClose={() => closeWindow(window.id)}
-              onMinimize={() => minimizeWindow(window.id)}
+              onClose={(): void => closeWindow(window.id)}
+              onMinimize={(): void => minimizeWindow(window.id)}
               className={window.className}
               style={{
                 ...window.style,

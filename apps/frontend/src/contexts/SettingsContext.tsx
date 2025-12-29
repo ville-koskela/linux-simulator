@@ -1,6 +1,6 @@
 import type { Settings, ThemeColors } from "@linux-simulator/shared";
 import { defaultThemes } from "@linux-simulator/shared";
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 import { useLocalStorage } from "../hooks";
 import { getBrowserLanguage } from "../utils/language";
@@ -12,10 +12,12 @@ interface SettingsContextValue {
   applyPresetTheme: (themeName: string) => void;
 }
 
-const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
+const SettingsContext: React.Context<SettingsContextValue | undefined> = createContext<
+  SettingsContextValue | undefined
+>(undefined);
 
-export const useSettings = () => {
-  const context = useContext(SettingsContext);
+export const useSettings = (): SettingsContextValue => {
+  const context: SettingsContextValue | undefined = useContext(SettingsContext);
   if (!context) {
     throw new Error("useSettings must be used within a SettingsProvider");
   }
@@ -29,7 +31,7 @@ interface SettingsProviderProps {
 const STORAGE_KEY = "app-settings";
 
 // Available languages - should match the languages in TranslationsContext
-const AVAILABLE_LANGUAGES = ["en", "fi"];
+const AVAILABLE_LANGUAGES: string[] = ["en", "fi"];
 
 const getDefaultSettings = (): Settings => {
   // Check system preference for dark mode
@@ -44,7 +46,7 @@ const getDefaultSettings = (): Settings => {
   };
 };
 
-export const SettingsProvider = ({ children }: SettingsProviderProps) => {
+export const SettingsProvider = ({ children }: SettingsProviderProps): JSX.Element => {
   const [settings, setSettings] = useLocalStorage<Settings>(STORAGE_KEY, getDefaultSettings());
 
   // Apply theme to CSS variables
@@ -62,15 +64,15 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     root.style.setProperty("--color-error", settings.theme.error);
   }, [settings.theme]);
 
-  const updateLanguage = (language: string) => {
+  const updateLanguage = (language: string): void => {
     setSettings((prev: Settings) => ({ ...prev, language }));
   };
 
-  const updateTheme = (theme: ThemeColors) => {
+  const updateTheme = (theme: ThemeColors): void => {
     setSettings((prev: Settings) => ({ ...prev, theme }));
   };
 
-  const applyPresetTheme = (themeName: string) => {
+  const applyPresetTheme = (themeName: string): void => {
     const theme = defaultThemes[themeName];
     if (theme) {
       updateTheme(theme);

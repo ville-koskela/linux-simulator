@@ -14,7 +14,7 @@ export class LoggerService implements NestLoggerService {
   private context = "";
   private logLevel: LogLevel;
 
-  constructor(private config: ConfigService) {
+  public constructor(private config: ConfigService) {
     this.logLevel = this.getLogLevelFromConfig();
   }
 
@@ -44,14 +44,14 @@ export class LoggerService implements NestLoggerService {
     return level <= this.logLevel;
   }
 
-  log(message: string): void {
+  public log(message: string): void {
     if (this.shouldLog(LogLevel.INFO)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.log(this.formatMessage("INFO", message));
     }
   }
 
-  error(message: string, trace?: string): void {
+  public error(message: string, trace?: string): void {
     if (this.shouldLog(LogLevel.ERROR)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.error(this.formatMessage("ERROR", message));
@@ -62,21 +62,21 @@ export class LoggerService implements NestLoggerService {
     }
   }
 
-  warn(message: string): void {
+  public warn(message: string): void {
     if (this.shouldLog(LogLevel.WARN)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.warn(this.formatMessage("WARN", message));
     }
   }
 
-  debug(message: string): void {
+  public debug(message: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.debug(this.formatMessage("DEBUG", message));
     }
   }
 
-  verbose(message: string): void {
+  public verbose(message: string): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       // biome-ignore lint/suspicious/noConsole: Logger service is the only allowed place for console usage
       console.log(this.formatMessage("VERBOSE", message));
@@ -85,7 +85,7 @@ export class LoggerService implements NestLoggerService {
 
   // Set context for this logger instance
   // Call this in your service constructor after injection
-  setContext(context: string): void {
+  public setContext(context: string): void {
     this.context = context;
   }
 }

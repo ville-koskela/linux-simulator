@@ -104,7 +104,7 @@ describe("useLocalStorage", () => {
 
     // Mock localStorage.setItem to throw quota exceeded error
     const originalSetItem = Storage.prototype.setItem;
-    Storage.prototype.setItem = () => {
+    Storage.prototype.setItem = (): void => {
       throw new Error("QuotaExceededError");
     };
 

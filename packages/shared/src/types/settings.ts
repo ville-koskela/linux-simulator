@@ -79,7 +79,7 @@ export const defaultThemes: Record<string, ThemeColors> = {
   },
 };
 
-export const availableLanguages = [
+export const availableLanguages: Array<{ code: string; name: string }> = [
   { code: "en", name: "English" },
   { code: "fi", name: "Suomi" },
   { code: "es", name: "Español" },

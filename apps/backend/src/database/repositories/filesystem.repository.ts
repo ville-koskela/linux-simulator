@@ -6,9 +6,9 @@ import { DatabaseService } from "../database.service";
 
 @Injectable()
 export class FilesystemRepository {
-  constructor(private db: DatabaseService) {}
+  public constructor(private db: DatabaseService) {}
 
-  async findById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
+  public async findById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
     const result = await this.db.query<FilesystemNode>(
       "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
       [userId, nodeId]
@@ -16,7 +16,7 @@ export class FilesystemRepository {
     return result.rows[0] || null;
   }
 
-  async findByPath(userId: number, path: string): Promise<FilesystemNode | null> {
+  public async findByPath(userId: number, path: string): Promise<FilesystemNode | null> {
     // Handle root path
     if (path === "/") {
       const result = await this.db.query<FilesystemNode>(
@@ -31,7 +31,7 @@ export class FilesystemRepository {
     return null; // Caller should use traversal logic
   }
 
-  async findRoot(userId: number): Promise<FilesystemNode | null> {
+  public async findRoot(userId: number): Promise<FilesystemNode | null> {
     const result = await this.db.query<FilesystemNode>(
       "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
       [userId, "/"]
@@ -39,7 +39,7 @@ export class FilesystemRepository {
     return result.rows[0] || null;
   }
 
-  async findByParentAndName(
+  public async findByParentAndName(
     userId: number,
     parentId: number,
     name: string
@@ -51,7 +51,7 @@ export class FilesystemRepository {
     return result.rows[0] || null;
   }
 
-  async findChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
+  public async findChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
     const query =
       parentId === null
         ? "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL ORDER BY type DESC, name"
@@ -63,7 +63,7 @@ export class FilesystemRepository {
     return result.rows;
   }
 
-  async exists(userId: number, parentId: number | null, name: string): Promise<boolean> {
+  public async exists(userId: number, parentId: number | null, name: string): Promise<boolean> {
     const result = await this.db.query(
       "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
       [userId, parentId, name]
@@ -71,7 +71,7 @@ export class FilesystemRepository {
     return result.rows.length > 0;
   }
 
-  async create(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
+  public async create(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
     const result = await this.db.query<FilesystemNode>(
       `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, content, permissions)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -88,7 +88,7 @@ export class FilesystemRepository {
     return result.rows[0];
   }
 
-  async update(
+  public async update(
     userId: number,
     nodeId: number,
     updates: {
@@ -130,7 +130,11 @@ export class FilesystemRepository {
     return result.rows[0];
   }
 
-  async move(userId: number, nodeId: number, newParentId: number | null): Promise<FilesystemNode> {
+  public async move(
+    userId: number,
+    nodeId: number,
+    newParentId: number | null
+  ): Promise<FilesystemNode> {
     const result = await this.db.query<FilesystemNode>(
       `UPDATE filesystem_nodes 
        SET parent_id = $1, updated_at = CURRENT_TIMESTAMP
@@ -141,14 +145,14 @@ export class FilesystemRepository {
     return result.rows[0];
   }
 
-  async delete(userId: number, nodeId: number): Promise<void> {
+  public async delete(userId: number, nodeId: number): Promise<void> {
     await this.db.query("DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2", [
       userId,
       nodeId,
     ]);
   }
 
-  async isDescendant(
+  public async isDescendant(
     userId: number,
     potentialAncestorId: number,
     potentialDescendantId: number
@@ -172,7 +176,7 @@ export class FilesystemRepository {
   /**
    * Execute operations in a transaction
    */
-  async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  public async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
     return this.db.transaction(callback);
   }
 }

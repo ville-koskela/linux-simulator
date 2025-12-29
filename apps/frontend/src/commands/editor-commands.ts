@@ -1,7 +1,7 @@
 import { FilesystemService } from "../services";
-import type { CommandHandler } from "./types";
+import type { CommandContext, CommandHandler } from "./types";
 
-export const vimCommand: CommandHandler = async (args, context) => {
+export const vimCommand: CommandHandler = async (args: Array<string>, context: CommandContext) => {
   if (args.length === 0) {
     context.addOutput("vim: missing file operand", "error");
     return;

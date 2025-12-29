@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { beforeEach, describe, test } from "node:test";
 import { fireEvent } from "@testing-library/react";
+import type { JSX } from "react";
 import { WindowManager } from "../../../src/components/WindowManager";
 import { useWindows } from "../../../src/contexts";
 import { createDOM } from "../../test-utils/create-dom";
@@ -11,7 +12,7 @@ const WindowCreator = ({
   onCreate,
 }: {
   onCreate: (createWindow: ReturnType<typeof useWindows>["createWindow"]) => void;
-}) => {
+}): JSX.Element => {
   const { createWindow } = useWindows();
 
   return (
@@ -37,7 +38,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "test-window",
               title: "Test Window",
@@ -65,7 +66,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "window-1",
               title: "Window 1",
@@ -102,7 +103,7 @@ describe("WindowManager", () => {
   });
 
   test("does not render minimized windows", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, minimizeWindow } = useWindows();
 
       return (
@@ -145,7 +146,7 @@ describe("WindowManager", () => {
   });
 
   test("brings window to front on mouse down", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, windows } = useWindows();
 
       return (
@@ -210,7 +211,7 @@ describe("WindowManager", () => {
   });
 
   test("brings window to front on Enter key", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, windows } = useWindows();
 
       return (
@@ -260,7 +261,7 @@ describe("WindowManager", () => {
   });
 
   test("brings window to front on Space key", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, windows } = useWindows();
 
       return (
@@ -310,7 +311,7 @@ describe("WindowManager", () => {
   });
 
   test("does not bring window to front on other keys", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, windows } = useWindows();
 
       return (
@@ -363,7 +364,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "custom-window",
               title: "Custom Window",
@@ -404,7 +405,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "window-1",
               title: "Window 1",
@@ -436,7 +437,7 @@ describe("WindowManager", () => {
   });
 
   test("calls closeWindow when FloatingWindow onClose is triggered", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { windows } = useWindows();
 
       return (
@@ -450,7 +451,7 @@ describe("WindowManager", () => {
     const { container, getByText, getByRole } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "closable-window",
               title: "Closable Window",
@@ -478,7 +479,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "accessible-window",
               title: "Accessible Window",
@@ -506,7 +507,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "window-1",
               title: "Window 1",
@@ -538,7 +539,7 @@ describe("WindowManager", () => {
     const { container, getByText } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "styled-window",
               title: "Styled Window",
@@ -565,7 +566,7 @@ describe("WindowManager", () => {
   });
 
   test("handles window restoration from minimized state", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, minimizeWindow, restoreWindow } = useWindows();
 
       return (
@@ -615,7 +616,7 @@ describe("WindowManager", () => {
   });
 
   test("renders empty fragment when all windows are minimized", () => {
-    const TestComponent = () => {
+    const TestComponent = (): JSX.Element => {
       const { createWindow, minimizeWindow } = useWindows();
 
       return (
@@ -655,7 +656,7 @@ describe("WindowManager", () => {
   });
 
   test("window content can include complex React components", () => {
-    const ComplexContent = () => (
+    const ComplexContent = (): JSX.Element => (
       <div>
         <h1>Complex Header</h1>
         <ul>
@@ -669,7 +670,7 @@ describe("WindowManager", () => {
     const { getByText, getByRole } = renderWithProviders(
       <>
         <WindowCreator
-          onCreate={(createWindow) => {
+          onCreate={(createWindow: ReturnType<typeof useWindows>["createWindow"]): void => {
             createWindow({
               id: "complex-window",
               title: "Complex Window",

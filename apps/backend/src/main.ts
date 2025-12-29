@@ -10,7 +10,7 @@ import { LoggerService } from "./logger/logger.service";
 // Load environment variables
 dotenv.config();
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   try {
     const app = await NestFactory.create(AppModule, {
       bufferLogs: true,

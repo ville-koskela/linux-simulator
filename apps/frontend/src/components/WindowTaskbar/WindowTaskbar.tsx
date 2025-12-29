@@ -13,7 +13,7 @@ export const WindowTaskbar: FC = () => {
     useWindows();
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
 
-  const handleCreateTerminal = () => {
+  const handleCreateTerminal = (): void => {
     const terminalId = `terminal-${Date.now()}`;
     createWindow({
       id: terminalId,
@@ -29,7 +29,7 @@ export const WindowTaskbar: FC = () => {
     setIsStartMenuOpen(false);
   };
 
-  const handleCreateSettings = () => {
+  const handleCreateSettings = (): void => {
     const settingsId = "settings";
     createWindow({
       id: settingsId,
@@ -51,7 +51,7 @@ export const WindowTaskbar: FC = () => {
         <button
           type="button"
           className={`start-menu-button ${isStartMenuOpen ? "active" : ""}`}
-          onClick={() => setIsStartMenuOpen(!isStartMenuOpen)}
+          onClick={(): void => setIsStartMenuOpen(!isStartMenuOpen)}
           title={tTaskbar.start.title}
         >
           <span className="start-icon">⊞</span>
@@ -62,8 +62,8 @@ export const WindowTaskbar: FC = () => {
             <button
               type="button"
               className="start-menu-backdrop"
-              onClick={() => setIsStartMenuOpen(false)}
-              onKeyDown={(e) => {
+              onClick={(): void => setIsStartMenuOpen(false)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>): void => {
                 if (e.key === "Escape") {
                   setIsStartMenuOpen(false);
                 }
@@ -96,7 +96,7 @@ export const WindowTaskbar: FC = () => {
               <button
                 type="button"
                 className={`taskbar-button ${window.isMinimized ? "minimized" : ""}`}
-                onClick={() => {
+                onClick={(): void => {
                   if (window.isMinimized) {
                     restoreWindow(window.id);
                   } else {
@@ -110,7 +110,7 @@ export const WindowTaskbar: FC = () => {
               <button
                 type="button"
                 className="taskbar-minimize"
-                onClick={() => {
+                onClick={(): void => {
                   if (window.isMinimized) {
                     restoreWindow(window.id);
                   } else {
@@ -124,7 +124,7 @@ export const WindowTaskbar: FC = () => {
               <button
                 type="button"
                 className="taskbar-close"
-                onClick={() => closeWindow(window.id)}
+                onClick={(): void => closeWindow(window.id)}
                 title={tTaskbar.window.close}
               >
                 ×

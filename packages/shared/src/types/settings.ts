@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface ThemeColors {
   primary: string;
   secondary: string;
@@ -11,8 +13,22 @@ export interface ThemeColors {
   error: string;
 }
 
+// Language codes - single source of truth
+export const languageCodes = ["en", "fi"] as const; // "es", "fr", "de"
+export const languageCodeSchema: z.ZodEnum<["en", "fi"]> = z.enum(languageCodes);
+export type LanguageCode = z.infer<typeof languageCodeSchema>;
+export const fallbackLanguage: LanguageCode = "en";
+
+export const availableLanguages: ReadonlyArray<{ code: LanguageCode; name: string }> = [
+  { code: "en", name: "English" },
+  { code: "fi", name: "Suomi" },
+  //{ code: "es", name: "Español" },
+  //{ code: "fr", name: "Français" },
+  //{ code: "de", name: "Deutsch" },
+];
+
 export interface Settings {
-  language: string;
+  language: LanguageCode;
   theme: ThemeColors;
 }
 
@@ -78,13 +94,3 @@ export const defaultThemes: Record<string, ThemeColors> = {
     error: "#e74c3c",
   },
 };
-
-export type AvailableLanguage = "en" | "fi" | "es" | "fr" | "de";
-
-export const availableLanguages: Array<{ code: AvailableLanguage; name: string }> = [
-  { code: "en", name: "English" },
-  { code: "fi", name: "Suomi" },
-  { code: "es", name: "Español" },
-  { code: "fr", name: "Français" },
-  { code: "de", name: "Deutsch" },
-];

@@ -1,3 +1,5 @@
+import type { LanguageCode } from "@linux-simulator/shared";
+import { availableLanguages } from "@linux-simulator/shared";
 import type { JSX, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import translationsEn from "../data/translations-en.json";
@@ -8,7 +10,10 @@ export type Translations = typeof translationsEn;
 
 interface TranslationsContextValue {
   t: Translations;
-  availableLanguages: string[];
+  availableLanguages: ReadonlyArray<{
+    code: LanguageCode;
+    name: string;
+  }>;
 }
 
 const TranslationsContext: React.Context<TranslationsContextValue | undefined> = createContext<
@@ -27,13 +32,12 @@ interface TranslationsProviderProps {
   children: ReactNode;
 }
 
-const translationsMap: Record<string, Translations> = {
+const translationsMap: Record<LanguageCode, Translations> = {
   en: translationsEn,
   fi: translationsFi,
 };
 
-// Get list of available languages from the translations map
-const availableLanguages: string[] = Object.keys(translationsMap);
+// Use the language codes from shared package as single source of truth
 
 export const TranslationsProvider = ({ children }: TranslationsProviderProps): JSX.Element => {
   const { settings } = useSettings();

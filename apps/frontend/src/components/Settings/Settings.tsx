@@ -1,5 +1,5 @@
 import type { ThemeColors } from "@linux-simulator/shared";
-import { defaultThemes } from "@linux-simulator/shared";
+import { defaultThemes, fallbackLanguage } from "@linux-simulator/shared";
 import type React from "react";
 import type { FC } from "react";
 import { useRef, useState } from "react";
@@ -35,7 +35,7 @@ export const Settings: FC = () => {
     const defaultTheme = defaultThemes.light;
     setCustomTheme(defaultTheme);
     updateTheme(defaultTheme);
-    updateLanguage("en");
+    updateLanguage(fallbackLanguage);
   };
 
   const getCurrentPresetName = (): string | null => {
@@ -64,12 +64,6 @@ export const Settings: FC = () => {
     { key: "error", label: tSettings.customTheme.colors.error },
   ];
 
-  // Map language codes to display names
-  const languageNames: Record<string, string> = {
-    en: "English",
-    fi: "Suomi",
-  };
-
   return (
     <div className="settings-container">
       <div className="settings-section">
@@ -85,8 +79,8 @@ export const Settings: FC = () => {
             onChange={handleLanguageChange}
           >
             {availableLanguages.map((lang) => (
-              <option key={lang} value={lang}>
-                {languageNames[lang] || lang}
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
               </option>
             ))}
           </select>

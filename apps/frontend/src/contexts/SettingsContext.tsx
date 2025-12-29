@@ -1,5 +1,10 @@
 import type { Settings, ThemeColors } from "@linux-simulator/shared";
-import { defaultThemes } from "@linux-simulator/shared";
+import {
+  defaultThemes,
+  fallbackLanguage,
+  languageCodeSchema,
+  languageCodes,
+} from "@linux-simulator/shared";
 import type { JSX, ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 import { useLocalStorage } from "../hooks";
@@ -30,15 +35,12 @@ interface SettingsProviderProps {
 
 const STORAGE_KEY = "app-settings";
 
-// Available languages - should match the languages in TranslationsContext
-const AVAILABLE_LANGUAGES: string[] = ["en", "fi"];
-
 const getDefaultSettings = (): Settings => {
   // Check system preference for dark mode
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   // Get browser language with fallback to English
-  const browserLanguage = getBrowserLanguage(AVAILABLE_LANGUAGES, "en");
+  const browserLanguage = getBrowserLanguage(languageCodes);
 
   return {
     language: browserLanguage,
@@ -64,7 +66,10 @@ export const SettingsProvider = ({ children }: SettingsProviderProps): JSX.Eleme
     root.style.setProperty("--color-error", settings.theme.error);
   }, [settings.theme]);
 
-  const updateLanguage = (language: string): void => {
+  const updateLanguage = (lang: string): void => {
+    const languageResult = languageCodeSchema.safeParse(lang);
+    const language = languageResult.success ? languageResult.data : fallbackLanguage;
+
     setSettings((prev: Settings) => ({ ...prev, language }));
   };
 

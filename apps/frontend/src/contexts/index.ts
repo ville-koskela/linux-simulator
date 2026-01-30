@@ -1,5 +1,5 @@
 export { SettingsProvider, useSettings } from "./SettingsContext";
-export type { Translations } from "./TranslationsContext";
+//export type { Translations } from "./TranslationsContext";
 export {
   TranslationsProvider,
   useTranslations,

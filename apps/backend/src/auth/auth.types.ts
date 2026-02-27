@@ -28,7 +28,6 @@ export interface OAuthIntrospectResponse {
 export interface AuthUser {
   id: number;
   username: string;
-  email: string;
   oauthSub: string;
 }
 

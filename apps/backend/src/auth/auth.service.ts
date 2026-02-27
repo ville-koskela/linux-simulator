@@ -22,8 +22,7 @@ interface CacheEntry {
 interface DbUser {
   id: number;
   username: string;
-  email: string;
-  oauthSub: string | null;
+  oauthSub: string;
 }
 
 @Injectable()
@@ -125,13 +124,13 @@ export class AuthService {
    */
   public async getUserBySub(sub: string): Promise<AuthUser | null> {
     const result = await this.db.query<DbUser>(
-      "SELECT id, username, email, oauth_sub FROM users WHERE oauth_sub = $1",
+      "SELECT id, username, oauth_sub FROM users WHERE oauth_sub = $1",
       [sub]
     );
 
     if (result.rows.length === 0) return null;
     const row = result.rows[0];
-    return { id: row.id, username: row.username, email: row.email, oauthSub: row.oauthSub ?? sub };
+    return { id: row.id, username: row.username, oauthSub: row.oauthSub };
   }
 
   /**
@@ -218,15 +217,14 @@ export class AuthService {
     if (existing) return existing;
 
     const username = userInfo.preferred_username ?? `user_${userInfo.sub.slice(0, 8)}`;
-    const email = userInfo.email ?? `${userInfo.sub}@oauth.local`;
 
     // Create the user, handling potential concurrent inserts
     const insertResult = await this.db.query<DbUser>(
-      `INSERT INTO users (username, email, oauth_sub)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (oauth_sub) DO UPDATE SET username = EXCLUDED.username, email = EXCLUDED.email
-       RETURNING id, username, email, oauth_sub`,
-      [username, email, userInfo.sub]
+      `INSERT INTO users (username, oauth_sub)
+       VALUES ($1, $2)
+       ON CONFLICT (oauth_sub) DO UPDATE SET username = EXCLUDED.username
+       RETURNING id, username, oauth_sub`,
+      [username, userInfo.sub]
     );
 
     const newUser = insertResult.rows[0];
@@ -238,7 +236,6 @@ export class AuthService {
     return {
       id: newUser.id,
       username: newUser.username,
-      email: newUser.email,
       oauthSub: userInfo.sub,
     };
   }

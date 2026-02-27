@@ -8,7 +8,9 @@
  * always emit.
  */
 
-const isDev: boolean = import.meta.env.DEV;
+import { env } from "./env";
+
+const isDev: boolean = env.isDev;
 
 export const logger = {
   // biome-ignore lint/suspicious/noConsole: Single allowed location for console usage

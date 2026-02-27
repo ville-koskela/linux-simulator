@@ -12,6 +12,7 @@ import {
 import { setAuthToken } from "../services/api.service";
 import { AuthApiService } from "../services/auth.service";
 import type { AuthUser } from "../services/auth.types";
+import { env } from "../utils/env";
 import { logger } from "../utils/logger";
 
 // ---------------------------------------------------------------------------
@@ -77,13 +78,10 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const OAUTH_ISSUER: string = import.meta.env.VITE_OAUTH_ISSUER ?? "https://www.operationmonkey.net";
-const OAUTH_CLIENT_ID: string = import.meta.env.VITE_OAUTH_CLIENT_ID ?? "linux-simulator";
-const OAUTH_SCOPES: string = import.meta.env.VITE_OAUTH_SCOPES ?? "openid profile email";
+const OAUTH_CLIENT_ID: string = env.oauthClientId;
+const OAUTH_SCOPES: string = env.oauthScopes;
 /** Authorization endpoint discovered from /.well-known/openid-configuration */
-const OAUTH_AUTHORIZE_ENDPOINT: string =
-  import.meta.env.VITE_OAUTH_AUTHORIZE_ENDPOINT ??
-  `${OAUTH_ISSUER}/monkeykey/api/v1/oauth/authorize`;
+const OAUTH_AUTHORIZE_ENDPOINT: string = env.oauthAuthorizeEndpoint;
 /** Must match the registered redirect URI and the backend OAUTH_REDIRECT_URI env var. */
 const REDIRECT_URI: string = `${window.location.origin}/callback`;
 

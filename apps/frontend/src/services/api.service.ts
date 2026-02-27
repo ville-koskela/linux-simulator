@@ -1,7 +1,8 @@
 import type { LanguageCode, Translation } from "@linux-simulator/shared";
 import { fallbackLanguage, translationSchema } from "@linux-simulator/shared";
+import { env } from "../utils/env";
 
-const API_BASE_URL: string = import.meta.env?.VITE_API_URL || "http://localhost:3001";
+const API_BASE_URL: string = env.apiUrl;
 
 /** Module-level auth token, set by AuthContext on login/logout. */
 let _authToken: string | null = null;

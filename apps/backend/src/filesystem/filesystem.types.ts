@@ -1,6 +1,6 @@
 export interface FilesystemNode {
   id: number;
-  userId: number;
+  ownerId: number;
   parentId: number | null;
   name: string;
   type: "file" | "directory";

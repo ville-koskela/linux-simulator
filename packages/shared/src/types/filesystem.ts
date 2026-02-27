@@ -6,7 +6,7 @@ export const nodeTypeSchema = z.enum(["file", "directory"]);
 
 export const filesystemNodeSchema = z.object({
   id: z.number(),
-  userId: z.number(),
+  ownerId: z.number(),
   parentId: z.number().nullable(),
   name: z.string(),
   type: nodeTypeSchema,

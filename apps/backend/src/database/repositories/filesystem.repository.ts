@@ -1,6 +1,5 @@
 import { filesystemNodeSchema } from "@linux-simulator/shared";
 import { Injectable } from "@nestjs/common";
-import type { PoolClient } from "pg";
 import { z } from "zod";
 import type { CreateNodeDto, FilesystemNode } from "../../filesystem/filesystem.types";
 // biome-ignore lint/style/useImportType: <Needed by dependency injection>
@@ -14,10 +13,20 @@ const filesystemNodeArraySchema = z.array(filesystemNodeSchema);
 export class FilesystemRepository {
   public constructor(private db: DatabaseService) {}
 
-  public async findById(userId: number, nodeId: number): Promise<FilesystemNode | null> {
+  public async findById(nodeId: number): Promise<FilesystemNode | null> {
+    const result = await this.db.query("SELECT * FROM filesystem_nodes WHERE id = $1", [nodeId]);
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return filesystemNodeSchema.parse(result.rows[0]);
+  }
+
+  public async findRoot(): Promise<FilesystemNode | null> {
     const result = await this.db.query(
-      "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND id = $2",
-      [userId, nodeId]
+      "SELECT * FROM filesystem_nodes WHERE parent_id IS NULL AND name = '/'",
+      []
     );
 
     if (result.rows.length === 0) {
@@ -27,30 +36,10 @@ export class FilesystemRepository {
     return filesystemNodeSchema.parse(result.rows[0]);
   }
 
-  public async findByPath(userId: number, path: string): Promise<FilesystemNode | null> {
-    // Handle root path
-    if (path === "/") {
-      const result = await this.db.query(
-        "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
-        [userId, "/"]
-      );
-
-      if (result.rows.length === 0) {
-        return null;
-      }
-
-      return filesystemNodeSchema.parse(result.rows[0]);
-    }
-
-    // For other paths, we need to traverse the tree
-    // This could be optimized with recursive CTE, but keeping it simple for now
-    return null; // Caller should use traversal logic
-  }
-
-  public async findRoot(userId: number): Promise<FilesystemNode | null> {
+  public async findByParentAndName(parentId: number, name: string): Promise<FilesystemNode | null> {
     const result = await this.db.query(
-      "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = $2",
-      [userId, "/"]
+      "SELECT * FROM filesystem_nodes WHERE parent_id = $1 AND name = $2",
+      [parentId, name]
     );
 
     if (result.rows.length === 0) {
@@ -60,50 +49,34 @@ export class FilesystemRepository {
     return filesystemNodeSchema.parse(result.rows[0]);
   }
 
-  public async findByParentAndName(
-    userId: number,
-    parentId: number,
-    name: string
-  ): Promise<FilesystemNode | null> {
-    const result = await this.db.query(
-      "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
-      [userId, parentId, name]
-    );
-
-    if (result.rows.length === 0) {
-      return null;
-    }
-
-    return filesystemNodeSchema.parse(result.rows[0]);
-  }
-
-  public async findChildren(userId: number, parentId: number | null): Promise<FilesystemNode[]> {
+  public async findChildren(parentId: number | null): Promise<FilesystemNode[]> {
     const query =
       parentId === null
-        ? "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL ORDER BY type DESC, name"
-        : "SELECT * FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 ORDER BY type DESC, name";
+        ? "SELECT * FROM filesystem_nodes WHERE parent_id IS NULL ORDER BY type DESC, name"
+        : "SELECT * FROM filesystem_nodes WHERE parent_id = $1 ORDER BY type DESC, name";
 
-    const params = parentId === null ? [userId] : [userId, parentId];
+    const params = parentId === null ? [] : [parentId];
     const result = await this.db.query(query, params);
 
     return filesystemNodeArraySchema.parse(result.rows);
   }
 
-  public async exists(userId: number, parentId: number | null, name: string): Promise<boolean> {
+  public async exists(parentId: number | null, name: string): Promise<boolean> {
+    // IS NOT DISTINCT FROM treats NULL = NULL as true (unlike =)
     const result = await this.db.query(
-      "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id = $2 AND name = $3",
-      [userId, parentId, name]
+      "SELECT id FROM filesystem_nodes WHERE parent_id IS NOT DISTINCT FROM $1 AND name = $2",
+      [parentId, name]
     );
     return result.rows.length > 0;
   }
 
-  public async create(userId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
+  public async create(ownerId: number, dto: CreateNodeDto): Promise<FilesystemNode> {
     const result = await this.db.query(
-      `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, content, permissions)
+      `INSERT INTO filesystem_nodes (owner_id, parent_id, name, type, content, permissions)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
       [
-        userId,
+        ownerId,
         dto.parentId,
         dto.name,
         dto.type,
@@ -115,7 +88,6 @@ export class FilesystemRepository {
   }
 
   public async update(
-    userId: number,
     nodeId: number,
     updates: {
       name?: string;
@@ -143,12 +115,12 @@ export class FilesystemRepository {
     }
 
     fields.push("updated_at = CURRENT_TIMESTAMP");
-    values.push(userId, nodeId);
+    values.push(nodeId);
 
     const result = await this.db.query(
       `UPDATE filesystem_nodes 
        SET ${fields.join(", ")}
-       WHERE user_id = $${paramIndex++} AND id = $${paramIndex++}
+       WHERE id = $${paramIndex++}
        RETURNING *`,
       values
     );
@@ -156,53 +128,36 @@ export class FilesystemRepository {
     return filesystemNodeSchema.parse(result.rows[0]);
   }
 
-  public async move(
-    userId: number,
-    nodeId: number,
-    newParentId: number | null
-  ): Promise<FilesystemNode> {
+  public async move(nodeId: number, newParentId: number | null): Promise<FilesystemNode> {
     const result = await this.db.query(
       `UPDATE filesystem_nodes 
        SET parent_id = $1, updated_at = CURRENT_TIMESTAMP
-       WHERE user_id = $2 AND id = $3
+       WHERE id = $2
        RETURNING *`,
-      [newParentId, userId, nodeId]
+      [newParentId, nodeId]
     );
     return filesystemNodeSchema.parse(result.rows[0]);
   }
 
-  public async delete(userId: number, nodeId: number): Promise<void> {
-    await this.db.query("DELETE FROM filesystem_nodes WHERE user_id = $1 AND id = $2", [
-      userId,
-      nodeId,
-    ]);
+  public async delete(nodeId: number): Promise<void> {
+    await this.db.query("DELETE FROM filesystem_nodes WHERE id = $1", [nodeId]);
   }
 
   public async isDescendant(
-    userId: number,
     potentialAncestorId: number,
     potentialDescendantId: number
   ): Promise<boolean> {
-    // Use recursive CTE to check if node is descendant
+    // Use recursive CTE to check if potentialDescendantId lives inside potentialAncestorId
     const result = await this.db.query<{ exists: boolean }>(
       `WITH RECURSIVE descendants AS (
-        SELECT id, parent_id FROM filesystem_nodes 
-        WHERE user_id = $1 AND id = $2
+        SELECT id, parent_id FROM filesystem_nodes WHERE id = $1
         UNION ALL
         SELECT fn.id, fn.parent_id FROM filesystem_nodes fn
         INNER JOIN descendants d ON fn.parent_id = d.id
-        WHERE fn.user_id = $1
       )
-      SELECT EXISTS(SELECT 1 FROM descendants WHERE id = $3) as exists`,
-      [userId, potentialAncestorId, potentialDescendantId]
+      SELECT EXISTS(SELECT 1 FROM descendants WHERE id = $2) as exists`,
+      [potentialAncestorId, potentialDescendantId]
     );
     return result.rows[0]?.exists || false;
-  }
-
-  /**
-   * Execute operations in a transaction
-   */
-  public async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
-    return this.db.transaction(callback);
   }
 }

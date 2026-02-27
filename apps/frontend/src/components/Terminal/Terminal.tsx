@@ -7,7 +7,7 @@ import type { FC, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandContext } from "../../commands";
 import { getCommandHandler } from "../../commands";
-import { useSettings, useTranslations } from "../../contexts";
+import { useAuth, useSettings, useTranslations } from "../../contexts";
 import { CommandsService, FilesystemService } from "../../services";
 import { logger } from "../../utils/logger";
 import { VimEditor } from "../VimEditor/VimEditor";
@@ -25,6 +25,7 @@ interface TerminalProps {
 export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const { t } = useTranslations();
   const { settings } = useSettings();
+  const { user } = useAuth();
   const tTerminal = t.terminal;
 
   const [history, setHistory] = useState<TerminalLine[]>([
@@ -35,7 +36,8 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const [input, setInput] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [currentPath, setCurrentPath] = useState("/");
+  const homePath = user ? `/home/${user.username}` : "/";
+  const [currentPath, setCurrentPath] = useState(homePath);
   const [currentNode, setCurrentNode] = useState<FilesystemNode | null>(null);
   const [commands, setCommands] = useState<TerminalCommand[]>([]);
   const [editorState, setEditorState] = useState<{
@@ -55,12 +57,19 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
     });
   }, []);
 
-  // Initialize filesystem
+  // Initialize filesystem – start in the user's home directory, fall back to /
   useEffect(() => {
-    FilesystemService.getNodeByPath("/").then((node) => {
-      setCurrentNode(node);
+    FilesystemService.getNodeByPath(homePath).then((node) => {
+      if (node) {
+        setCurrentNode(node);
+      } else {
+        return FilesystemService.getNodeByPath("/").then((root) => {
+          setCurrentPath("/");
+          setCurrentNode(root);
+        });
+      }
     });
-  }, []);
+  }, [homePath]);
 
   useEffect(() => {
     if (history.length !== historyLengthRef.current) {

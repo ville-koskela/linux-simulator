@@ -212,13 +212,9 @@ export class AuthService {
   }
 
   private async findOrCreateUser(userInfo: OAuthUserInfo): Promise<AuthUser> {
-    // Try to find existing user by oauth_sub
-    const existing = await this.getUserBySub(userInfo.sub);
-    if (existing) return existing;
-
     const username = userInfo.preferred_username ?? `user_${userInfo.sub.slice(0, 8)}`;
 
-    // Create the user, handling potential concurrent inserts
+    // Upsert the user record (handles first login and username changes atomically)
     const insertResult = await this.db.query<DbUser>(
       `INSERT INTO users (username, oauth_sub)
        VALUES ($1, $2)
@@ -227,89 +223,92 @@ export class AuthService {
       [username, userInfo.sub]
     );
 
-    const newUser = insertResult.rows[0];
-    this.logger.log(`Created/updated OAuth user: ${username} (sub: ${userInfo.sub})`);
+    const user = insertResult.rows[0];
+    this.logger.log(`Authenticated user: ${username} (id: ${user.id})`);
 
-    // Provision a fresh Linux filesystem for new users
-    await this.provisionFilesystem(newUser.id);
+    // Always ensure the home directory exists – provisionHomedir is idempotent
+    // and handles the case where an existing user's home was wiped (e.g. by a
+    // migration) or was never created.
+    await this.provisionHomedir(user.id, username);
 
     return {
-      id: newUser.id,
-      username: newUser.username,
+      id: user.id,
+      username: user.username,
       oauthSub: userInfo.sub,
     };
   }
 
   /**
-   * Seed a minimal Linux filesystem for a newly created user.
+   * Create /home/<username> for a newly registered user inside the shared tree.
+   *
+   * The shared root filesystem (/, /home, /etc, /tmp, …) already exists –
+   * seeded by migration 3 and persisted across restarts.  All we need to do
+   * is add a personal directory under /home and drop a welcome file in it.
    */
-  private async provisionFilesystem(userId: number): Promise<void> {
-    // Check if root node already exists to avoid double-provisioning
-    const existing = await this.db.query(
-      "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = '/'",
-      [userId]
+  private async provisionHomedir(userId: number, username: string): Promise<void> {
+    // Locate the shared root
+    const rootRow = await this.db.query<{ id: number }>(
+      "SELECT id FROM filesystem_nodes WHERE parent_id IS NULL AND name = '/'",
+      []
+    );
+    if (rootRow.rows.length === 0) {
+      this.logger.warn("Shared root not found – skipping home directory provisioning");
+      return;
+    }
+    const rootId = rootRow.rows[0].id;
+
+    // Locate /home
+    const homeRow = await this.db.query<{ id: number }>(
+      "SELECT id FROM filesystem_nodes WHERE parent_id = $1 AND name = 'home'",
+      [rootId]
+    );
+    if (homeRow.rows.length === 0) {
+      this.logger.warn("Shared /home not found – skipping home directory provisioning");
+      return;
+    }
+    const homeId = homeRow.rows[0].id;
+
+    // Idempotency check – home dir may already exist (e.g. concurrent logins)
+    const existing = await this.db.query<{ id: number }>(
+      "SELECT id FROM filesystem_nodes WHERE parent_id = $1 AND name = $2",
+      [homeId, username]
     );
     if (existing.rows.length > 0) return;
 
     await this.db.transaction(async (client) => {
-      // Create root node
-      const rootResult = await client.query<{ id: number }>(
-        `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, permissions)
-         VALUES ($1, NULL, '/', 'directory', 'rwxr-xr-x')
+      const userHomeDirResult = await client.query<{ id: number }>(
+        `INSERT INTO filesystem_nodes (owner_id, parent_id, name, type, permissions)
+         VALUES ($1, $2, $3, 'directory', 'rwx------')
          RETURNING id`,
-        [userId]
+        [userId, homeId, username]
       );
-      const rootId = rootResult.rows[0].id;
+      const userHomeDirId = userHomeDirResult.rows[0].id;
 
-      // Create top-level directories
-      const topLevelDirs = [
-        ["home", "rwxr-xr-x"],
-        ["etc", "rwxr-xr-x"],
-        ["var", "rwxr-xr-x"],
-        ["usr", "rwxr-xr-x"],
-        ["tmp", "rwxrwxrwx"],
-      ];
-
-      for (const [name, permissions] of topLevelDirs) {
-        await client.query(
-          `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, permissions)
-           VALUES ($1, $2, $3, 'directory', $4)`,
-          [userId, rootId, name, permissions]
-        );
-      }
-
-      // Create /root home directory
-      const homeResult = await client.query<{ id: number }>(
-        `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, permissions)
-         VALUES ($1, $2, 'root', 'directory', 'rwx------')
-         RETURNING id`,
-        [userId, rootId]
-      );
-      const homeDirId = homeResult.rows[0].id;
-
-      // Create welcome file
       await client.query(
-        `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, content, permissions)
+        `INSERT INTO filesystem_nodes (owner_id, parent_id, name, type, content, permissions)
          VALUES ($1, $2, 'welcome.txt', 'file', $3, 'rw-r--r--')`,
         [
           userId,
-          homeDirId,
+          userHomeDirId,
           `Welcome to Linux Simulator!
 
 This is a simulated Linux filesystem where you can practice basic Linux commands.
 Try exploring the filesystem with commands like:
-  - ls (list files)
-  - cd (change directory)
-  - cat (view file contents)
-  - mkdir (create directory)
-  - touch (create file)
+  - ls     (list files)
+  - cd     (change directory)
+  - cat    (view file contents)
+  - mkdir  (create directory)
+  - touch  (create file)
+
+Your personal home directory is /home/${username}.
+The /tmp directory is shared and writable by everyone.
 
 Have fun learning!`,
         ]
       );
     });
 
-    this.logger.log(`Provisioned filesystem for user ID: ${userId}`);
+    this.logger.log(`Provisioned home directory /home/${username} for user ID: ${userId}`);
   }
 
   private buildClientCredentials(): string {

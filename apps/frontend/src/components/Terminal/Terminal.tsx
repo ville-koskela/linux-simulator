@@ -1,4 +1,5 @@
 import {
+  type CommandExecutionEvent,
   type FilesystemNode,
   type TerminalCommand,
   commandNameSchema,
@@ -7,7 +8,7 @@ import type { FC, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandContext } from "../../commands";
 import { getCommandHandler } from "../../commands";
-import { useAuth, useSettings, useTranslations } from "../../contexts";
+import { useAuth, useProgress, useSettings, useTranslations } from "../../contexts";
 import { CommandsService, FilesystemService } from "../../services";
 import { logger } from "../../utils/logger";
 import { VimEditor } from "../VimEditor/VimEditor";
@@ -26,6 +27,7 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const { t } = useTranslations();
   const { settings } = useSettings();
   const { user } = useAuth();
+  const { recordCommandExecution } = useProgress();
   const tTerminal = t.terminal;
 
   const [history, setHistory] = useState<TerminalLine[]>([
@@ -49,6 +51,9 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const historyLengthRef = useRef(history.length);
+  /** Mutable refs so async command handlers can report results without stale closures. */
+  const capturedFsEventRef = useRef<CommandExecutionEvent["fsEvent"] | null>(null);
+  const capturedPathRef = useRef<string>(currentPath);
 
   // Load commands from API
   useEffect(() => {
@@ -111,7 +116,7 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
     }
   }, []);
 
-  const executeCommand = (commandLine: string): void => {
+  const executeCommand = async (commandLine: string): Promise<void> => {
     const trimmed = commandLine.trim();
     if (!trimmed) return;
 
@@ -136,11 +141,23 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       return;
     }
 
+    // Reset captured side-effects before executing
+    capturedFsEventRef.current = null;
+    capturedPathRef.current = currentPath;
+
     if (commandName === "clear") {
       setHistory([]);
     } else {
-      executeBuiltinCommand(parsedCommandName.data, args);
+      await executeBuiltinCommand(parsedCommandName.data, args);
     }
+
+    // Notify the progress system
+    await recordCommandExecution({
+      command: commandName,
+      args,
+      currentPath: capturedPathRef.current,
+      fsEvent: capturedFsEventRef.current ?? undefined,
+    });
 
     // Add to command history
     setCommandHistory((prev) => [...prev, trimmed]);
@@ -181,7 +198,14 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
     setEditorState(null);
   };
 
-  const executeBuiltinCommand = (commandName: TerminalCommand["name"], args: string[]): void => {
+  const emitFsEvent = (event: NonNullable<CommandExecutionEvent["fsEvent"]>): void => {
+    capturedFsEventRef.current = event;
+  };
+
+  const executeBuiltinCommand = async (
+    commandName: TerminalCommand["name"],
+    args: string[]
+  ): Promise<void> => {
     const handler = getCommandHandler(commandName);
 
     if (!handler) {
@@ -200,7 +224,10 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       currentPath,
       currentNode,
       addOutput,
-      setCurrentPath,
+      setCurrentPath: (path: string) => {
+        capturedPathRef.current = path;
+        setCurrentPath(path);
+      },
       setCurrentNode,
       resolvePath,
       openEditor,
@@ -208,14 +235,15 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       commands,
       translations: t,
       languageCode: settings.language,
+      emitFsEvent,
     };
 
-    handler(args, context);
+    await handler(args, context);
   };
 
   const handleSubmit = (): void => {
     if (input.trim()) {
-      executeCommand(input);
+      void executeCommand(input);
       setInput("");
     }
   };
@@ -252,6 +280,14 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
         filepath={editorState.filepath}
         initialContent={editorState.content}
         onClose={closeEditor}
+        onSave={(): void => {
+          void recordCommandExecution({
+            command: "vim",
+            args: [editorState.filepath],
+            currentPath,
+            fsEvent: "file_saved",
+          });
+        }}
       />
     );
   }

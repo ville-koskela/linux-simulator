@@ -2,6 +2,7 @@ import { type FC, useState } from "react";
 import { useAuth, useTranslations, useWindows } from "../../contexts";
 import { Settings } from "../Settings";
 import { Terminal } from "../Terminal";
+import { XpHud } from "../XpHud/XpHud";
 import "./WindowTaskbar.css";
 
 export const WindowTaskbar: FC = () => {
@@ -152,6 +153,9 @@ export const WindowTaskbar: FC = () => {
             </div>
           ))
         )}
+      </div>
+      <div className="taskbar-right">
+        <XpHud />
       </div>
     </div>
   );

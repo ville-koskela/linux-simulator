@@ -1,4 +1,5 @@
 import type {
+  CommandExecutionEvent,
   FilesystemNode,
   LanguageCode,
   TerminalCommand,
@@ -17,6 +18,8 @@ export interface CommandContext {
   commands?: TerminalCommand[];
   translations?: Translation;
   languageCode?: LanguageCode;
+  /** Emit a filesystem side-effect so the progress system can award XP. */
+  emitFsEvent?: (event: NonNullable<CommandExecutionEvent["fsEvent"]>) => void;
 }
 
 export type CommandHandler = (args: string[], context: CommandContext) => void | Promise<void>;

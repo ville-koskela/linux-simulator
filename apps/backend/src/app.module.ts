@@ -6,6 +6,7 @@ import { DatabaseModule } from "./database/database.module";
 import { FilesystemModule } from "./filesystem/filesystem.module";
 import { HealthController } from "./health/health.controller";
 import { LoggerModule } from "./logger/logger.module";
+import { ProgressModule } from "./progress/progress.module";
 import { TranslationsModule } from "./translations/translations.module";
 
 @Module({
@@ -17,6 +18,7 @@ import { TranslationsModule } from "./translations/translations.module";
     FilesystemModule,
     CommandsModule,
     TranslationsModule,
+    ProgressModule,
   ],
   controllers: [HealthController],
 })

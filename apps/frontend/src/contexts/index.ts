@@ -1,4 +1,5 @@
 export { AuthProvider, useAuth } from "./AuthContext";
+export { ProgressProvider, useProgress } from "./ProgressContext";
 export { SettingsProvider, useSettings } from "./SettingsContext";
 //export type { Translations } from "./TranslationsContext";
 export {

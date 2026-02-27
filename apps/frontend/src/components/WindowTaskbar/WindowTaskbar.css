@@ -23,6 +23,12 @@
   align-items: center;
 }
 
+.taskbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
 .start-menu-button {
   background: var(--color-surface, #3a3a3a);
   border: 1px solid var(--color-border, #555);

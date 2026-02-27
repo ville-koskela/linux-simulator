@@ -1,0 +1,111 @@
+.levelup-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 9999;
+  animation: levelup-fadein 0.2s ease;
+}
+
+@keyframes levelup-fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.levelup-card {
+  background: #1e1e1e;
+  border: 2px solid #4ec9b0;
+  border-radius: 10px;
+  padding: 36px 44px;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  color: #d4d4d4;
+  animation: levelup-popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 280px;
+}
+
+@keyframes levelup-popIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.levelup-badge {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.levelup-title {
+  font-size: 1.8rem;
+  color: #4ec9b0;
+  margin: 0 0 4px;
+}
+
+.levelup-level {
+  font-size: 1rem;
+  color: #e0a060;
+  margin: 0 0 20px;
+}
+
+.levelup-unlocks {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.levelup-unlocks__heading {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+  margin: 0 0 8px;
+}
+
+.levelup-unlocks__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.levelup-unlocks__item code {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 13px;
+  color: #4ec9b0;
+}
+
+.levelup-close {
+  background: #4ec9b0;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.levelup-close:hover {
+  background: #3db09f;
+}

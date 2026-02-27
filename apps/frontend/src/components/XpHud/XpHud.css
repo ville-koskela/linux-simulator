@@ -1,0 +1,47 @@
+.xp-hud {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 30, 30, 0.92);
+  border: 1px solid var(--color-border, #424242);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--color-text, #d4d4d4);
+  font-size: 13px;
+  transition: border-color 0.15s;
+  user-select: none;
+}
+
+.xp-hud:hover {
+  border-color: var(--color-success, #4ec9b0);
+}
+
+.xp-hud__level {
+  color: var(--color-success, #4ec9b0);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.xp-hud__xp {
+  color: #e0a060;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.xp-hud__bar-wrap {
+  width: 80px;
+  height: 6px;
+  background: var(--color-border, #424242);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.xp-hud__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4ec9b0, #e0a060);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}

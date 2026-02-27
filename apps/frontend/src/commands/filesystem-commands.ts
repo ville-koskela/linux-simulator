@@ -116,6 +116,7 @@ export const mkdirCommand: CommandHandler = async (
     }
 
     await FilesystemService.createNode(context.currentNode.id, name, "directory");
+    context.emitFsEvent?.("dir_created");
     context.addOutput("");
   } catch (error) {
     context.addOutput(`mkdir: error: ${error}`, "error");
@@ -144,6 +145,7 @@ export const touchCommand: CommandHandler = async (
     }
 
     await FilesystemService.createNode(context.currentNode.id, name, "file", "");
+    context.emitFsEvent?.("file_created");
     context.addOutput("");
   } catch (error) {
     context.addOutput(`touch: error: ${error}`, "error");
@@ -174,6 +176,7 @@ export const rmCommand: CommandHandler = async (args: Array<string>, context: Co
     }
 
     await FilesystemService.deleteNode(node.id);
+    context.emitFsEvent?.("file_deleted");
     context.addOutput("");
   } catch (error) {
     context.addOutput(`rm: error: ${error}`, "error");
@@ -199,6 +202,7 @@ export const mvCommand: CommandHandler = async (args: Array<string>, context: Co
     // Simple rename in current directory
     if (!destName.includes("/")) {
       await FilesystemService.updateNode(sourceNode.id, { name: destName });
+      context.emitFsEvent?.("node_moved");
       context.addOutput("");
       return;
     }

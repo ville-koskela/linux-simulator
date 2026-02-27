@@ -270,27 +270,29 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
       role="button"
       tabIndex={0}
     >
-      <div className="terminal-output">
-        {history.map((line, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: Terminal history lines need stable keys
-          <div key={index} className={`terminal-line terminal-${line.type}`}>
-            {line.content}
-          </div>
-        ))}
+      <div className="terminal-scroll-container">
+        <div className="terminal-output">
+          {history.map((line, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: Terminal history lines need stable keys
+            <div key={index} className={`terminal-line terminal-${line.type}`}>
+              {line.content}
+            </div>
+          ))}
+        </div>
+        <div className="terminal-input-line">
+          <span className="terminal-prompt">{currentPath} $</span>
+          <input
+            ref={inputRef}
+            type="text"
+            className="terminal-input"
+            value={input}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            spellCheck={false}
+            autoComplete="off"
+          />
+        </div>
         <div ref={terminalEndRef} />
-      </div>
-      <div className="terminal-input-line">
-        <span className="terminal-prompt">{currentPath} $</span>
-        <input
-          ref={inputRef}
-          type="text"
-          className="terminal-input"
-          value={input}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          spellCheck={false}
-          autoComplete="off"
-        />
       </div>
     </div>
   );

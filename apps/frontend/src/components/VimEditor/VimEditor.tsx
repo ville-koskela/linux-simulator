@@ -29,7 +29,6 @@ export const VimEditor: FC<VimEditorProps> = ({
 
   useEffect(() => {
     containerRef.current?.focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getCurrentLine = (): string => lines[cursorRow] || "";

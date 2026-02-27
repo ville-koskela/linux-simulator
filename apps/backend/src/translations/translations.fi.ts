@@ -65,6 +65,7 @@ export const translationsFi: Translation = {
       text: "Käynnistä",
       header: "Sovellukset",
       closeMenu: "Sulje käynnistä-valikko",
+      logout: "Kirjaudu ulos",
     },
     applications: {
       terminal: "Pääte",

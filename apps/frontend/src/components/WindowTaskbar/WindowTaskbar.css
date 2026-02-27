@@ -123,10 +123,39 @@
   background: var(--color-primary, rgba(74, 144, 226, 0.2));
 }
 
+.start-menu-footer {
+  border-top: 1px solid var(--color-border, #444);
+  padding: 4px 0;
+}
+
+.start-menu-username {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 4px;
+  font-size: 14px;
+  color: var(--color-text-secondary, #aaa);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.start-menu-logout {
+  color: var(--color-error, #e74c3c);
+}
+
+.start-menu-logout:hover {
+  background: rgba(231, 76, 60, 0.12);
+}
+
 .menu-item-icon {
   font-size: 18px;
   width: 24px;
   text-align: center;
+}
+
+.start-menu-username .menu-item-icon {
+  opacity: 0.7;
 }
 
 .menu-item-text {

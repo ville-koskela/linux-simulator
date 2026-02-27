@@ -64,6 +64,7 @@ export const translationsEn: Translation = {
       text: "Start",
       header: "Applications",
       closeMenu: "Close start menu",
+      logout: "Log out",
     },
     applications: {
       terminal: "Terminal",

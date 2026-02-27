@@ -1,15 +1,28 @@
 import type { LanguageCode, Translation } from "@linux-simulator/shared";
 import { fallbackLanguage, translationSchema } from "@linux-simulator/shared";
 
-const API_BASE_URL: string = import.meta.env?.VITE_API_URL || "http://localhost:3000";
+const API_BASE_URL: string = import.meta.env?.VITE_API_URL || "http://localhost:3001";
+
+/** Module-level auth token, set by AuthContext on login/logout. */
+let _authToken: string | null = null;
+
+export function setAuthToken(token: string | null): void {
+  _authToken = token;
+}
 
 export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T | undefined> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options?.headers as Record<string, string>),
+  };
+
+  if (_authToken) {
+    headers.Authorization = `Bearer ${_authToken}`;
+  }
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {

@@ -1,5 +1,5 @@
 import { type FC, useState } from "react";
-import { useTranslations, useWindows } from "../../contexts";
+import { useAuth, useTranslations, useWindows } from "../../contexts";
 import { Settings } from "../Settings";
 import { Terminal } from "../Terminal";
 import "./WindowTaskbar.css";
@@ -11,6 +11,7 @@ export const WindowTaskbar: FC = () => {
 
   const { windows, bringToFront, minimizeWindow, restoreWindow, closeWindow, createWindow } =
     useWindows();
+  const { logout, user } = useAuth();
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
 
   const handleCreateTerminal = (): void => {
@@ -80,6 +81,25 @@ export const WindowTaskbar: FC = () => {
                 <button type="button" className="start-menu-item" onClick={handleCreateSettings}>
                   <span className="menu-item-icon">⚙</span>
                   <span className="menu-item-text">{tApps.settings}</span>
+                </button>
+              </div>
+              <div className="start-menu-footer">
+                {user && (
+                  <div className="start-menu-username">
+                    <span className="menu-item-icon">👤</span>
+                    <span>{user.username}</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="start-menu-item start-menu-logout"
+                  onClick={(): void => {
+                    logout();
+                    setIsStartMenuOpen(false);
+                  }}
+                >
+                  <span className="menu-item-icon">⏻</span>
+                  <span className="menu-item-text">{tTaskbar.start.logout}</span>
                 </button>
               </div>
             </div>

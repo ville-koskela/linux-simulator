@@ -9,6 +9,7 @@ import type { CommandContext } from "../../commands";
 import { getCommandHandler } from "../../commands";
 import { useSettings, useTranslations } from "../../contexts";
 import { CommandsService, FilesystemService } from "../../services";
+import { logger } from "../../utils/logger";
 import { VimEditor } from "../VimEditor/VimEditor";
 import "./Terminal.css";
 
@@ -87,8 +88,7 @@ export const Terminal: FC<TerminalProps> = ({ onClose }: TerminalProps) => {
 
       if (selectedText?.trim()) {
         navigator.clipboard.writeText(selectedText).catch((err) => {
-          // biome-ignore lint/suspicious/noConsole: we want to log clipboard errors
-          console.error("Failed to copy text:", err);
+          logger.error("Failed to copy text:", err);
         });
       }
     };

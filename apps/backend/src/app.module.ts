@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AuthModule } from "./auth/auth.module";
 import { CommandsModule } from "./commands/commands.module";
 import { ConfigModule } from "./config/config.module";
 import { DatabaseModule } from "./database/database.module";
@@ -12,6 +13,7 @@ import { TranslationsModule } from "./translations/translations.module";
     ConfigModule,
     LoggerModule,
     DatabaseModule,
+    AuthModule,
     FilesystemModule,
     CommandsModule,
     TranslationsModule,

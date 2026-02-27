@@ -1,0 +1,332 @@
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+// biome-ignore lint/style/useImportType: Needed by dependency injection
+import { ConfigService } from "../config/config.service";
+// biome-ignore lint/style/useImportType: Needed by dependency injection
+import { DatabaseService } from "../database/database.service";
+// biome-ignore lint/style/useImportType: Needed by dependency injection
+import { LoggerService } from "../logger/logger.service";
+import type {
+  AuthUser,
+  ExchangeCodeResponse,
+  OAuthIntrospectResponse,
+  OAuthTokenResponse,
+  OAuthUserInfo,
+  RefreshTokenResponse,
+} from "./auth.types";
+
+interface CacheEntry {
+  data: OAuthIntrospectResponse;
+  expiresAt: number;
+}
+
+interface DbUser {
+  id: number;
+  username: string;
+  email: string;
+  oauthSub: string | null;
+}
+
+@Injectable()
+export class AuthService {
+  /** Short-lived cache for introspection results to reduce external calls. */
+  private readonly introspectionCache = new Map<string, CacheEntry>();
+  private readonly CACHE_TTL_MS = 30_000; // 30 seconds
+
+  public constructor(
+    private readonly config: ConfigService,
+    private readonly db: DatabaseService,
+    private readonly logger: LoggerService
+  ) {
+    this.logger.setContext("AuthService");
+  }
+
+  // ---------------------------------------------------------------------------
+  // Public API
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Exchange an authorization code (with PKCE verifier) for tokens, then
+   * find-or-create a local user from the OAuth user info.
+   */
+  public async exchangeCode(
+    code: string,
+    codeVerifier: string,
+    redirectUri: string
+  ): Promise<ExchangeCodeResponse> {
+    const tokens = await this.requestTokens({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+    });
+
+    const userInfo = await this.fetchUserInfo(tokens.access_token);
+    const user = await this.findOrCreateUser(userInfo);
+
+    return {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token ?? null,
+      user,
+    };
+  }
+
+  /**
+   * Use an OAuth refresh_token to obtain a new access_token.
+   */
+  public async refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse> {
+    const tokens = await this.requestTokens({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    });
+
+    return {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token ?? null,
+    };
+  }
+
+  /**
+   * Validate a Bearer access_token via the introspection endpoint.
+   * Returns the introspection payload when active, otherwise throws.
+   * Results are cached for {@link CACHE_TTL_MS} to reduce external calls.
+   */
+  public async validateToken(accessToken: string): Promise<OAuthIntrospectResponse> {
+    // Check cache first
+    this.pruneCache();
+    const cached = this.introspectionCache.get(accessToken);
+    if (cached) {
+      if (!cached.data.active) {
+        throw new UnauthorizedException("Token is no longer active");
+      }
+      return cached.data;
+    }
+
+    const intro = await this.introspectToken(accessToken);
+
+    if (!intro.active) {
+      // Cache negative result briefly so we don't spam the server
+      this.introspectionCache.set(accessToken, {
+        data: intro,
+        expiresAt: Date.now() + 5_000,
+      });
+      throw new UnauthorizedException("Token is inactive or expired");
+    }
+
+    this.introspectionCache.set(accessToken, {
+      data: intro,
+      expiresAt: Date.now() + this.CACHE_TTL_MS,
+    });
+
+    return intro;
+  }
+
+  /**
+   * Look up a local user by OAuth subject (sub claim).
+   */
+  public async getUserBySub(sub: string): Promise<AuthUser | null> {
+    const result = await this.db.query<DbUser>(
+      "SELECT id, username, email, oauth_sub FROM users WHERE oauth_sub = $1",
+      [sub]
+    );
+
+    if (result.rows.length === 0) return null;
+    const row = result.rows[0];
+    return { id: row.id, username: row.username, email: row.email, oauthSub: row.oauthSub ?? sub };
+  }
+
+  /**
+   * Revoke an access_token or refresh_token at the OAuth server.
+   */
+  public async revokeToken(token: string): Promise<void> {
+    const credentials = this.buildClientCredentials();
+    await fetch(this.config.oauthRevokeEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${credentials}`,
+      },
+      body: new URLSearchParams({ token }),
+    });
+
+    // Remove from cache regardless of server response
+    this.introspectionCache.delete(token);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Private helpers
+  // ---------------------------------------------------------------------------
+
+  private async requestTokens(params: Record<string, string>): Promise<OAuthTokenResponse> {
+    const credentials = this.buildClientCredentials();
+    const body = new URLSearchParams(params);
+
+    const response = await fetch(this.config.oauthTokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${credentials}`,
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      this.logger.error(`OAuth token request failed: ${response.status} ${text}`);
+      throw new UnauthorizedException("Token request failed");
+    }
+
+    return response.json() as Promise<OAuthTokenResponse>;
+  }
+
+  private async fetchUserInfo(accessToken: string): Promise<OAuthUserInfo> {
+    const response = await fetch(this.config.oauthUserinfoEndpoint, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      this.logger.error(`OAuth userinfo request failed: ${response.status} ${text}`);
+      throw new UnauthorizedException("Failed to fetch user info");
+    }
+
+    return response.json() as Promise<OAuthUserInfo>;
+  }
+
+  private async introspectToken(token: string): Promise<OAuthIntrospectResponse> {
+    const credentials = this.buildClientCredentials();
+
+    const response = await fetch(this.config.oauthIntrospectEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${credentials}`,
+      },
+      body: new URLSearchParams({ token }),
+    });
+
+    if (!response.ok) {
+      this.logger.error(`OAuth introspect request failed: ${response.status}`);
+      throw new UnauthorizedException("Token introspection failed");
+    }
+
+    return response.json() as Promise<OAuthIntrospectResponse>;
+  }
+
+  private async findOrCreateUser(userInfo: OAuthUserInfo): Promise<AuthUser> {
+    // Try to find existing user by oauth_sub
+    const existing = await this.getUserBySub(userInfo.sub);
+    if (existing) return existing;
+
+    const username = userInfo.preferred_username ?? `user_${userInfo.sub.slice(0, 8)}`;
+    const email = userInfo.email ?? `${userInfo.sub}@oauth.local`;
+
+    // Create the user, handling potential concurrent inserts
+    const insertResult = await this.db.query<DbUser>(
+      `INSERT INTO users (username, email, oauth_sub)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (oauth_sub) DO UPDATE SET username = EXCLUDED.username, email = EXCLUDED.email
+       RETURNING id, username, email, oauth_sub`,
+      [username, email, userInfo.sub]
+    );
+
+    const newUser = insertResult.rows[0];
+    this.logger.log(`Created/updated OAuth user: ${username} (sub: ${userInfo.sub})`);
+
+    // Provision a fresh Linux filesystem for new users
+    await this.provisionFilesystem(newUser.id);
+
+    return {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      oauthSub: userInfo.sub,
+    };
+  }
+
+  /**
+   * Seed a minimal Linux filesystem for a newly created user.
+   */
+  private async provisionFilesystem(userId: number): Promise<void> {
+    // Check if root node already exists to avoid double-provisioning
+    const existing = await this.db.query(
+      "SELECT id FROM filesystem_nodes WHERE user_id = $1 AND parent_id IS NULL AND name = '/'",
+      [userId]
+    );
+    if (existing.rows.length > 0) return;
+
+    await this.db.transaction(async (client) => {
+      // Create root node
+      const rootResult = await client.query<{ id: number }>(
+        `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, permissions)
+         VALUES ($1, NULL, '/', 'directory', 'rwxr-xr-x')
+         RETURNING id`,
+        [userId]
+      );
+      const rootId = rootResult.rows[0].id;
+
+      // Create top-level directories
+      const topLevelDirs = [
+        ["home", "rwxr-xr-x"],
+        ["etc", "rwxr-xr-x"],
+        ["var", "rwxr-xr-x"],
+        ["usr", "rwxr-xr-x"],
+        ["tmp", "rwxrwxrwx"],
+      ];
+
+      for (const [name, permissions] of topLevelDirs) {
+        await client.query(
+          `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, permissions)
+           VALUES ($1, $2, $3, 'directory', $4)`,
+          [userId, rootId, name, permissions]
+        );
+      }
+
+      // Create /root home directory
+      const homeResult = await client.query<{ id: number }>(
+        `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, permissions)
+         VALUES ($1, $2, 'root', 'directory', 'rwx------')
+         RETURNING id`,
+        [userId, rootId]
+      );
+      const homeDirId = homeResult.rows[0].id;
+
+      // Create welcome file
+      await client.query(
+        `INSERT INTO filesystem_nodes (user_id, parent_id, name, type, content, permissions)
+         VALUES ($1, $2, 'welcome.txt', 'file', $3, 'rw-r--r--')`,
+        [
+          userId,
+          homeDirId,
+          `Welcome to Linux Simulator!
+
+This is a simulated Linux filesystem where you can practice basic Linux commands.
+Try exploring the filesystem with commands like:
+  - ls (list files)
+  - cd (change directory)
+  - cat (view file contents)
+  - mkdir (create directory)
+  - touch (create file)
+
+Have fun learning!`,
+        ]
+      );
+    });
+
+    this.logger.log(`Provisioned filesystem for user ID: ${userId}`);
+  }
+
+  private buildClientCredentials(): string {
+    return Buffer.from(`${this.config.oauthClientId}:${this.config.oauthClientSecret}`).toString(
+      "base64"
+    );
+  }
+
+  private pruneCache(): void {
+    const now = Date.now();
+    for (const [key, entry] of this.introspectionCache.entries()) {
+      if (entry.expiresAt <= now) {
+        this.introspectionCache.delete(key);
+      }
+    }
+  }
+}

@@ -70,6 +70,7 @@ export const translationSchema = z.object({
       text: z.string(),
       header: z.string(),
       closeMenu: z.string(),
+      logout: z.string(),
     }),
     applications: z.object({
       terminal: z.string(),

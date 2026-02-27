@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ZodSchema } from "zod";
 
 /**
@@ -39,27 +39,27 @@ export function useValidatedSessionStorage<T>(
 
   // Return a wrapped version of useState's setter function that
   // persists the new value to sessionStorage.
-  const setValue = (value: T | ((prev: T) => T)): void => {
-    try {
-      // Allow value to be a function so we have same API as useState
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
+  const setValue = useCallback(
+    (value: T | ((prev: T) => T)): void => {
+      try {
+        setStoredValue((prev) => {
+          // Allow value to be a function so we have same API as useState
+          const valueToStore = value instanceof Function ? value(prev) : value;
 
-      // Validate before storing
-      const validated = schema.safeParse(valueToStore);
-      if (!validated.success) {
-        // Don't store invalid data
-        return;
+          // Validate before storing
+          const validated = schema.safeParse(valueToStore);
+          if (!validated.success) return prev;
+
+          // Save to session storage
+          window.sessionStorage.setItem(key, JSON.stringify(validated.data));
+          return validated.data;
+        });
+      } catch {
+        // Silently fail - could be extended to notify users
       }
-
-      // Save state
-      setStoredValue(validated.data);
-
-      // Save to session storage
-      window.sessionStorage.setItem(key, JSON.stringify(validated.data));
-    } catch {
-      // Silently fail - could be extended to notify users
-    }
-  };
+    },
+    [key, schema]
+  );
 
   // Listen for changes to sessionStorage from other tabs/windows
   useEffect(() => {

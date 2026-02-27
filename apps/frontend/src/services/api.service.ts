@@ -4,8 +4,12 @@ import { env } from "../utils/env";
 
 const API_BASE_URL: string = env.apiUrl;
 
-/** Module-level auth token, set by AuthContext on login/logout. */
-let _authToken: string | null = null;
+/**
+ * Module-level auth token. Initialized synchronously from sessionStorage so
+ * that API calls made during the first render cycle (before AuthContext's
+ * useEffect has had a chance to call setAuthToken) still carry the token.
+ */
+let _authToken: string | null = sessionStorage.getItem("auth_access_token");
 
 export function setAuthToken(token: string | null): void {
   _authToken = token;

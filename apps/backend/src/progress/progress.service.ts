@@ -17,8 +17,8 @@ interface DbProgress {
 }
 
 interface DbCompletedTask {
-  task_key: string;
-  completed_at: Date;
+  taskKey: string;
+  completedAt: Date;
 }
 
 @Injectable()
@@ -51,8 +51,8 @@ export class ProgressService {
 
     const row = progressResult.rows[0];
     const completedTasks: TaskProgress[] = tasksResult.rows.map((r) => ({
-      taskKey: r.task_key,
-      completedAt: r.completed_at,
+      taskKey: r.taskKey,
+      completedAt: r.completedAt,
     }));
 
     return { xp: row.xp, level: row.level, completedTasks };

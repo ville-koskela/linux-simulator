@@ -1,6 +1,12 @@
 import type { Translation } from "@linux-simulator/shared";
 
 export const translationsEn: Translation = {
+  loginPage: {
+    title: "Linux Simulator",
+    subtitle: "Sign in to access your virtual terminal",
+    signInButton: "Sign in with OAuth",
+    signingIn: "Signing in\u2026",
+  },
   settings: {
     title: "Settings",
     languageSettings: {

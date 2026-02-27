@@ -4,9 +4,11 @@ import { WindowTaskbar } from "./components/WindowTaskbar";
 import "./App.css";
 import type { JSX } from "react";
 import { useAuth } from "./contexts";
+import { useTranslations } from "./contexts/TranslationsContext";
 
 export function App(): JSX.Element {
   const { isAuthenticated, isLoading } = useAuth();
+  const { t } = useTranslations();
 
   if (isLoading) {
     return (
@@ -22,7 +24,7 @@ export function App(): JSX.Element {
           fontSize: "1.2rem",
         }}
       >
-        Signing in…
+        {t.loginPage.signingIn}
       </div>
     );
   }

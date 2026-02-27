@@ -1,6 +1,12 @@
 import type { Translation } from "@linux-simulator/shared";
 
 export const translationsFi: Translation = {
+  loginPage: {
+    title: "Linux Simulator",
+    subtitle: "Kirjaudu sis\u00e4\u00e4n p\u00e4\u00e4stäksesi virtuaaliseen p\u00e4\u00e4tteeseen",
+    signInButton: "Kirjaudu sisään OAuth:lla",
+    signingIn: "Kirjaudutaan sisään\u2026",
+  },
   settings: {
     title: "Asetukset",
     languageSettings: {

@@ -111,7 +111,7 @@ export const TranslationsProvider = ({ children }: TranslationsProviderProps): J
               margin: "0 auto 1rem",
             }}
           />
-          <p>Loading translations...</p>
+          <output aria-live="polite">Loading translations...</output>
           <style>
             {`
               @keyframes spin {

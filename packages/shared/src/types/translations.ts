@@ -7,6 +7,12 @@ import { z } from "zod";
 
 // biome-ignore lint/nursery/useExplicitType: Re-defining the schema here would be way too verbose
 export const translationSchema = z.object({
+  loginPage: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+    signInButton: z.string(),
+    signingIn: z.string(),
+  }),
   settings: z.object({
     title: z.string(),
     languageSettings: z.object({

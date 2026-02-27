@@ -93,4 +93,11 @@ export const translationsEn: Translation = {
       resizeBottomRight: "Resize bottom-right",
     },
   },
+  levelUp: {
+    title: "Level Up!",
+    reachedLevel: "You reached level {level}",
+    unlockedCommands: "Unlocked commands:",
+    continue: "Continue",
+    aria: "Level up",
+  },
 };

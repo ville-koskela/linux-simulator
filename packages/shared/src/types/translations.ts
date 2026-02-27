@@ -99,6 +99,13 @@ export const translationSchema = z.object({
       resizeBottomRight: z.string(),
     }),
   }),
+  levelUp: z.object({
+    title: z.string(),
+    reachedLevel: z.string(),
+    unlockedCommands: z.string(),
+    continue: z.string(),
+    aria: z.string(),
+  }),
 });
 
 export type Translation = z.infer<typeof translationSchema>;

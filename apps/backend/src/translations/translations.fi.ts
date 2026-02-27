@@ -94,4 +94,11 @@ export const translationsFi: Translation = {
       resizeBottomRight: "Muuta kokoa alhaalta oikealta",
     },
   },
+  levelUp: {
+    title: "Taso nousi!",
+    reachedLevel: "Saavutit tason {level}",
+    unlockedCommands: "Avatut komennot:",
+    continue: "Jatka",
+    aria: "Taso nousi",
+  },
 };

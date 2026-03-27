@@ -1,6 +1,12 @@
 import { type RenderResult, render } from "@testing-library/react";
 import type { ReactElement } from "react";
-import { SettingsProvider, TranslationsProvider, WindowProvider } from "../../src/contexts";
+import {
+  AuthProvider,
+  ProgressProvider,
+  SettingsProvider,
+  TranslationsProvider,
+  WindowProvider,
+} from "../../src/contexts";
 import { mockTranslations } from "./mock-translation";
 
 /**
@@ -30,10 +36,14 @@ export const renderWithProviders = (component: ReactElement): RenderResult => {
   sessionStorage.setItem("translations-fi", JSON.stringify(mockTranslations));
 
   return render(
-    <SettingsProvider>
-      <TranslationsProvider>
-        <WindowProvider>{component}</WindowProvider>
-      </TranslationsProvider>
-    </SettingsProvider>
+    <AuthProvider>
+      <ProgressProvider>
+        <SettingsProvider>
+          <TranslationsProvider>
+            <WindowProvider>{component}</WindowProvider>
+          </TranslationsProvider>
+        </SettingsProvider>
+      </ProgressProvider>
+    </AuthProvider>
   );
 };

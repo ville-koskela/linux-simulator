@@ -2,6 +2,12 @@ import type { Translation } from "@linux-simulator/shared";
 
 // Mock translations for testing
 export const mockTranslations: Translation = {
+  loginPage: {
+    title: "Sign In",
+    subtitle: "Welcome back",
+    signInButton: "Sign In",
+    signingIn: "Signing in...",
+  },
   settings: {
     title: "Settings",
     languageSettings: {
@@ -65,6 +71,7 @@ export const mockTranslations: Translation = {
       text: "Start",
       header: "Applications",
       closeMenu: "Close start menu",
+      logout: "Sign out",
     },
     applications: {
       terminal: "Terminal",
@@ -86,5 +93,12 @@ export const mockTranslations: Translation = {
       resizeRight: "Resize right",
       resizeBottomRight: "Resize bottom-right",
     },
+  },
+  levelUp: {
+    title: "Level Up!",
+    reachedLevel: "You reached level {level}",
+    unlockedCommands: "Unlocked commands",
+    continue: "Continue",
+    aria: "Level up notification",
   },
 };

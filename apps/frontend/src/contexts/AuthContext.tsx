@@ -83,7 +83,7 @@ const OAUTH_SCOPES: string = env.oauthScopes;
 /** Authorization endpoint discovered from /.well-known/openid-configuration */
 const OAUTH_AUTHORIZE_ENDPOINT: string = env.oauthAuthorizeEndpoint;
 /** Must match the registered redirect URI and the backend OAUTH_REDIRECT_URI env var. */
-const REDIRECT_URI: string = `${window.location.origin}/callback`;
+const getRedirectUri = (): string => `${window.location.origin}/callback`;
 
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const [user, setUser] = useState<AuthUser | null>(() =>
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     sessionStorage.removeItem(STORAGE_KEY_OAUTH_STATE);
 
     setIsLoading(true);
-    AuthApiService.exchangeCode(code, verifier, REDIRECT_URI)
+    AuthApiService.exchangeCode(code, verifier, getRedirectUri())
       .then(({ accessToken: token, refreshToken, user: authUser }) => {
         persistSession(token, refreshToken, authUser);
         setAccessToken(token);
@@ -150,7 +150,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     const params = new URLSearchParams({
       response_type: "code",
       client_id: OAUTH_CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: getRedirectUri(),
       scope: OAUTH_SCOPES,
       state,
       code_challenge: challenge,

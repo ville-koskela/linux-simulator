@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 type EnvSchema = z.ZodObject<{
-  DEV: z.ZodBoolean;
+  DEV: z.ZodDefault<z.ZodBoolean>;
   VITE_API_URL: z.ZodDefault<z.ZodString>;
   VITE_OAUTH_ISSUER: z.ZodDefault<z.ZodString>;
   VITE_OAUTH_CLIENT_ID: z.ZodDefault<z.ZodString>;
@@ -10,7 +10,7 @@ type EnvSchema = z.ZodObject<{
 }>;
 
 const envSchema: EnvSchema = z.object({
-  DEV: z.boolean(),
+  DEV: z.boolean().default(false),
   VITE_API_URL: z.string().default("http://localhost:3001"),
   VITE_OAUTH_ISSUER: z.string().default("https://www.operationmonkey.net"),
   VITE_OAUTH_CLIENT_ID: z.string().default("linux-simulator"),
@@ -20,7 +20,9 @@ const envSchema: EnvSchema = z.object({
     .default("https://www.operationmonkey.net/monkeykey/api/v1/oauth/authorize"),
 });
 
-const parsed: z.ZodSafeParseResult<z.output<EnvSchema>> = envSchema.safeParse(import.meta.env);
+const parsed: z.ZodSafeParseResult<z.output<EnvSchema>> = envSchema.safeParse(
+  import.meta.env ?? {}
+);
 
 if (!parsed.success) {
   throw new Error(`Invalid environment configuration:\n${parsed.error.toString()}`);

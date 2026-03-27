@@ -51,7 +51,11 @@ export function useValidatedSessionStorage<T>(
           if (!validated.success) return prev;
 
           // Save to session storage
-          window.sessionStorage.setItem(key, JSON.stringify(validated.data));
+          try {
+            window.sessionStorage.setItem(key, JSON.stringify(validated.data));
+          } catch {
+            // Storage quota exceeded or unavailable — update in-memory state only
+          }
           return validated.data;
         });
       } catch {

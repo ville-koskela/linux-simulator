@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ZodSchema } from "zod";
+import { logger } from "../utils/logger";
 
 /**
  * Custom hook for managing state that persists in sessionStorage with Zod validation
@@ -55,6 +56,9 @@ export function useValidatedSessionStorage<T>(
             window.sessionStorage.setItem(key, JSON.stringify(validated.data));
           } catch {
             // Storage quota exceeded or unavailable — update in-memory state only
+            logger.error(
+              `Failed to save to sessionStorage for key "${key}". Data will not persist across sessions.`
+            );
           }
           return validated.data;
         });

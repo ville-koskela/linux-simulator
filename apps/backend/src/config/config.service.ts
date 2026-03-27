@@ -1,23 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
 
-const envSchema: z.ZodObject<{
-  NODE_ENV: z.ZodDefault<z.ZodEnum<["development", "production", "test"]>>;
-  PORT: z.ZodDefault<z.ZodNumber>;
-  DATABASE_HOST: z.ZodDefault<z.ZodString>;
-  DATABASE_PORT: z.ZodDefault<z.ZodNumber>;
-  DATABASE_NAME: z.ZodDefault<z.ZodString>;
-  DATABASE_USER: z.ZodDefault<z.ZodString>;
-  DATABASE_PASSWORD: z.ZodDefault<z.ZodString>;
-  LOG_LEVEL: z.ZodDefault<z.ZodEnum<["error", "warn", "info", "debug"]>>;
-  CORS_ORIGIN: z.ZodDefault<z.ZodString>;
-  DEFAULT_USER_ID: z.ZodDefault<z.ZodNumber>;
-  OAUTH_ISSUER: z.ZodDefault<z.ZodString>;
-  OAUTH_CLIENT_ID: z.ZodDefault<z.ZodString>;
-  OAUTH_CLIENT_SECRET: z.ZodDefault<z.ZodString>;
-  OAUTH_REDIRECT_URI: z.ZodDefault<z.ZodString>;
-  OAUTH_SCOPES: z.ZodDefault<z.ZodString>;
-}> = z.object({
+// biome-ignore lint/nursery/useExplicitType: No need to redefined type for schema
+const envSchema = z.object({
   // Server
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().int().positive().default(3001),

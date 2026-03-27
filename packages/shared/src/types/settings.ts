@@ -15,7 +15,8 @@ export interface ThemeColors {
 
 // Language codes - single source of truth
 export const languageCodes = ["en", "fi"] as const;
-export const languageCodeSchema: z.ZodEnum<["en", "fi"]> = z.enum(languageCodes);
+export const languageCodeSchema: z.ZodEnum<{ [K in (typeof languageCodes)[number]]: K }> =
+  z.enum(languageCodes);
 export type LanguageCode = z.infer<typeof languageCodeSchema>;
 export const fallbackLanguage: LanguageCode = "en";
 

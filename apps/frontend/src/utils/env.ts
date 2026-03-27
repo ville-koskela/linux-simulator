@@ -20,9 +20,7 @@ const envSchema: EnvSchema = z.object({
     .default("https://www.operationmonkey.net/monkeykey/api/v1/oauth/authorize"),
 });
 
-const parsed: z.SafeParseReturnType<z.input<EnvSchema>, z.output<EnvSchema>> = envSchema.safeParse(
-  import.meta.env
-);
+const parsed: z.ZodSafeParseResult<z.output<EnvSchema>> = envSchema.safeParse(import.meta.env);
 
 if (!parsed.success) {
   throw new Error(`Invalid environment configuration:\n${parsed.error.toString()}`);

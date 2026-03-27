@@ -61,6 +61,35 @@ export function createDOM(): void {
     writable: true,
     configurable: true,
   });
+
+  // Stub fetch so tests never make real network connections.
+  // Node 25+ ships with native fetch which would actually attempt to reach
+  // localhost:3001 (the backend) when providers like ProgressProvider mount.
+  Object.defineProperty(globalThis, "fetch", {
+    value: async (input: RequestInfo | URL): Promise<Response> => {
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.href
+            : (input as Request).url;
+
+      if (url.includes("/progress")) {
+        return new Response(JSON.stringify({ xp: 0, level: 1, completedTasks: [] }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      // Default: return empty 200 for any other API call
+      return new Response(JSON.stringify({}), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    writable: true,
+    configurable: true,
+  });
 }
 
 export function cleanupDOM(): void {
